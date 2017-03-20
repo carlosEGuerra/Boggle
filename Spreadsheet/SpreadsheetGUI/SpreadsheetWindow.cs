@@ -219,6 +219,7 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            CheckChanged();
             if(Changed)
             {
                 DialogResult RESULT = MessageBox.Show("Would you like to save your file?", "Unsaved Changes", MessageBoxButtons.YesNo);
