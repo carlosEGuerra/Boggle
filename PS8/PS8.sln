@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PS8", "PS8\PS8.csproj", "{032C34A2-3B89-4B87-B537-DE70A3EF1AF4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BoggleClient", "BoggleClient\BoggleClient.csproj", "{63E27914-40D3-428E-B9CC-CB5C61972B1B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{032C34A2-3B89-4B87-B537-DE70A3EF1AF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{032C34A2-3B89-4B87-B537-DE70A3EF1AF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{032C34A2-3B89-4B87-B537-DE70A3EF1AF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{032C34A2-3B89-4B87-B537-DE70A3EF1AF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63E27914-40D3-428E-B9CC-CB5C61972B1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63E27914-40D3-428E-B9CC-CB5C61972B1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63E27914-40D3-428E-B9CC-CB5C61972B1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63E27914-40D3-428E-B9CC-CB5C61972B1B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
