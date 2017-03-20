@@ -24,10 +24,11 @@ namespace SpreadsheetGUI
         }
 
         public event Action CloseEvent;
-        public event Action<string> CountEvent;
         public event Action<string> FileChosenEvent;
         public event Action NewEvent;
-        public event Action<SpreadsheetPanel> UpdateCell;
+        public event Action UpdateCell;
+        public event Action CellClicked;
+        public event Action HelpEvent;
         private string _value;
 
         /// <summary>

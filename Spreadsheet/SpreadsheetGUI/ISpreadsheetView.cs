@@ -14,13 +14,18 @@ namespace SpreadsheetGUI
     {
         event Action<string> FileChosenEvent;
 
-        event Action<string> CountEvent;
-
         event Action CloseEvent;
 
-        event Action NewEvent;
+        event Action NewEvent; 
 
-        event Action<SpreadsheetPanel> UpdateCell;
+        event Action UpdateCell;
+
+        event Action CellClicked; //When a cell is chosen.
+
+        event Action HelpEvent; //When they click help.
+
+        
+        string CellName { get; set; }
 
         SpreadsheetPanel SP { get; set; }
 
