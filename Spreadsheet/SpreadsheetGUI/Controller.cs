@@ -36,6 +36,8 @@ namespace SpreadsheetGUI
             window.CellClicked += HandleCellChanged;
             window.SP.SelectionChanged += HandleCellChanged;
             window.HelpEvent += DisplayHelp;
+            window.SaveEvent += SaveFile;
+            window.CheckChanged += CheckIfChanged;
 
         }
 
@@ -50,7 +52,6 @@ namespace SpreadsheetGUI
             ss.GetSelection(out col, out row);
             ss.GetValue(col, row, out value);
             window.CellName = this.LocationToCellName(row, col);
-            //cellNameReadOnly.Text = this.LocationToCellName(row, col);
             ss.GetValue(col, row, out val2);
             window.Value = val2;
             string val;
@@ -107,7 +108,7 @@ namespace SpreadsheetGUI
                 //CircularExecption
                 if (e is CircularException)
                 {
-                    window.Value = "1";
+                    window.Value = "0";
                     window.Message = "Circular Exception detected";
                
                 }
@@ -115,14 +116,14 @@ namespace SpreadsheetGUI
                 else if (e is FormulaFormatException)
                 {
                     window.Message = "Sorry, but that formula is in the incorrect format!";
-                    window.Value = "00";
+                    window.Value = "0";
 
                 }
                 //FormulaEvaluationException
                 else if (e is FormulaEvaluationException)
                 {
-                    window.Message = "Formula Evaluation Exception Error Detected with new formula";
-                    window.Value = "000";
+                    window.Message = "Formula Evaluation Exception Error detected with new formula";
+                    window.Value = "0";
                 }
             }
 
@@ -169,6 +170,7 @@ namespace SpreadsheetGUI
             try
             {
                 TextReader file = new StringReader(filename);
+                LoadFile(file);
             }
             catch (Exception ex)
             {
@@ -265,9 +267,9 @@ namespace SpreadsheetGUI
         ///  A method that converts the contents of an xml file to the spreadsheet.
         /// </summary>
         /// <param name="filename"></param>
-        private void LoadFile(string filepath)
+        private void LoadFile(TextReader reader)
         {
-            TextReader reader = new StreamReader(filepath);
+            
             model = new Spreadsheet(reader, new Regex(""));
             List<string> list = new List<string>(model.GetNamesOfAllNonemptyCells());
 
@@ -299,7 +301,7 @@ namespace SpreadsheetGUI
         /// </summary>
         private void DisplayHelp()
         {
-            window.Message =
+            window.HelpMessage =
             "Welcome the the Ghetto Spreadsheet! \n " +
             "Sorry in advance. \n" +
             "\n\n" +
@@ -309,11 +311,29 @@ namespace SpreadsheetGUI
             "\n\n" +
             "To close the program: File > Close \n" +
             "To open an existing spreadsheet: File > Open \n" +
-            "To create a new Spreadsheet: File > New \n"
+            "To create a new Spreadsheet: File > New \n" +
+            "To save a file: File > Save\n" +
+            "To save a file to a different name: File > SaveAs \n" +
+            "**We encourage you to save all files with the extension .ss**"
 
             ;
 
         }
+
+        /// <summary>
+        /// Lets us know if a file has changed since we last saved or created it.
+        /// </summary>
+        private void CheckIfChanged()
+        {
+            if (model.Changed)
+            {
+                window.Changed = true;
+            }
+
+            else
+                window.Changed = false;
+        }
+
 
     }
 }
