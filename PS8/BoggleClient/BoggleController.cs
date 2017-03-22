@@ -87,6 +87,7 @@ namespace BoggleClient
         private void HandleCreateUser(string nickname)
         {
 
+
         }
 
         /// <summary>
