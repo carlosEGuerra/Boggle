@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{63E27914-40D3-428E-B9CC-CB5C61972B1B}</ProjectGuid>
+    <ProjectGuid>{BEC87D35-E04D-4F59-9072-0CDA79294F1A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BoggleClient</RootNamespace>
@@ -46,15 +46,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClientController.cs" />
+    <Compile Include="BoggleController.cs" />
     <Compile Include="BoggleView.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="BoggleView.Designer.cs">
       <DependentUpon>BoggleView.cs</DependentUpon>
     </Compile>
+    <Compile Include="BoggleLaunch.cs" />
     <Compile Include="IBoggleClient.cs" />
-    <Compile Include="ClientLaunch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

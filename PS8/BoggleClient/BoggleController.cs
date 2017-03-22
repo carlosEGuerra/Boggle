@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BoggleClient
 {
-    class ClientController
+    class BoggleController: IBoggleClient
     {
     }
 }
