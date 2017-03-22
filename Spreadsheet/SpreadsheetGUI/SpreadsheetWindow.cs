@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
 
 namespace SpreadsheetGUI
 {
@@ -20,7 +20,6 @@ namespace SpreadsheetGUI
         public SpreadsheetWindow()
         {
             InitializeComponent();
-            spreadsheetPanel1.SelectionChanged += displaySelection;
         }
 
         public event Action CloseEvent;
@@ -29,33 +28,40 @@ namespace SpreadsheetGUI
         public event Action UpdateCell;
         public event Action CellClicked;
         public event Action HelpEvent;
-        private string _value;
+        public event Action CheckChanged;
+        public event Action<TextWriter> SaveEvent;
 
-        /// <summary>
-        /// When we edit the contents of the cell.
-        /// </summary>
-        private void displaySelection(SpreadsheetPanel ss)
+        private string _value;
+        private bool _changed;
+
+        public bool Changed
         {
-            int row, col;
-            String value;
-            ss.GetSelection(out col, out row);
-            ss.GetValue(col, row, out value);
-            cellNameReadOnly.Text = this.LocationToCellName(row, col);
-            string s;
-            ss.GetValue(col, row, out s);
-            if(s == null)
+            get
             {
-                cellValReadOnly.Text = "";
+                return _changed;
+            }
+            set
+            {
+                _changed = value;
             }
         }
+
+
 
         public string Message
         {
             set
             {
-                MessageBox.Show(value.ToString(), "ERROR", MessageBoxButtons.OK ,MessageBoxIcon.Error);
+                MessageBox.Show(value.ToString(), "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            
+        }
+
+        public string HelpMessage
+        {
+            set
+            {
+                MessageBox.Show(value.ToString(), "Welcome!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
 
         public string Title
@@ -70,12 +76,12 @@ namespace SpreadsheetGUI
         {
             get
             {
-                return cellValReadOnly.Text;
+                return ContentBox.Text;
             }
 
             set
             {
-                cellValReadOnly.Text = value;
+                ContentBox.Text = value;
             }
         }
 
@@ -83,14 +89,15 @@ namespace SpreadsheetGUI
         {
             get
             {
-                
-                return "work";
+
+                return _value;
             }
 
             set
             {
                 int row;
                 int col;
+                _value = value;
                 cellValReadOnly.Text = value;
                 spreadsheetPanel1.GetSelection(out col, out row);
                 spreadsheetPanel1.SetValue(col, row, value);
@@ -106,7 +113,7 @@ namespace SpreadsheetGUI
 
             set
             {
-                
+
             }
         }
 
@@ -129,7 +136,7 @@ namespace SpreadsheetGUI
         public void DoClose()
         {
             //closes the window
-            if(CloseEvent!= null)
+            if (CloseEvent != null)
             {
                 Close();
             }
@@ -150,10 +157,11 @@ namespace SpreadsheetGUI
 
         }
 
-        //When we double click on the spreadsheet panel, it should fire the UpdateCell event.
+        //When we click a spreadsheet panel, it should show the cell, value, and content
         private void spreadsheetPanel1_MouseClick(object sender, MouseEventArgs e)
         {
-            //UpdateCell();
+            CellClicked();
+            ContentBox.Text = this.Content;
         }
 
         //If user presses "enter" in the editable contents box, fires the event to update all cell fields.
@@ -161,23 +169,29 @@ namespace SpreadsheetGUI
         {
             if (e.KeyChar == (char)Keys.Return || e.KeyChar == (char)Keys.Enter)
             {
-                int col;
-                int row;
-                spreadsheetPanel1.GetSelection(out col, out row);
+                //Grab the contents the user typed.
+                string OriginalContent = ContentBox.Text;
+                if (OriginalContent[0] == '=')
+                {
+                    OriginalContent = OriginalContent.ToUpper();
+                }
+
                 Content = ContentBox.Text;
+                ContentBox.Text = OriginalContent;
+
+                UpdateCell();
+                int col, row;
                 spreadsheetPanel1.GetSelection(out col, out row);
-                spreadsheetPanel1.SetValue(col, row, this.Value);
+                spreadsheetPanel1.SetValue(col, row, Value);
+                cellValReadOnly.Text = Value;
+
+
             }
         }
 
         private void SpreadsheetWindow_Load(object sender, EventArgs e)
         {
-            
-        }
 
-        private void cellNameReadOnly_TextChanged(object sender, EventArgs e)
-        {
-            cellNameReadOnly.Text = "fucking work";
         }
 
         private void spreadsheetPanel1_Load(object sender, EventArgs e)
@@ -192,6 +206,15 @@ namespace SpreadsheetGUI
         /// <param name="e"></param>
         private void closeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if(Changed)
+            {
+                DialogResult RESULT = MessageBox.Show("Would you like to save your file?", "Unsaved Changes", MessageBoxButtons.YesNo);
+                if(RESULT == DialogResult.Yes)
+                {
+                    saveToolStripMenuItem_Click(sender, e);
+                }
+                
+            }
             this.DoClose();
         }
 
@@ -210,7 +233,7 @@ namespace SpreadsheetGUI
         /// <param name="row"></param>
         /// <param name="col"></param>
         /// <returns></returns>
-        private string LocationToCellName(int row, int col)
+        private string LocationTolCellName(int row, int col)
         {
             char colName = (char)(col + 65); //CELLS START INDEXING AT 0,0.
             return colName + (row + 1).ToString();
@@ -227,8 +250,48 @@ namespace SpreadsheetGUI
             return colLocation;
         }
 
+        /// <summary>
+        /// When open is clicked.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            OpenFileDialog result = new OpenFileDialog();
+            if (result.ShowDialog() == DialogResult.OK)
+            {
+                //Read in file.
+                FileChosenEvent(result.FileName);
+
+            }
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            HelpEvent();
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+
+            if (save.ShowDialog() == DialogResult.OK)
+            {
+                /* if (!save.CheckFileExists)
+                 {
+                     SaveAsEvent();
+                     return;
+                 }
+                 */
+                string sfn = save.FileName;
+                TextWriter writer = File.CreateText(sfn);
+                SaveEvent(writer);
+            }
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveToolStripMenuItem_Click(sender, e);
         }
     }
 }
