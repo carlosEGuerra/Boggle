@@ -1,6 +1,6 @@
 ﻿namespace BoggleClient
 {
-    partial class Form1
+    partial class BoggleView
     {
         /// <summary>
         /// Required designer variable.
