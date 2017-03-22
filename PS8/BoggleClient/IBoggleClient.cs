@@ -8,6 +8,7 @@ namespace BoggleClient
 {
     interface IBoggleClient
     {
-        
+        private BoggleView view = new BoggleView();
+
     }
 }
