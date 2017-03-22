@@ -16,7 +16,7 @@ namespace BoggleClient
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            butt7 view = new butt7();
+            BoggleViewWindow view = new BoggleViewWindow();
             new BoggleController(view);
             Application.Run(view);
         }
