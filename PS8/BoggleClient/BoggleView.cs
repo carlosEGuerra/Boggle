@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace BoggleClient
 {
-    public partial class butt7 : Form, IBoggleClient
+    public partial class BoggleViewWindow : Form, IBoggleClient
     {
         private int localGameTimeLimit;
 

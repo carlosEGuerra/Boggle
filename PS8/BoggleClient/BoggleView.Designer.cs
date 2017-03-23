@@ -1,6 +1,6 @@
 ﻿namespace BoggleClient
 {
-    partial class butt7
+    partial class BoggleViewWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(butt7));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(BoggleViewWindow));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.userNameBox = new System.Windows.Forms.TextBox();
@@ -69,24 +69,26 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(976, 38);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(714, 26);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(68, 34);
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(53, 24);
             this.helpToolStripMenuItem.Text = "Help";
             // 
             // userNameBox
             // 
             this.userNameBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.userNameBox.Location = new System.Drawing.Point(13, 77);
+            this.userNameBox.Location = new System.Drawing.Point(9, 51);
+            this.userNameBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.userNameBox.Name = "userNameBox";
             this.userNameBox.ReadOnly = true;
-            this.userNameBox.Size = new System.Drawing.Size(126, 29);
+            this.userNameBox.Size = new System.Drawing.Size(93, 22);
             this.userNameBox.TabIndex = 1;
             this.userNameBox.Text = "User Name";
             this.userNameBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -95,10 +97,11 @@
             // 
             this.domainBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.domainBox.Location = new System.Drawing.Point(13, 42);
+            this.domainBox.Location = new System.Drawing.Point(9, 28);
+            this.domainBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.domainBox.Name = "domainBox";
             this.domainBox.ReadOnly = true;
-            this.domainBox.Size = new System.Drawing.Size(126, 29);
+            this.domainBox.Size = new System.Drawing.Size(93, 22);
             this.domainBox.TabIndex = 2;
             this.domainBox.Text = "Domain";
             this.domainBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
@@ -107,27 +110,30 @@
             // 
             this.domainInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.domainInput.Location = new System.Drawing.Point(145, 42);
+            this.domainInput.Location = new System.Drawing.Point(105, 28);
+            this.domainInput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.domainInput.Name = "domainInput";
-            this.domainInput.Size = new System.Drawing.Size(626, 29);
+            this.domainInput.Size = new System.Drawing.Size(456, 22);
             this.domainInput.TabIndex = 4;
             // 
             // userNameInput
             // 
             this.userNameInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.userNameInput.Location = new System.Drawing.Point(145, 77);
+            this.userNameInput.Location = new System.Drawing.Point(105, 51);
+            this.userNameInput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.userNameInput.Name = "userNameInput";
-            this.userNameInput.Size = new System.Drawing.Size(626, 29);
+            this.userNameInput.Size = new System.Drawing.Size(456, 22);
             this.userNameInput.TabIndex = 3;
             // 
             // registerButton
             // 
             this.registerButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.registerButton.Location = new System.Drawing.Point(777, 42);
+            this.registerButton.Location = new System.Drawing.Point(565, 28);
+            this.registerButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.registerButton.Name = "registerButton";
-            this.registerButton.Size = new System.Drawing.Size(95, 64);
+            this.registerButton.Size = new System.Drawing.Size(69, 43);
             this.registerButton.TabIndex = 5;
             this.registerButton.Text = "Register";
             this.registerButton.UseVisualStyleBackColor = true;
@@ -136,192 +142,215 @@
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.cancelButton.Location = new System.Drawing.Point(878, 42);
+            this.cancelButton.Location = new System.Drawing.Point(639, 28);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.cancelButton.Name = "cancelButton";
-            this.cancelButton.Size = new System.Drawing.Size(86, 64);
+            this.cancelButton.Size = new System.Drawing.Size(63, 43);
             this.cancelButton.TabIndex = 6;
             this.cancelButton.Text = "Cancel";
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
             // butt1
             // 
-            this.butt1.Location = new System.Drawing.Point(260, 250);
+            this.butt1.Location = new System.Drawing.Point(189, 167);
+            this.butt1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt1.Name = "butt1";
-            this.butt1.Size = new System.Drawing.Size(100, 100);
+            this.butt1.Size = new System.Drawing.Size(73, 67);
             this.butt1.TabIndex = 7;
             this.butt1.UseVisualStyleBackColor = true;
             // 
             // butt2
             // 
-            this.butt2.Location = new System.Drawing.Point(366, 250);
+            this.butt2.Location = new System.Drawing.Point(266, 167);
+            this.butt2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt2.Name = "butt2";
-            this.butt2.Size = new System.Drawing.Size(100, 100);
+            this.butt2.Size = new System.Drawing.Size(73, 67);
             this.butt2.TabIndex = 8;
             this.butt2.UseVisualStyleBackColor = true;
             // 
             // butt3
             // 
-            this.butt3.Location = new System.Drawing.Point(472, 250);
+            this.butt3.Location = new System.Drawing.Point(343, 167);
+            this.butt3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt3.Name = "butt3";
-            this.butt3.Size = new System.Drawing.Size(100, 100);
+            this.butt3.Size = new System.Drawing.Size(73, 67);
             this.butt3.TabIndex = 9;
             this.butt3.UseVisualStyleBackColor = true;
             // 
             // butt4
             // 
-            this.butt4.Location = new System.Drawing.Point(578, 250);
+            this.butt4.Location = new System.Drawing.Point(420, 167);
+            this.butt4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt4.Name = "butt4";
-            this.butt4.Size = new System.Drawing.Size(100, 100);
+            this.butt4.Size = new System.Drawing.Size(73, 67);
             this.butt4.TabIndex = 10;
             this.butt4.UseVisualStyleBackColor = true;
             // 
             // butt8
             // 
-            this.butt8.Location = new System.Drawing.Point(578, 356);
+            this.butt8.Location = new System.Drawing.Point(420, 237);
+            this.butt8.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt8.Name = "butt8";
-            this.butt8.Size = new System.Drawing.Size(100, 100);
+            this.butt8.Size = new System.Drawing.Size(73, 67);
             this.butt8.TabIndex = 14;
             this.butt8.UseVisualStyleBackColor = true;
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(472, 356);
+            this.button5.Location = new System.Drawing.Point(343, 237);
+            this.button5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(100, 100);
+            this.button5.Size = new System.Drawing.Size(73, 67);
             this.button5.TabIndex = 13;
             this.button5.UseVisualStyleBackColor = true;
             // 
             // butt6
             // 
-            this.butt6.Location = new System.Drawing.Point(366, 356);
+            this.butt6.Location = new System.Drawing.Point(266, 237);
+            this.butt6.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt6.Name = "butt6";
-            this.butt6.Size = new System.Drawing.Size(100, 100);
+            this.butt6.Size = new System.Drawing.Size(73, 67);
             this.butt6.TabIndex = 12;
             this.butt6.UseVisualStyleBackColor = true;
             // 
             // butt5
             // 
-            this.butt5.Location = new System.Drawing.Point(260, 356);
+            this.butt5.Location = new System.Drawing.Point(189, 237);
+            this.butt5.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt5.Name = "butt5";
-            this.butt5.Size = new System.Drawing.Size(100, 100);
+            this.butt5.Size = new System.Drawing.Size(73, 67);
             this.butt5.TabIndex = 11;
             this.butt5.UseVisualStyleBackColor = true;
             // 
             // butt16
             // 
-            this.butt16.Location = new System.Drawing.Point(578, 568);
+            this.butt16.Location = new System.Drawing.Point(420, 379);
+            this.butt16.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt16.Name = "butt16";
-            this.butt16.Size = new System.Drawing.Size(100, 100);
+            this.butt16.Size = new System.Drawing.Size(73, 67);
             this.butt16.TabIndex = 22;
             this.butt16.UseVisualStyleBackColor = true;
             // 
             // butt15
             // 
-            this.butt15.Location = new System.Drawing.Point(472, 568);
+            this.butt15.Location = new System.Drawing.Point(343, 379);
+            this.butt15.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt15.Name = "butt15";
-            this.butt15.Size = new System.Drawing.Size(100, 100);
+            this.butt15.Size = new System.Drawing.Size(73, 67);
             this.butt15.TabIndex = 21;
             this.butt15.UseVisualStyleBackColor = true;
             // 
             // butt14
             // 
-            this.butt14.Location = new System.Drawing.Point(366, 568);
+            this.butt14.Location = new System.Drawing.Point(266, 379);
+            this.butt14.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt14.Name = "butt14";
-            this.butt14.Size = new System.Drawing.Size(100, 100);
+            this.butt14.Size = new System.Drawing.Size(73, 67);
             this.butt14.TabIndex = 20;
             this.butt14.UseVisualStyleBackColor = true;
             // 
             // butt13
             // 
-            this.butt13.Location = new System.Drawing.Point(260, 568);
+            this.butt13.Location = new System.Drawing.Point(189, 379);
+            this.butt13.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt13.Name = "butt13";
-            this.butt13.Size = new System.Drawing.Size(100, 100);
+            this.butt13.Size = new System.Drawing.Size(73, 67);
             this.butt13.TabIndex = 19;
             this.butt13.UseVisualStyleBackColor = true;
             // 
             // butt12
             // 
-            this.butt12.Location = new System.Drawing.Point(578, 462);
+            this.butt12.Location = new System.Drawing.Point(420, 308);
+            this.butt12.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt12.Name = "butt12";
-            this.butt12.Size = new System.Drawing.Size(100, 100);
+            this.butt12.Size = new System.Drawing.Size(73, 67);
             this.butt12.TabIndex = 18;
             this.butt12.UseVisualStyleBackColor = true;
             // 
             // butt11
             // 
-            this.butt11.Location = new System.Drawing.Point(472, 462);
+            this.butt11.Location = new System.Drawing.Point(343, 308);
+            this.butt11.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt11.Name = "butt11";
-            this.butt11.Size = new System.Drawing.Size(100, 100);
+            this.butt11.Size = new System.Drawing.Size(73, 67);
             this.butt11.TabIndex = 17;
             this.butt11.UseVisualStyleBackColor = true;
             // 
             // butt10
             // 
-            this.butt10.Location = new System.Drawing.Point(366, 462);
+            this.butt10.Location = new System.Drawing.Point(266, 308);
+            this.butt10.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt10.Name = "butt10";
-            this.butt10.Size = new System.Drawing.Size(100, 100);
+            this.butt10.Size = new System.Drawing.Size(73, 67);
             this.butt10.TabIndex = 16;
             this.butt10.UseVisualStyleBackColor = true;
             // 
             // butt9
             // 
-            this.butt9.Location = new System.Drawing.Point(260, 462);
+            this.butt9.Location = new System.Drawing.Point(189, 308);
+            this.butt9.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.butt9.Name = "butt9";
-            this.butt9.Size = new System.Drawing.Size(100, 100);
+            this.butt9.Size = new System.Drawing.Size(73, 67);
             this.butt9.TabIndex = 15;
             this.butt9.UseVisualStyleBackColor = true;
             // 
             // gameID
             // 
-            this.gameID.Location = new System.Drawing.Point(660, 895);
+            this.gameID.Location = new System.Drawing.Point(480, 597);
+            this.gameID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.gameID.Name = "gameID";
             this.gameID.ReadOnly = true;
-            this.gameID.Size = new System.Drawing.Size(304, 29);
+            this.gameID.Size = new System.Drawing.Size(222, 22);
             this.gameID.TabIndex = 23;
             this.gameID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
             // userInput
             // 
-            this.userInput.Location = new System.Drawing.Point(260, 674);
+            this.userInput.Location = new System.Drawing.Point(189, 449);
+            this.userInput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.userInput.Name = "userInput";
-            this.userInput.Size = new System.Drawing.Size(418, 29);
+            this.userInput.Size = new System.Drawing.Size(305, 22);
             this.userInput.TabIndex = 24;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(685, 285);
+            this.textBox1.Location = new System.Drawing.Point(498, 190);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(279, 383);
+            this.textBox1.Size = new System.Drawing.Size(204, 257);
             this.textBox1.TabIndex = 25;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(685, 250);
+            this.textBox2.Location = new System.Drawing.Point(498, 167);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(279, 29);
+            this.textBox2.Size = new System.Drawing.Size(204, 22);
             this.textBox2.TabIndex = 26;
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(13, 250);
+            this.textBox3.Location = new System.Drawing.Point(9, 167);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(241, 29);
+            this.textBox3.Size = new System.Drawing.Size(176, 22);
             this.textBox3.TabIndex = 28;
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(13, 285);
+            this.textBox4.Location = new System.Drawing.Point(9, 190);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.textBox4.Multiline = true;
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(241, 383);
+            this.textBox4.Size = new System.Drawing.Size(176, 257);
             this.textBox4.TabIndex = 27;
             // 
-            // butt7
+            // BoggleViewWindow
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(976, 936);
+            this.ClientSize = new System.Drawing.Size(714, 635);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox2);
@@ -353,9 +382,10 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.MaximumSize = new System.Drawing.Size(1000, 1000);
-            this.MinimumSize = new System.Drawing.Size(1000, 1000);
-            this.Name = "butt7";
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.MaximumSize = new System.Drawing.Size(732, 682);
+            this.MinimumSize = new System.Drawing.Size(732, 682);
+            this.Name = "BoggleViewWindow";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Boggle";
             this.menuStrip1.ResumeLayout(false);
