@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace BoggleClient
 {
@@ -54,7 +55,7 @@ namespace BoggleClient
                 view.EnableControls(false);
 
                 //creates the HTTP client via user input domain
-                using (HttpClient client = CreateClient(domain))
+                using (HttpClient client = CreateClient())
                 {
                     //creating the user parameter
                     dynamic userData = new ExpandoObject();
@@ -65,9 +66,10 @@ namespace BoggleClient
                     //Compose and send the request
                     tokenSource = new CancellationTokenSource();
                     StringContent content = new StringContent(JsonConvert.SerializeObject(userData), Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync("/users", content, tokenSource.Token);
+                    HttpResponseMessage response = await client.PostAsync("users", content, tokenSource.Token);
                     if (response.IsSuccessStatusCode)
                     {
+                        this.view.
                         MessageBox.Show(":D");
                     }
                     else
@@ -187,6 +189,5 @@ namespace BoggleClient
             // There is more client configuration to do, depending on the request.
             return client;
         }
-        */
     }
 }
