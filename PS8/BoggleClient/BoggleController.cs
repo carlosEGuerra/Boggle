@@ -60,6 +60,7 @@ namespace BoggleClient
                     dynamic userData = new ExpandoObject();
                     userData.Nickname = name;
 
+                    //If we needto cancel the request
                     tokenSource = new CancellationTokenSource();
 
                     //Compose and send the request
@@ -87,18 +88,6 @@ namespace BoggleClient
                 view.EnableControls(true);
             }
         }
-
-        private HttpClient CreateClient(string domain)
-        {
-            //creates the client with base address given via domain
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(domain);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            return client;
-
-        }
-
 
         /// <summary>
         /// Play a word in a game.
