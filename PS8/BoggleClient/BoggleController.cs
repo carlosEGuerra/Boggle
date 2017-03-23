@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace BoggleClient
 {
@@ -101,6 +101,20 @@ namespace BoggleClient
         }
 
 
+        /*
+        public BoggleController(IBoggleClient window)
+        {
+            this.window = window;
+            window.CreateUserEvent += HandleCreateUser;
+            window.JoinGameEvent += HandleJoinGame;
+            window.CancelJoinRequestEvent += HandleCancelJoinRequest;
+            window.PlayWordEvent += HandlePlayWord;
+            //WE MIGHT NEED TO CHANGE THIS
+            window.GameStatusEvent += HandleGameStatus;
+
+        }
+        */
+
         /// <summary>
         /// Create a new user.
         /// 
@@ -146,21 +160,6 @@ namespace BoggleClient
         }
 
         /// <summary>
-        /// Play a word in a game.
-        /// If Word is null or empty when trimmed, or if GameID or UserToken is missing or invalid, 
-        /// or if UserToken is not a player in the game identified by GameID, responds with response code 403 (Forbidden)
-        /// Otherwise, if the game state is anything other than "active", responds with response code 409 (Conflict).
-        /// Otherwise, records the trimmed Word as being played by UserToken in the game identified by GameID.
-        /// Returns the score for Word in the context of the game (e.g. if Word has been played before 
-        /// the score is zero). Responds with status 200 (OK). Note: The word is not case sensitive.
-        /// </summary>
-        /// <param name="word"></param>
-        private void HandlePlayWord(string word)
-        {
-
-        }
-
-        /// <summary>
         /// If GameID is invalid, responds with status 403 (Forbidden). Otherwise, returns 
         /// information about the game named by GameID as illustrated below.Note that the information returned depends on 
         /// whether "Brief=yes" was included as a parameter as well as on the state of the game. Responds 
@@ -170,6 +169,23 @@ namespace BoggleClient
         private void HandleGameStatus(string brief)
         {
 
+        }
+
+        /// <summary>
+        /// Creates an HttpClient for communicating with the server.
+        /// </summary>
+        private static HttpClient CreateClient()
+        {
+            // Create a client whose base address is BoggleService
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://cs3500-boggle-s17.azurewebsites.net/BoggleService.svc/");
+
+            // Tell the server that the client will accept this particular type of response data
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            // There is more client configuration to do, depending on the request.
+            return client;
         }
         */
     }
