@@ -18,16 +18,15 @@ namespace BoggleClient
         /// </summary>
         private string userToken;
 
-        /*
-                public event Action CloseGameEvent;
-                public event Action<string> CreateUserEvent;
-                public event Action JoinGameEvent;
-                public event Action CancelJoinRequestEvent;
-                public event Action<string> PlayWordEvent;
-                public event Action<string> GameStatusEvent;
+
+        public event Action CloseGameEvent;
+        public event Action<string> CreateUserEvent;
+        public event Action JoinGameEvent;
+        public event Action CancelJoinRequestEvent;
+        public event Action<string> PlayWordEvent;
+        public event Action<string> GameStatusEvent;
 
 
-        */
         /// <summary>
         /// Creates the controller for the provided view
         /// </summary>
@@ -37,6 +36,7 @@ namespace BoggleClient
             this.view = view;
             this.userToken = "0";
             view.RegisterPressed += Register;
+
 
         }
 
@@ -72,6 +72,54 @@ namespace BoggleClient
             return client;
 
         }
+
+
+        /// <summary>
+        /// Play a word in a game.
+        /// If Word is null or empty when trimmed, or if GameID or UserToken is missing or invalid, 
+        /// or if UserToken is not a player in the game identified by GameID, responds with response code 403 (Forbidden)
+        /// Otherwise, if the game state is anything other than "active", responds with response code 409 (Conflict).
+        /// Otherwise, records the trimmed Word as being played by UserToken in the game identified by GameID.
+        /// Returns the score for Word in the context of the game (e.g. if Word has been played before 
+        /// the score is zero). Responds with status 200 (OK). Note: The word is not case sensitive.
+        /// </summary>
+        /// <param name="word"></param>
+        private void PlayWord(string word)
+        {
+            try
+            {
+                view.EnableControls(false);
+                using (HttpClient client = CreateClient())
+                {
+                    // Create the parameter
+                    dynamic task = new ExpandoObject();
+                    task.UserID = userToken;
+                    task.Description = description;
+
+                    // Compose and send the request.
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(task), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = client.PostAsync("AddItem", content).Result;
+
+                    // Deal with the response
+                    if (response.IsSuccessStatusCode)
+                    {
+                        String result = response.Content.ReadAsStringAsync().Result;
+                        dynamic itemToken = JsonConvert.DeserializeObject(result);
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error submitting: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
+                    }
+                }
+                Refresh();
+            }
+            finally
+            {
+                view.EnableControls(true);
+            }
+        }
+
 
 
         /*
@@ -128,21 +176,6 @@ namespace BoggleClient
         /// Otherwise, removes UserToken from the pending game and responds with status 200 (OK).
         /// </summary>
         private void HandleCancelJoinRequest()
-        {
-
-        }
-
-        /// <summary>
-        /// Play a word in a game.
-        /// If Word is null or empty when trimmed, or if GameID or UserToken is missing or invalid, 
-        /// or if UserToken is not a player in the game identified by GameID, responds with response code 403 (Forbidden)
-        /// Otherwise, if the game state is anything other than "active", responds with response code 409 (Conflict).
-        /// Otherwise, records the trimmed Word as being played by UserToken in the game identified by GameID.
-        /// Returns the score for Word in the context of the game (e.g. if Word has been played before 
-        /// the score is zero). Responds with status 200 (OK). Note: The word is not case sensitive.
-        /// </summary>
-        /// <param name="word"></param>
-        private void HandlePlayWord(string word)
         {
 
         }
