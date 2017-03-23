@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
 using System.Dynamic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace BoggleClient
 {
@@ -12,6 +13,11 @@ namespace BoggleClient
     {
         //The window being controlled.
         private BoggleView view;
+
+        /// <summary>
+        /// For canceling the current operation
+        /// </summary>
+        private CancellationTokenSource tokenSource;
 
         /// <summary>
         /// Holds the value of the user
@@ -44,11 +50,31 @@ namespace BoggleClient
         {
             try
             {
+                //disables the controls
                 view.EnableControls(false);
+
+                //creates the HTTP client via user input domain
                 using (HttpClient client = CreateClient(domain))
                 {
-                    string url = String.Format(domain);
-                    StringContent content = null;
+                    //creating the user parameter
+                    dynamic userData = new ExpandoObject();
+                    userData.Nickname = name;
+
+                    tokenSource = new CancellationTokenSource();
+
+                    //Compose and send the request
+                    tokenSource = new CancellationTokenSource();
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(userData), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync("users", content, tokenSource.Token);
+                    if (response.IsSuccessStatusCode)
+                    {
+
+                    }
+                    else
+                    {
+                        MessageBox errorPopup = new MessageBox();
+                        errorPopup.
+                    }
 
                 }
             }
