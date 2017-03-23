@@ -14,11 +14,6 @@ namespace BoggleClient
     {
         private int localGameTimeLimit;
 
-        public BoggleViewWindow()
-        {
-            InitializeComponent();
-        }
-
         public int gameTimeLimit
         {
             get
@@ -64,5 +59,6 @@ namespace BoggleClient
         public event Action<string> GameStatusEvent;
         public event Action JoinGameEvent;
         public event Action<string> PlayWordEvent;
+
     }
 }
