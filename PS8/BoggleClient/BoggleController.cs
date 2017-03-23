@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace BoggleClient
 {
@@ -119,7 +119,7 @@ namespace BoggleClient
                 {
                     // Create the parameter
                     dynamic task = new ExpandoObject();
-                    task.UserID = userToken;
+                    task.UserToken = userToken;
                     task.Description = description;
 
                     // Compose and send the request.
@@ -216,6 +216,23 @@ namespace BoggleClient
         private void HandleGameStatus(string brief)
         {
 
+        }
+
+        /// <summary>
+        /// Creates an HttpClient for communicating with the server.
+        /// </summary>
+        private static HttpClient CreateClient()
+        {
+            // Create a client whose base address is BoggleService
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri("http://cs3500-boggle-s17.azurewebsites.net/BoggleService.svc/");
+
+            // Tell the server that the client will accept this particular type of response data
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+
+            // There is more client configuration to do, depending on the request.
+            return client;
         }
 
     }
