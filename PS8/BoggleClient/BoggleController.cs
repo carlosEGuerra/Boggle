@@ -8,20 +8,26 @@ using System.Threading.Tasks;
 
 namespace BoggleClient
 {
-    class BoggleController: IBoggleClient
+    class BoggleController
     {
         //The window being controlled.
-        private IBoggleClient window;
-
-        public event Action CloseGameEvent;
-        public event Action<string> CreateUserEvent;
-        public event Action JoinGameEvent;
-        public event Action CancelJoinRequestEvent;
-        public event Action<string> PlayWordEvent;
-        public event Action<string> GameStatusEvent;
-        private string localUserToken;
         private BoggleView view;
 
+        /// <summary>
+        /// Holds the value of the user
+        /// </summary>
+        private string userToken;
+
+        /*
+                public event Action CloseGameEvent;
+                public event Action<string> CreateUserEvent;
+                public event Action JoinGameEvent;
+                public event Action CancelJoinRequestEvent;
+                public event Action<string> PlayWordEvent;
+                public event Action<string> GameStatusEvent;
+
+
+        */
         /// <summary>
         /// Creates the controller for the provided view
         /// </summary>
@@ -67,47 +73,6 @@ namespace BoggleClient
 
         }
 
-        public string userToken
-        {
-            get
-            {
-                return localUserToken;
-            }
-
-            set
-            {
-                localUserToken = value;
-            }
-        }
-
-        private int localGameTimeLimit = 0;
-        public int gameTimeLimit
-        {
-            get
-            {
-                return localGameTimeLimit;
-            }
-
-            set
-            {
-                localGameTimeLimit = value;
-            }
-        }
-
-
-        private int localPlayTimeLimit;
-        public int playTimeLimit
-        {
-            get
-            {
-                return localPlayTimeLimit;
-            }
-
-            set
-            {
-                localPlayTimeLimit = value;
-            }
-        }
 
         /*
         public BoggleController(IBoggleClient window)
