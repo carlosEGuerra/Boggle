@@ -54,13 +54,13 @@ namespace BoggleClient
                 view.EnableControls(false);
 
                 //creates the HTTP client via user input domain
-                using (HttpClient client = CreateClient(domain))
+                using (HttpClient client = CreateClient())
                 {
                     //creating the user parameter
                     dynamic userData = new ExpandoObject();
                     userData.Nickname = name;
 
-                    //If we needto cancel the request
+                    //If we need to cancel the request
                     tokenSource = new CancellationTokenSource();
 
                     //Compose and send the request
@@ -101,7 +101,7 @@ namespace BoggleClient
         /// <param name="word"></param>
         private void PlayWord(string word)
         {
-            try
+    /*        try
             {
                 view.EnableControls(false);
                 using (HttpClient client = CreateClient())
@@ -133,23 +133,10 @@ namespace BoggleClient
             {
                 view.EnableControls(true);
             }
+
+            */
         }
 
-
-
-        /*
-        public BoggleController(IBoggleClient window)
-        {
-            this.window = window;
-            window.CreateUserEvent += HandleCreateUser;
-            window.JoinGameEvent += HandleJoinGame;
-            window.CancelJoinRequestEvent += HandleCancelJoinRequest;
-            window.PlayWordEvent += HandlePlayWord;
-            //WE MIGHT NEED TO CHANGE THIS
-            window.GameStatusEvent += HandleGameStatus;
-
-        }
-        */
 
         /// <summary>
         /// Create a new user.
@@ -181,7 +168,7 @@ namespace BoggleClient
         /// </summary>
         private void HandleJoinGame()
         {
-
+            
         }
 
         /// <summary>
