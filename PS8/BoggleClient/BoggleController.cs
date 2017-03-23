@@ -1,79 +1,69 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
+using System.Net.Http;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace BoggleClient
 {
-    class BoggleController: IBoggleClient
+    class BoggleController
     {
-        //The window being controlled.
-        private IBoggleClient window;
+        /// <summary>
+        /// The view controlled by this Controller
+        /// </summary>
+        private BoggleViewWindow view;
+   
+        /// <summary>
+        /// The token of the most recently registered user, or "0" if no user
+        /// has ever registered
+        /// </summary>
+        private string userToken;
 
-        public event Action CloseGameEvent;
-        public event Action<string> CreateUserEvent;
-        public event Action JoinGameEvent;
-        public event Action CancelJoinRequestEvent;
-        public event Action<string> PlayWordEvent;
-        public event Action<string> GameStatusEvent;
+        /// <summary>
+        /// For canceling the current operation
+        /// </summary>
+        private CancellationTokenSource tokenSource;
 
-        private string localUserToken;
-        public string userToken
+
+        /// <summary>
+        /// A list of all of the words the user has displayed.
+        /// </summary>
+        private IList<string> itemList;
+
+        /// <summary>
+        /// Creates a Controller for the provided view
+        /// </summary>
+        public BoggleController(BoggleViewWindow view)
         {
-            get
-            {
-                return localUserToken;
-            }
-
-            set
-            {
-                localUserToken = value;
-            }
+            this.view = view;
+            userToken = "0";
+            itemList = new List<string>();
+            view.CancelPressed += Cancel;
+            view.RegisterPressed += Register;
+            view.SubmitPressed += Submit;
+            view.DeletePressed += Delete;
+            view.DonePressed += Done;
+            view.FilterChanged += Filter;
         }
+        /*
+                public event Action CloseGameEvent;
+                public event Action<string> CreateUserEvent;
+                public event Action JoinGameEvent;
+                public event Action CancelJoinRequestEvent;
+                public event Action<string> PlayWordEvent;
+                public event Action<string> GameStatusEvent;
 
-        private int localGameTimeLimit = 0;
-        public int gameTimeLimit
+            */
+        /// <summary>
+        /// Cancels the current operation (currently unimplemented)
+        /// </summary>
+        private void Cancel()
         {
-            get
-            {
-                return localGameTimeLimit;
-            }
-
-            set
-            {
-                localGameTimeLimit = value;
-            }
+            tokenSource.Cancel();
         }
-
-
-        private int localPlayTimeLimit;
-        public int playTimeLimit
-        {
-            get
-            {
-                return localPlayTimeLimit;
-            }
-
-            set
-            {
-                localPlayTimeLimit = value;
-            }
-        }
-
-        public BoggleController(IBoggleClient window)
-        {
-            this.window = window;
-            window.CreateUserEvent += HandleCreateUser;
-            window.JoinGameEvent += HandleJoinGame;
-            window.CancelJoinRequestEvent += HandleCancelJoinRequest;
-            window.PlayWordEvent += HandlePlayWord;
-            //WE MIGHT NEED TO CHANGE THIS
-            window.GameStatusEvent += HandleGameStatus;
-
-        }
-
 
         /// <summary>
         /// Create a new user.

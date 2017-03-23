@@ -53,7 +53,6 @@
             this.butt11 = new System.Windows.Forms.Button();
             this.butt10 = new System.Windows.Forms.Button();
             this.butt9 = new System.Windows.Forms.Button();
-            this.gameID = new System.Windows.Forms.TextBox();
             this.userInput = new System.Windows.Forms.TextBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
@@ -79,7 +78,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(714, 26);
+            this.menuStrip1.Size = new System.Drawing.Size(982, 26);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -94,7 +93,7 @@
             this.userNameBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.userNameBox.Location = new System.Drawing.Point(9, 51);
-            this.userNameBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.userNameBox.Margin = new System.Windows.Forms.Padding(2);
             this.userNameBox.Name = "userNameBox";
             this.userNameBox.ReadOnly = true;
             this.userNameBox.Size = new System.Drawing.Size(93, 22);
@@ -107,7 +106,7 @@
             this.domainBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.domainBox.Location = new System.Drawing.Point(9, 28);
-            this.domainBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.domainBox.Margin = new System.Windows.Forms.Padding(2);
             this.domainBox.Name = "domainBox";
             this.domainBox.ReadOnly = true;
             this.domainBox.Size = new System.Drawing.Size(93, 22);
@@ -120,7 +119,7 @@
             this.domainInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.domainInput.Location = new System.Drawing.Point(105, 28);
-            this.domainInput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.domainInput.Margin = new System.Windows.Forms.Padding(2);
             this.domainInput.Name = "domainInput";
             this.domainInput.Size = new System.Drawing.Size(456, 22);
             this.domainInput.TabIndex = 4;
@@ -130,7 +129,7 @@
             this.userNameInput.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.userNameInput.Location = new System.Drawing.Point(105, 51);
-            this.userNameInput.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.userNameInput.Margin = new System.Windows.Forms.Padding(2);
             this.userNameInput.Name = "userNameInput";
             this.userNameInput.Size = new System.Drawing.Size(456, 22);
             this.userNameInput.TabIndex = 3;
@@ -140,7 +139,7 @@
             this.registerButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.registerButton.Location = new System.Drawing.Point(565, 28);
-            this.registerButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.registerButton.Margin = new System.Windows.Forms.Padding(2);
             this.registerButton.Name = "registerButton";
             this.registerButton.Size = new System.Drawing.Size(69, 43);
             this.registerButton.TabIndex = 5;
@@ -152,7 +151,7 @@
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.Location = new System.Drawing.Point(639, 28);
-            this.cancelButton.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.cancelButton.Margin = new System.Windows.Forms.Padding(2);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(63, 43);
             this.cancelButton.TabIndex = 6;
@@ -201,11 +200,10 @@
             // 
             // butt7
             // 
-            this.button5.Location = new System.Drawing.Point(472, 356);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(100, 100);
-            this.button5.TabIndex = 13;
-            this.button5.UseVisualStyleBackColor = true;
+            this.butt7.Location = new System.Drawing.Point(0, 0);
+            this.butt7.Name = "butt7";
+            this.butt7.Size = new System.Drawing.Size(75, 23);
+            this.butt7.TabIndex = 29;
             // 
             // butt6
             // 
@@ -287,16 +285,6 @@
             this.butt9.TabIndex = 15;
             this.butt9.UseVisualStyleBackColor = true;
             // 
-            // gameID
-            // 
-            this.gameID.Location = new System.Drawing.Point(480, 597);
-            this.gameID.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
-            this.gameID.Name = "gameID";
-            this.gameID.ReadOnly = true;
-            this.gameID.Size = new System.Drawing.Size(222, 22);
-            this.gameID.TabIndex = 23;
-            this.gameID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
             // userInput
             // 
             this.userInput.Location = new System.Drawing.Point(260, 674);
@@ -316,37 +304,88 @@
             // 
             this.textBox2.Location = new System.Drawing.Point(685, 250);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(279, 29);
+            this.textBox2.Size = new System.Drawing.Size(279, 22);
             this.textBox2.TabIndex = 26;
             // 
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(9, 167);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(2);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(241, 29);
+            this.textBox3.Size = new System.Drawing.Size(241, 22);
             this.textBox3.TabIndex = 28;
             // 
             // textBox4
             // 
             this.textBox4.Location = new System.Drawing.Point(9, 190);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(2);
             this.textBox4.Multiline = true;
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(241, 383);
             this.textBox4.TabIndex = 27;
             // 
-            // butt7
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(0, 0);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(100, 96);
+            this.richTextBox1.TabIndex = 0;
+            this.richTextBox1.Text = "";
+            // 
+            // Player2Score
+            // 
+            this.Player2Score.Location = new System.Drawing.Point(0, 0);
+            this.Player2Score.Name = "Player2Score";
+            this.Player2Score.Size = new System.Drawing.Size(100, 96);
+            this.Player2Score.TabIndex = 0;
+            this.Player2Score.Text = "";
+            // 
+            // Player1Score
+            // 
+            this.Player1Score.Location = new System.Drawing.Point(0, 0);
+            this.Player1Score.Name = "Player1Score";
+            this.Player1Score.Size = new System.Drawing.Size(100, 96);
+            this.Player1Score.TabIndex = 0;
+            this.Player1Score.Text = "";
+            // 
+            // textBox5
+            // 
+            this.textBox5.Location = new System.Drawing.Point(0, 0);
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new System.Drawing.Size(100, 22);
+            this.textBox5.TabIndex = 0;
+            // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(0, 0);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(100, 22);
+            this.textBox6.TabIndex = 0;
+            // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(0, 0);
+            this.textBox7.Name = "textBox7";
+            this.textBox7.Size = new System.Drawing.Size(100, 22);
+            this.textBox7.TabIndex = 0;
+            // 
+            // textBox8
+            // 
+            this.textBox8.Location = new System.Drawing.Point(0, 0);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(100, 22);
+            this.textBox8.TabIndex = 0;
+            // 
+            // BoggleViewWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(976, 936);
+            this.ClientSize = new System.Drawing.Size(982, 953);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.userInput);
-            this.Controls.Add(this.gameID);
             this.Controls.Add(this.butt16);
             this.Controls.Add(this.butt15);
             this.Controls.Add(this.butt14);
@@ -374,7 +413,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.MaximumSize = new System.Drawing.Size(1000, 1000);
             this.MinimumSize = new System.Drawing.Size(1000, 1000);
-            this.Name = "butt7";
+            this.Name = "BoggleViewWindow";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Boggle";
             this.menuStrip1.ResumeLayout(false);
@@ -411,7 +450,6 @@
         private System.Windows.Forms.Button butt11;
         private System.Windows.Forms.Button butt10;
         private System.Windows.Forms.Button butt9;
-        private System.Windows.Forms.TextBox gameID;
         private System.Windows.Forms.TextBox userInput;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;

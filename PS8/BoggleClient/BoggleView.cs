@@ -10,55 +10,46 @@ using System.Windows.Forms;
 
 namespace BoggleClient
 {
-    public partial class BoggleViewWindow : Form, IBoggleClient
+    public partial class BoggleViewWindow : Form
     {
-        private int localGameTimeLimit;
-
-        public int gameTimeLimit
+        /// <summary>
+        /// Creates the view
+        /// </summary>
+        public BoggleViewWindow()
         {
-            get
-            {
-                return localGameTimeLimit;
-            }
-
-            set
-            {
-                throw new NotImplementedException();
-            }
+            InitializeComponent();
         }
 
-        public int playTimeLimit
+        /// <summary>
+        /// If state == true, enables all controls that are normally enabled; disables Cancel.
+        /// If state == false, disables all controls; enables Cancel.
+        /// </summary>
+        public void EnableControls(bool state)
         {
-            get
-            {
-                throw new NotImplementedException();
-            }
+            registerButton.Enabled = state;
+            taskButton.Enabled = state && UserRegistered && taskBox.Text.Length > 0;
+            allTaskButton.Enabled = state && UserRegistered;
+            showCompletedTasksButton.Enabled = state && UserRegistered;
 
-            set
+            foreach (Control control in taskPanel.Controls)
             {
-                throw new NotImplementedException();
+                if (control is Button)
+                {
+                    control.Enabled = state && UserRegistered;
+                }
             }
+            cancelButton.Enabled = !state;
         }
 
-        public string userToken
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
+        /*
+                public event Action CancelJoinRequestEvent;
+                public event Action CloseGameEvent;
+                public event Action<string> CreateUserEvent;
+                public event Action<string> GameStatusEvent;
+                public event Action JoinGameEvent;
+                public event Action<string> PlayWordEvent;
 
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public event Action CancelJoinRequestEvent;
-        public event Action CloseGameEvent;
-        public event Action<string> CreateUserEvent;
-        public event Action<string> GameStatusEvent;
-        public event Action JoinGameEvent;
-        public event Action<string> PlayWordEvent;
+            */
 
     }
 }
