@@ -12,9 +12,17 @@ namespace BoggleClient
 {
     public partial class BoggleView : Form
     {
+        public event Action<string, string> RegisterPressed;
+
         public BoggleView()
         {
             InitializeComponent();
+        }
+
+        public void EnableControls(bool state)
+        {
+            RegisterButton.Enabled = state;
+
         }
     }
 }

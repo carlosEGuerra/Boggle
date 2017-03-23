@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -18,8 +19,54 @@ namespace BoggleClient
         public event Action CancelJoinRequestEvent;
         public event Action<string> PlayWordEvent;
         public event Action<string> GameStatusEvent;
-
         private string localUserToken;
+        private BoggleView view;
+
+        /// <summary>
+        /// Creates the controller for the provided view
+        /// </summary>
+        /// <param name="view"></param>
+        public BoggleController(BoggleView view)
+        {
+            this.view = view;
+            this.userToken = "0";
+            view.RegisterPressed += Register;
+
+        }
+
+        public async void Register(string name, string domain)
+        {
+            try
+            {
+                view.EnableControls(false);
+                using (HttpClient client = CreateClient(domain))
+                {
+                    string url = String.Format(domain);
+                    StringContent content = null;
+
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                //Does Nothing when caught
+            }
+            finally
+            {
+                view.EnableControls(true);
+            }
+        }
+
+        private HttpClient CreateClient(string domain)
+        {
+            //creates the client with base address given via domain
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(domain);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            return client;
+
+        }
+
         public string userToken
         {
             get
@@ -62,6 +109,7 @@ namespace BoggleClient
             }
         }
 
+        /*
         public BoggleController(IBoggleClient window)
         {
             this.window = window;
@@ -73,7 +121,7 @@ namespace BoggleClient
             window.GameStatusEvent += HandleGameStatus;
 
         }
-
+        */
 
         /// <summary>
         /// Create a new user.

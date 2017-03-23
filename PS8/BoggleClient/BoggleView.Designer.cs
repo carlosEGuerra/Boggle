@@ -34,8 +34,8 @@
             this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.RegisterButton = new System.Windows.Forms.Button();
+            this.CancelButton = new System.Windows.Forms.Button();
             this.butt1 = new System.Windows.Forms.Button();
             this.butt2 = new System.Windows.Forms.Button();
             this.butt4 = new System.Windows.Forms.Button();
@@ -124,27 +124,27 @@
             this.textBox4.Size = new System.Drawing.Size(571, 29);
             this.textBox4.TabIndex = 4;
             // 
-            // button1
+            // RegisterButton
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.RegisterButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(757, 41);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(100, 65);
-            this.button1.TabIndex = 5;
-            this.button1.Text = "Register";
-            this.button1.UseVisualStyleBackColor = true;
+            this.RegisterButton.Location = new System.Drawing.Point(757, 41);
+            this.RegisterButton.Name = "RegisterButton";
+            this.RegisterButton.Size = new System.Drawing.Size(100, 65);
+            this.RegisterButton.TabIndex = 5;
+            this.RegisterButton.Text = "Register";
+            this.RegisterButton.UseVisualStyleBackColor = true;
             // 
-            // button2
+            // CancelButton
             // 
-            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.CancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.button2.Location = new System.Drawing.Point(863, 41);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(100, 65);
-            this.button2.TabIndex = 6;
-            this.button2.Text = "Cancel";
-            this.button2.UseVisualStyleBackColor = true;
+            this.CancelButton.Location = new System.Drawing.Point(863, 41);
+            this.CancelButton.Name = "CancelButton";
+            this.CancelButton.Size = new System.Drawing.Size(100, 65);
+            this.CancelButton.TabIndex = 6;
+            this.CancelButton.Text = "Cancel";
+            this.CancelButton.UseVisualStyleBackColor = true;
             // 
             // butt1
             // 
@@ -362,7 +362,7 @@
             this.Player2ScoreBox.Size = new System.Drawing.Size(206, 29);
             this.Player2ScoreBox.TabIndex = 33;
             // 
-            // BoggleViewWindow
+            // BoggleView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -393,8 +393,8 @@
             this.Controls.Add(this.butt3);
             this.Controls.Add(this.butt2);
             this.Controls.Add(this.butt1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.CancelButton);
+            this.Controls.Add(this.RegisterButton);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox2);
@@ -403,7 +403,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.MaximumSize = new System.Drawing.Size(1000, 1000);
             this.MinimumSize = new System.Drawing.Size(1000, 1000);
-            this.Name = "BoggleViewWindow";
+            this.Name = "BoggleView";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "BoggleView";
             this.menuStrip1.ResumeLayout(false);
@@ -421,8 +421,8 @@
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox4;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button RegisterButton;
+        private System.Windows.Forms.Button CancelButton;
         private System.Windows.Forms.Button butt1;
         private System.Windows.Forms.Button butt2;
         private System.Windows.Forms.Button butt4;
