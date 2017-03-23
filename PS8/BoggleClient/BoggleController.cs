@@ -1,69 +1,127 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace BoggleClient
 {
-    class BoggleController
+    class BoggleController: IBoggleClient
     {
-        /// <summary>
-        /// The view controlled by this Controller
-        /// </summary>
-        private BoggleViewWindow view;
-   
-        /// <summary>
-        /// The token of the most recently registered user, or "0" if no user
-        /// has ever registered
-        /// </summary>
-        private string userToken;
+        //The window being controlled.
+        private IBoggleClient window;
+
+        public event Action CloseGameEvent;
+        public event Action<string> CreateUserEvent;
+        public event Action JoinGameEvent;
+        public event Action CancelJoinRequestEvent;
+        public event Action<string> PlayWordEvent;
+        public event Action<string> GameStatusEvent;
+        private string localUserToken;
+        private BoggleView view;
 
         /// <summary>
-        /// For canceling the current operation
+        /// Creates the controller for the provided view
         /// </summary>
-        private CancellationTokenSource tokenSource;
-
-
-        /// <summary>
-        /// A list of all of the words the user has displayed.
-        /// </summary>
-        private IList<string> itemList;
-
-        /// <summary>
-        /// Creates a Controller for the provided view
-        /// </summary>
-        public BoggleController(BoggleViewWindow view)
+        /// <param name="view"></param>
+        public BoggleController(BoggleView view)
         {
             this.view = view;
-            userToken = "0";
-            itemList = new List<string>();
-            view.CancelPressed += Cancel;
+            this.userToken = "0";
             view.RegisterPressed += Register;
-            view.SubmitPressed += Submit;
-            view.DeletePressed += Delete;
-            view.DonePressed += Done;
-            view.FilterChanged += Filter;
-        }
-        /*
-                public event Action CloseGameEvent;
-                public event Action<string> CreateUserEvent;
-                public event Action JoinGameEvent;
-                public event Action CancelJoinRequestEvent;
-                public event Action<string> PlayWordEvent;
-                public event Action<string> GameStatusEvent;
 
-            */
-        /// <summary>
-        /// Cancels the current operation (currently unimplemented)
-        /// </summary>
-        private void Cancel()
-        {
-            tokenSource.Cancel();
         }
+
+        public async void Register(string name, string domain)
+        {
+            try
+            {
+                view.EnableControls(false);
+                using (HttpClient client = CreateClient(domain))
+                {
+                    string url = String.Format(domain);
+                    StringContent content = null;
+
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                //Does Nothing when caught
+            }
+            finally
+            {
+                view.EnableControls(true);
+            }
+        }
+
+        private HttpClient CreateClient(string domain)
+        {
+            //creates the client with base address given via domain
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(domain);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            return client;
+
+        }
+
+        public string userToken
+        {
+            get
+            {
+                return localUserToken;
+            }
+
+            set
+            {
+                localUserToken = value;
+            }
+        }
+
+        private int localGameTimeLimit = 0;
+        public int gameTimeLimit
+        {
+            get
+            {
+                return localGameTimeLimit;
+            }
+
+            set
+            {
+                localGameTimeLimit = value;
+            }
+        }
+
+
+        private int localPlayTimeLimit;
+        public int playTimeLimit
+        {
+            get
+            {
+                return localPlayTimeLimit;
+            }
+
+            set
+            {
+                localPlayTimeLimit = value;
+            }
+        }
+
+        /*
+        public BoggleController(IBoggleClient window)
+        {
+            this.window = window;
+            window.CreateUserEvent += HandleCreateUser;
+            window.JoinGameEvent += HandleJoinGame;
+            window.CancelJoinRequestEvent += HandleCancelJoinRequest;
+            window.PlayWordEvent += HandlePlayWord;
+            //WE MIGHT NEED TO CHANGE THIS
+            window.GameStatusEvent += HandleGameStatus;
+
+        }
+        */
 
         /// <summary>
         /// Create a new user.
