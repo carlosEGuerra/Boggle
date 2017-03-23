@@ -38,7 +38,7 @@
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.textBox7 = new System.Windows.Forms.TextBox();
-            this.timeLeftBox = new System.Windows.Forms.TextBox();
+            this.textBox8 = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.performanceCounter1)).BeginInit();
             this.SuspendLayout();
@@ -114,17 +114,17 @@
             // 
             // textBox8
             // 
-            this.timeLeftBox.Location = new System.Drawing.Point(381, 710);
-            this.timeLeftBox.Name = "timeLeftBox";
-            this.timeLeftBox.Size = new System.Drawing.Size(312, 29);
-            this.timeLeftBox.TabIndex = 35;
+            this.textBox8.Location = new System.Drawing.Point(381, 710);
+            this.textBox8.Name = "textBox8";
+            this.textBox8.Size = new System.Drawing.Size(312, 29);
+            this.textBox8.TabIndex = 35;
             // 
             // BoggleViewWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(976, 936);
-            this.Controls.Add(this.timeLeftBox);
+            this.Controls.Add(this.textBox8);
             this.Controls.Add(this.textBox7);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.textBox5);
@@ -168,7 +168,7 @@
             this.Text = "Boggle";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
-            //((System.ComponentModel.ISupportInitialize)(this.performanceCounter1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.performanceCounter1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
