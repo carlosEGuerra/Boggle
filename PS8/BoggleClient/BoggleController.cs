@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace BoggleClient
 {
@@ -24,15 +25,16 @@ namespace BoggleClient
         /// </summary>
         private string userToken;
 
+        /*
+                public event Action CloseGameEvent;
+                public event Action<string> CreateUserEvent;
+                public event Action JoinGameEvent;
+                public event Action CancelJoinRequestEvent;
+                public event Action<string> PlayWordEvent;
+                public event Action<string> GameStatusEvent;
 
-        public event Action CloseGameEvent;
-        public event Action<string> CreateUserEvent;
-        public event Action JoinGameEvent;
-        public event Action CancelJoinRequestEvent;
-        public event Action<string> PlayWordEvent;
-        public event Action<string> GameStatusEvent;
 
-
+        */
         /// <summary>
         /// Creates the controller for the provided view
         /// </summary>
@@ -42,7 +44,6 @@ namespace BoggleClient
             this.view = view;
             this.userToken = "0";
             view.RegisterPressed += Register;
-
 
         }
 
@@ -60,7 +61,6 @@ namespace BoggleClient
                     dynamic userData = new ExpandoObject();
                     userData.Nickname = name;
 
-                    //If we need to cancel the request
                     tokenSource = new CancellationTokenSource();
 
                     //Compose and send the request
@@ -69,12 +69,12 @@ namespace BoggleClient
                     HttpResponseMessage response = await client.PostAsync("users", content, tokenSource.Token);
                     if (response.IsSuccessStatusCode)
                     {
-
+                        this.view.
+                        MessageBox.Show(":D");
                     }
                     else
                     {
-                        MessageBox errorPopup = new MessageBox();
-                        errorPopup.
+                        MessageBox.Show("Sorry but we have an error registering your username");
                     }
 
                 }
@@ -89,54 +89,33 @@ namespace BoggleClient
             }
         }
 
-        /// <summary>
-        /// Play a word in a game.
-        /// If Word is null or empty when trimmed, or if GameID or UserToken is missing or invalid, 
-        /// or if UserToken is not a player in the game identified by GameID, responds with response code 403 (Forbidden)
-        /// Otherwise, if the game state is anything other than "active", responds with response code 409 (Conflict).
-        /// Otherwise, records the trimmed Word as being played by UserToken in the game identified by GameID.
-        /// Returns the score for Word in the context of the game (e.g. if Word has been played before 
-        /// the score is zero). Responds with status 200 (OK). Note: The word is not case sensitive.
-        /// </summary>
-        /// <param name="word"></param>
-        private void PlayWord(string word)
+
+        /*
+        private HttpClient CreateClient(string domain)
         {
-    /*        try
-            {
-                view.EnableControls(false);
-                using (HttpClient client = CreateClient())
-                {
-                    // Create the parameter
-                    dynamic task = new ExpandoObject();
-                    task.UserToken = userToken;
-                    task.Description = description;
+            //creates the client with base address given via domain
+            HttpClient client = new HttpClient();
+            client.BaseAddress = new Uri(domain);
+            client.DefaultRequestHeaders.Accept.Clear();
+            client.DefaultRequestHeaders.Add("Accept", "application/json");
+            return client;
 
-                    // Compose and send the request.
-                    StringContent content = new StringContent(JsonConvert.SerializeObject(task), Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = client.PostAsync("AddItem", content).Result;
-
-                    // Deal with the response
-                    if (response.IsSuccessStatusCode)
-                    {
-                        String result = response.Content.ReadAsStringAsync().Result;
-                        dynamic itemToken = JsonConvert.DeserializeObject(result);
-                    }
-                    else
-                    {
-                        Console.WriteLine("Error submitting: " + response.StatusCode);
-                        Console.WriteLine(response.ReasonPhrase);
-                    }
-                }
-                Refresh();
-            }
-            finally
-            {
-                view.EnableControls(true);
-            }
-
-            */
         }
 
+
+        /*
+        public BoggleController(IBoggleClient window)
+        {
+            this.window = window;
+            window.CreateUserEvent += HandleCreateUser;
+            window.JoinGameEvent += HandleJoinGame;
+            window.CancelJoinRequestEvent += HandleCancelJoinRequest;
+            window.PlayWordEvent += HandlePlayWord;
+            //WE MIGHT NEED TO CHANGE THIS
+            window.GameStatusEvent += HandleGameStatus;
+
+        }
+        */
 
         /// <summary>
         /// Create a new user.
@@ -168,7 +147,7 @@ namespace BoggleClient
         /// </summary>
         private void HandleJoinGame()
         {
-            
+
         }
 
         /// <summary>
@@ -210,6 +189,5 @@ namespace BoggleClient
             // There is more client configuration to do, depending on the request.
             return client;
         }
-
     }
 }

@@ -32,8 +32,8 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.domainBox = new System.Windows.Forms.TextBox();
+            this.userNameBox = new System.Windows.Forms.TextBox();
             this.RegisterButton = new System.Windows.Forms.Button();
             this.CancelButton = new System.Windows.Forms.Button();
             this.butt1 = new System.Windows.Forms.Button();
@@ -62,6 +62,12 @@
             this.textBox8 = new System.Windows.Forms.TextBox();
             this.Player1ScoreBox = new System.Windows.Forms.TextBox();
             this.Player2ScoreBox = new System.Windows.Forms.TextBox();
+            this.gameID = new System.Windows.Forms.TextBox();
+            this.userID = new System.Windows.Forms.TextBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.timeLeftBox = new System.Windows.Forms.TextBox();
+            this.timeDesiredBox = new System.Windows.Forms.TextBox();
+            this.textBox10 = new System.Windows.Forms.TextBox();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -106,23 +112,23 @@
             this.textBox2.Text = "User Name";
             this.textBox2.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // textBox3
+            // domainBox
             // 
-            this.textBox3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.domainBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox3.Location = new System.Drawing.Point(180, 42);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(571, 29);
-            this.textBox3.TabIndex = 3;
+            this.domainBox.Location = new System.Drawing.Point(180, 42);
+            this.domainBox.Name = "domainBox";
+            this.domainBox.Size = new System.Drawing.Size(571, 29);
+            this.domainBox.TabIndex = 3;
             // 
-            // textBox4
+            // userNameBox
             // 
-            this.textBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            this.userNameBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox4.Location = new System.Drawing.Point(180, 77);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(571, 29);
-            this.textBox4.TabIndex = 4;
+            this.userNameBox.Location = new System.Drawing.Point(180, 77);
+            this.userNameBox.Name = "userNameBox";
+            this.userNameBox.Size = new System.Drawing.Size(571, 29);
+            this.userNameBox.TabIndex = 4;
             // 
             // RegisterButton
             // 
@@ -134,6 +140,7 @@
             this.RegisterButton.TabIndex = 5;
             this.RegisterButton.Text = "Register";
             this.RegisterButton.UseVisualStyleBackColor = true;
+            this.RegisterButton.Click += new System.EventHandler(this.RegisterButton_Click);
             // 
             // CancelButton
             // 
@@ -362,11 +369,66 @@
             this.Player2ScoreBox.Size = new System.Drawing.Size(206, 29);
             this.Player2ScoreBox.TabIndex = 33;
             // 
+            // gameID
+            // 
+            this.gameID.Location = new System.Drawing.Point(470, 895);
+            this.gameID.Name = "gameID";
+            this.gameID.ReadOnly = true;
+            this.gameID.Size = new System.Drawing.Size(494, 29);
+            this.gameID.TabIndex = 34;
+            this.gameID.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
+            // userID
+            // 
+            this.userID.Location = new System.Drawing.Point(12, 895);
+            this.userID.Name = "userID";
+            this.userID.ReadOnly = true;
+            this.userID.Size = new System.Drawing.Size(452, 29);
+            this.userID.TabIndex = 35;
+            // 
+            // textBox3
+            // 
+            this.textBox3.Location = new System.Drawing.Point(470, 730);
+            this.textBox3.Name = "textBox3";
+            this.textBox3.ReadOnly = true;
+            this.textBox3.Size = new System.Drawing.Size(100, 29);
+            this.textBox3.TabIndex = 36;
+            this.textBox3.Text = "Time Left";
+            // 
+            // timeLeftBox
+            // 
+            this.timeLeftBox.Location = new System.Drawing.Point(576, 730);
+            this.timeLeftBox.Name = "timeLeftBox";
+            this.timeLeftBox.Size = new System.Drawing.Size(100, 29);
+            this.timeLeftBox.TabIndex = 37;
+            // 
+            // timeDesiredBox
+            // 
+            this.timeDesiredBox.Location = new System.Drawing.Point(364, 730);
+            this.timeDesiredBox.Name = "timeDesiredBox";
+            this.timeDesiredBox.Size = new System.Drawing.Size(100, 29);
+            this.timeDesiredBox.TabIndex = 39;
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(258, 730);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.ReadOnly = true;
+            this.textBox10.Size = new System.Drawing.Size(100, 29);
+            this.textBox10.TabIndex = 38;
+            this.textBox10.Text = "Time";
+            // 
             // BoggleView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(976, 936);
+            this.Controls.Add(this.timeDesiredBox);
+            this.Controls.Add(this.textBox10);
+            this.Controls.Add(this.timeLeftBox);
+            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.userID);
+            this.Controls.Add(this.gameID);
             this.Controls.Add(this.Player2ScoreBox);
             this.Controls.Add(this.Player1ScoreBox);
             this.Controls.Add(this.textBox8);
@@ -395,8 +457,8 @@
             this.Controls.Add(this.butt1);
             this.Controls.Add(this.CancelButton);
             this.Controls.Add(this.RegisterButton);
-            this.Controls.Add(this.textBox4);
-            this.Controls.Add(this.textBox3);
+            this.Controls.Add(this.userNameBox);
+            this.Controls.Add(this.domainBox);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.menuStrip1);
@@ -419,8 +481,8 @@
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.TextBox textBox2;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox domainBox;
+        private System.Windows.Forms.TextBox userNameBox;
         private System.Windows.Forms.Button RegisterButton;
         private System.Windows.Forms.Button CancelButton;
         private System.Windows.Forms.Button butt1;
@@ -449,5 +511,11 @@
         private System.Windows.Forms.TextBox textBox8;
         private System.Windows.Forms.TextBox Player1ScoreBox;
         private System.Windows.Forms.TextBox Player2ScoreBox;
+        private System.Windows.Forms.TextBox gameID;
+        private System.Windows.Forms.TextBox userID;
+        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox timeLeftBox;
+        private System.Windows.Forms.TextBox timeDesiredBox;
+        private System.Windows.Forms.TextBox textBox10;
     }
 }

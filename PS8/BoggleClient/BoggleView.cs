@@ -14,6 +14,8 @@ namespace BoggleClient
     {
         public event Action<string, string> RegisterPressed;
 
+        public void setUserIDBox { get; set;}
+
         public BoggleView()
         {
             InitializeComponent();
@@ -23,6 +25,14 @@ namespace BoggleClient
         {
             RegisterButton.Enabled = state;
 
+        }
+
+        private void RegisterButton_Click(object sender, EventArgs e)
+        {
+            if(RegisterPressed != null)
+            {
+                RegisterPressed(userNameBox.Text.Trim(), domainBox.Text.Trim());
+            }
         }
     }
 }
