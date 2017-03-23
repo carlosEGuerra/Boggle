@@ -65,15 +65,14 @@ namespace BoggleClient
                     //Compose and send the request
                     tokenSource = new CancellationTokenSource();
                     StringContent content = new StringContent(JsonConvert.SerializeObject(userData), Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync("users", content, tokenSource.Token);
+                    HttpResponseMessage response = await client.PostAsync("/users", content, tokenSource.Token);
                     if (response.IsSuccessStatusCode)
                     {
-
+                        MessageBox.Show(":D");
                     }
                     else
                     {
-                        MessageBox errorPopup = new MessageBox();
-                        errorPopup.
+                        MessageBox.Show("Sorry but we have an error registering your username");
                     }
 
                 }
@@ -88,6 +87,8 @@ namespace BoggleClient
             }
         }
 
+
+        /*
         private HttpClient CreateClient(string domain)
         {
             //creates the client with base address given via domain
@@ -99,20 +100,6 @@ namespace BoggleClient
 
         }
 
-
-        /*
-        public BoggleController(IBoggleClient window)
-        {
-            this.window = window;
-            window.CreateUserEvent += HandleCreateUser;
-            window.JoinGameEvent += HandleJoinGame;
-            window.CancelJoinRequestEvent += HandleCancelJoinRequest;
-            window.PlayWordEvent += HandlePlayWord;
-            //WE MIGHT NEED TO CHANGE THIS
-            window.GameStatusEvent += HandleGameStatus;
-
-        }
-        */
 
         /// <summary>
         /// Create a new user.
@@ -184,6 +171,6 @@ namespace BoggleClient
         {
 
         }
-
+        */
     }
 }

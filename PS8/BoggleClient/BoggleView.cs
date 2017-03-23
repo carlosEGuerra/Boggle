@@ -24,5 +24,13 @@ namespace BoggleClient
             RegisterButton.Enabled = state;
 
         }
+
+        private void RegisterButton_Click(object sender, EventArgs e)
+        {
+            if(RegisterPressed != null)
+            {
+                RegisterPressed(userNameBox.Text.Trim(), domainBox.Text.Trim());
+            }
+        }
     }
 }
