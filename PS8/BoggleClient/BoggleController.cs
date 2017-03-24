@@ -35,6 +35,18 @@ namespace BoggleClient
         /// </summary>
         private dynamic board;
 
+        /// <summary>
+        /// Holds name of player 1.
+        /// </summary>
+        private dynamic player1;
+
+        /// <summary>
+        /// Holds name of player 2.
+        /// </summary>
+        private dynamic player2;
+
+
+
         /*
                 public event Action CloseGameEvent;
                 public event Action<string> CreateUserEvent;
@@ -113,48 +125,6 @@ namespace BoggleClient
             }
         }
 
-
-        /*
-        private HttpClient CreateClient(string domain)
-        {
-            //creates the client with base address given via domain
-            HttpClient client = new HttpClient();
-            client.BaseAddress = new Uri(domain);
-            client.DefaultRequestHeaders.Accept.Clear();
-            client.DefaultRequestHeaders.Add("Accept", "application/json");
-            return client;
-
-        }
-
-
-        /*
-        public BoggleController(IBoggleClient window)
-        {
-            this.window = window;
-            window.CreateUserEvent += HandleCreateUser;
-            window.JoinGameEvent += HandleJoinGame;
-            window.CancelJoinRequestEvent += HandleCancelJoinRequest;
-            window.PlayWordEvent += HandlePlayWord;
-            //WE MIGHT NEED TO CHANGE THIS
-            window.GameStatusEvent += HandleGameStatus;
-
-        }
-        */
-
-        /// <summary>
-        /// Create a new user.
-        /// 
-        /// If Nickname is null, or is empty when trimmed, responds with status 403 (Forbidden).
-        /// Otherwise, creates a new user with a unique UserToken and the trimmed Nickname.The 
-        /// returned UserToken should be used to identify the user in subsequent 
-        /// requests.Responds with status 201 (Created).
-        /// </summary>
-        /// <param name="nickname"></param>
-        private void HandleCreateUser(string nickname)
-        {
-
-
-        }
 
         /// <summary>
         /// Join a game.
@@ -278,6 +248,8 @@ namespace BoggleClient
                         dynamic token = JsonConvert.DeserializeObject(result);
 
                         board = token.Board; //THIS LINE NEEDS TO BE FIXED.
+                        player1 = token.Player1.Nickname;
+                        view.setP1 = player1;
 
                         //Put each letter in the view.
                         AddLetters();
