@@ -25,7 +25,15 @@ namespace BoggleClient
         /// </summary>
         private dynamic userToken;
 
+        /// <summary>
+        /// Holds the game ID from the server
+        /// </summary>
         private dynamic gameID;
+
+        /// <summary>
+        /// Holds the letters of the gameboard.
+        /// </summary>
+        private dynamic board;
 
         /*
                 public event Action CloseGameEvent;
@@ -172,7 +180,7 @@ namespace BoggleClient
                     int.TryParse(dTimeLimit, out dTL);
                     // Create the parameter
                     dynamic userData = new ExpandoObject();
-                    userData.UserID = userToken.UserToken;
+                    userData.UserToken = userToken.UserToken;
                     userData.TimeLimit = dTL;
 
                     StringContent content = new StringContent(JsonConvert.SerializeObject(userData), Encoding.UTF8, "application/json");
@@ -184,10 +192,16 @@ namespace BoggleClient
                         //Get the gameID
                         String result = response.Content.ReadAsStringAsync().Result;
                         dynamic token = JsonConvert.DeserializeObject(result);
-                        
+
                         gameID = token.GameID;
                         view.setGameID = gameID;
-                        
+
+
+                        //Put all of the Boggle letters into the view.
+                        SetUpBoggleBoard();
+
+                        //  HttpResponseMessage getResponse = await client.GetAsync("games/{+" + gameID.GameID + "}");
+
                     }
                     else
                     {
@@ -195,11 +209,11 @@ namespace BoggleClient
                         Console.WriteLine(response.ReasonPhrase);
                     }
                 }
- 
+
             }
-            finally
+            catch
             {
-                view.EnableControls(true);
+                //Do nothing.
             }
         }
 
@@ -241,6 +255,49 @@ namespace BoggleClient
 
             // There is more client configuration to do, depending on the request.
             return client;
+        }
+
+        /// <summary>
+        /// Adds characters from the server to the boggle board.
+        /// </summary>
+        private void SetUpBoggleBoard()
+        {
+            try
+            {
+                view.EnableControls(false);
+                using (HttpClient client = CreateClient())
+                {
+                    string getStatus = "games/" + gameID;
+                    HttpResponseMessage response = client.GetAsync(getStatus).Result;
+
+                    //If the status is successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        //Get the gameID
+                        String result = response.Content.ReadAsStringAsync().Result;
+                        dynamic token = JsonConvert.DeserializeObject(result);
+
+                        gameID = token.GameID;
+                        view.setGameID = gameID;
+
+
+                        //Put all of the Boggle letters into the view.
+                        SetUpBoggleBoard();
+                        //  HttpResponseMessage getResponse = await client.GetAsync("games/{+" + gameID.GameID + "}");
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error submitting: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
+                    }
+                }
+            }
+
+            catch
+            {
+
+            }
         }
     }
 }
