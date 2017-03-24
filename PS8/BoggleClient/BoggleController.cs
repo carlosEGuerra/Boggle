@@ -45,18 +45,6 @@ namespace BoggleClient
         /// </summary>
         private dynamic player2;
 
-
-
-        /*
-                public event Action CloseGameEvent;
-                public event Action<string> CreateUserEvent;
-                public event Action JoinGameEvent;
-                public event Action CancelJoinRequestEvent;
-                public event Action<string> PlayWordEvent;
-                public event Action<string> GameStatusEvent;
-
-
-        */
         /// <summary>
         /// Creates the controller for the provided view
         /// </summary>
@@ -68,12 +56,13 @@ namespace BoggleClient
             view.RegisterPressed += Register;
             view.CancelPressed += Cancel;
             view.JoinGamePressed += JoinPressed;
-
+            view.CancelJoinRequest += HandleCancelJoinRequest;
         }
 
         public void Cancel()
         {
             tokenSource.Cancel();
+            new BoggleController(new BoggleView());
         }
 
         public async void Register(string name, string domain)
@@ -178,7 +167,7 @@ namespace BoggleClient
                         Console.WriteLine(response.ReasonPhrase);
                     }
                 }
-
+                
             }
             catch
             {
@@ -195,18 +184,6 @@ namespace BoggleClient
         private void HandleCancelJoinRequest()
         {
             tokenSource.Cancel();
-        }
-
-        /// <summary>
-        /// If GameID is invalid, responds with status 403 (Forbidden). Otherwise, returns 
-        /// information about the game named by GameID as illustrated below.Note that the information returned depends on 
-        /// whether "Brief=yes" was included as a parameter as well as on the state of the game. Responds 
-        /// with status code 200 (OK). Note: The Board and Words are not case sensitive.
-        /// </summary>
-        /// <param name="brief"></param>
-        private void HandleGameStatus(string brief)
-        {
-
         }
 
         /// <summary>
@@ -246,13 +223,17 @@ namespace BoggleClient
                         String result = response.Content.ReadAsStringAsync().Result;
                         dynamic token = JsonConvert.DeserializeObject(result);
 
-                        board = token.Board; //THIS LINE NEEDS TO BE FIXED.
-                        player1 = token.Player1.Nickname;
-                        view.setP1 = player1;
-
-                        //Put each letter in the view.
+                        this.board = token.Board; 
+                        //Put each letter in the boxes
                         AddLetters();
 
+                        this.player1 = token.Player2.Nickname;
+                        view.setP1 = player1;
+
+                        /*
+                        this.player2 = token.Player1.Nickname;
+                        view.setP2 = player2;
+                        */
                     }
                     else
                     {

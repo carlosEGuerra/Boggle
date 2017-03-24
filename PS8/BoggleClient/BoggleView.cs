@@ -133,6 +133,7 @@ namespace BoggleClient
 
         public event Action CancelPressed;
 
+        public event Action CancelJoinRequest;
 
         public bool userRegistered
         {
@@ -168,6 +169,21 @@ namespace BoggleClient
         private void CancelButton_Click(object sender, EventArgs e)
         {
             CancelPressed();
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Hello and welcome to Boggle!\n" +
+                            "To start off please enter a domain you want to connect to and a username!\n" +
+                            "To join a game please enter the ammount of time you would like to play for!\n" +
+                            "Once in a game, use the input area under the grid to type the word and enter to send it off!\n" +
+                            "Once the game has completed, the columns on both sides of the board will tell you each others points as well as the words that have been played by each player!\n" +
+                            "Have fun!");
+        }
+
+        private void CancelJoinButton_Click(object sender, EventArgs e)
+        {
+            CancelJoinRequest();
         }
     }
 }
