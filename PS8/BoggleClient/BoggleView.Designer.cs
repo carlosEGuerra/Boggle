@@ -120,6 +120,7 @@
             this.domainBox.Name = "domainBox";
             this.domainBox.Size = new System.Drawing.Size(571, 29);
             this.domainBox.TabIndex = 3;
+            this.domainBox.Text = "http://cs3500-boggle-s17.azurewebsites.net/BoggleService.svc/";
             // 
             // userNameBox
             // 
@@ -331,7 +332,7 @@
             this.GameName.AutoSize = true;
             this.GameName.Font = new System.Drawing.Font("Segoe Print", 24F, System.Drawing.FontStyle.Bold);
             this.GameName.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.GameName.Location = new System.Drawing.Point(357, 169);
+            this.GameName.Location = new System.Drawing.Point(357, 160);
             this.GameName.Name = "GameName";
             this.GameName.Size = new System.Drawing.Size(224, 98);
             this.GameName.TabIndex = 29;
