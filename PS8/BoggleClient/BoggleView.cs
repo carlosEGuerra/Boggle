@@ -189,9 +189,11 @@ namespace BoggleClient
             {
                 
                 PlayWord(UserInput.Text);
+                
                 string newText = UserInput.Text;
-                newText += "\n";
-                Player1Responces.Text += newText;
+                newText = newText + "                                                      ";
+                Player1Responces.Text += newText + "\n";
+                UserInput.Text = "";
             }
         }
 
