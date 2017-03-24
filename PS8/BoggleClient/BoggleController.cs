@@ -44,7 +44,13 @@ namespace BoggleClient
             this.view = view;
             this.userToken = "0";
             view.RegisterPressed += Register;
+            view.CancelPressed += Cancel;
 
+        }
+
+        public void Cancel()
+        {
+            tokenSource.Cancel();
         }
 
         public async void Register(string name, string domain)
@@ -73,11 +79,12 @@ namespace BoggleClient
                         String result = response.Content.ReadAsStringAsync().Result;
                         userToken = JsonConvert.DeserializeObject(result).ToString();
                         view.userRegistered = true;
+                        view.setUserID = userToken;
                         MessageBox.Show("You are registered! :D");
                     }
                     else
                     {
-                        MessageBox.Show("Sorry but we have an error registering your username");
+                        MessageBox.Show("Sorry but we have an error registering your username" + response.StatusCode + "\n" + response.ReasonPhrase);
                     }
 
                 }

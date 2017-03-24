@@ -67,7 +67,8 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.timeLeftBox = new System.Windows.Forms.TextBox();
             this.timeDesiredBox = new System.Windows.Forms.TextBox();
-            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.timeText = new System.Windows.Forms.TextBox();
+            this.joinGameButton = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -389,43 +390,54 @@
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(470, 730);
+            this.textBox3.Location = new System.Drawing.Point(364, 730);
             this.textBox3.Name = "textBox3";
             this.textBox3.ReadOnly = true;
             this.textBox3.Size = new System.Drawing.Size(100, 29);
             this.textBox3.TabIndex = 36;
             this.textBox3.Text = "Time Left";
+            this.textBox3.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // timeLeftBox
             // 
-            this.timeLeftBox.Location = new System.Drawing.Point(576, 730);
+            this.timeLeftBox.Location = new System.Drawing.Point(470, 730);
             this.timeLeftBox.Name = "timeLeftBox";
             this.timeLeftBox.Size = new System.Drawing.Size(100, 29);
             this.timeLeftBox.TabIndex = 37;
             // 
             // timeDesiredBox
             // 
-            this.timeDesiredBox.Location = new System.Drawing.Point(364, 730);
+            this.timeDesiredBox.Location = new System.Drawing.Point(119, 128);
             this.timeDesiredBox.Name = "timeDesiredBox";
-            this.timeDesiredBox.Size = new System.Drawing.Size(100, 29);
+            this.timeDesiredBox.Size = new System.Drawing.Size(132, 29);
             this.timeDesiredBox.TabIndex = 39;
             // 
-            // textBox10
+            // timeText
             // 
-            this.textBox10.Location = new System.Drawing.Point(258, 730);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.ReadOnly = true;
-            this.textBox10.Size = new System.Drawing.Size(100, 29);
-            this.textBox10.TabIndex = 38;
-            this.textBox10.Text = "Time";
+            this.timeText.Location = new System.Drawing.Point(13, 128);
+            this.timeText.Name = "timeText";
+            this.timeText.ReadOnly = true;
+            this.timeText.Size = new System.Drawing.Size(100, 29);
+            this.timeText.TabIndex = 38;
+            this.timeText.Text = "Time Limit";
+            // 
+            // joinGameButton
+            // 
+            this.joinGameButton.Location = new System.Drawing.Point(258, 124);
+            this.joinGameButton.Name = "joinGameButton";
+            this.joinGameButton.Size = new System.Drawing.Size(75, 38);
+            this.joinGameButton.TabIndex = 40;
+            this.joinGameButton.Text = "JOIN";
+            this.joinGameButton.UseVisualStyleBackColor = true;
             // 
             // BoggleView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(11F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(976, 936);
+            this.Controls.Add(this.joinGameButton);
             this.Controls.Add(this.timeDesiredBox);
-            this.Controls.Add(this.textBox10);
+            this.Controls.Add(this.timeText);
             this.Controls.Add(this.timeLeftBox);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.userID);
@@ -517,6 +529,7 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox timeLeftBox;
         private System.Windows.Forms.TextBox timeDesiredBox;
-        private System.Windows.Forms.TextBox textBox10;
+        private System.Windows.Forms.TextBox timeText;
+        private System.Windows.Forms.Button joinGameButton;
     }
 }
