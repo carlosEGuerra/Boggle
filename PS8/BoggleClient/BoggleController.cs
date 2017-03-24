@@ -273,17 +273,14 @@ namespace BoggleClient
                     //If the status is successful
                     if (response.IsSuccessStatusCode)
                     {
-                        //Get the gameID
+                        //Get the letters of the boggle board.
                         String result = response.Content.ReadAsStringAsync().Result;
                         dynamic token = JsonConvert.DeserializeObject(result);
 
-                        gameID = token.GameID;
-                        view.setGameID = gameID;
+                        board = token.Board; //THIS LINE NEEDS TO BE FIXED.
 
-
-                        //Put all of the Boggle letters into the view.
-                        SetUpBoggleBoard();
-                        //  HttpResponseMessage getResponse = await client.GetAsync("games/{+" + gameID.GameID + "}");
+                        //Put each letter in the view.
+                        AddLetters();
 
                     }
                     else
@@ -298,6 +295,29 @@ namespace BoggleClient
             {
 
             }
+        }
+
+        /// <summary>
+        /// Completes the work of actually adding letters to the view.
+        /// </summary>
+        private void AddLetters()
+        {
+            view.setButton1 = board[0];
+            view.setButton2 = board[1];
+            view.setButton3 = board[2];
+            view.setButton4 = board[3];
+            view.setButton5 = board[4];
+            view.setButton6 = board[5];
+            view.setButton7 = board[6];
+            view.setButton8 = board[7];
+            view.setButton9 = board[8];
+            view.setButton10 = board[9];
+            view.setButton11 = board[10];
+            view.setButton12 = board[11];
+            view.setButton13 = board[12];
+            view.setButton14 = board[13];
+            view.setButton15 = board[14];
+            view.setButton16 = board[15];
         }
     }
 }

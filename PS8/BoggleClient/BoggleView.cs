@@ -22,11 +22,96 @@ namespace BoggleClient
             get { return userID.Text.ToString(); }
             set { userID.Text = value; }
         }
-
         public string setGameID
         {
             get { return gameID.Text.ToString(); }
             set { gameID.Text = value; }
+        }
+
+        //ALL OF THE GETTERS AND SETTERS FOR THE PANELS ON THE GAME BOARD
+        public string setButton1
+        {
+            get { return butt1.ToString(); }
+            set { butt1.Text = value; }
+        }
+
+        public string setButton2
+        {
+            get { return butt2.ToString(); }
+            set { butt2.Text = value; }
+        }
+
+        public string setButton3
+        {
+            get { return butt3.ToString(); }
+            set { butt3.Text = value; }
+        }
+        public string setButton4
+        {
+            get { return butt4.ToString(); }
+            set { butt4.Text = value; }
+        }
+        public string setButton5
+        {
+            get { return butt5.ToString(); }
+            set { butt5.Text = value; }
+
+        }
+        public string setButton6
+        {
+            get { return butt6.ToString(); }
+            set { butt6.Text = value; }
+        }
+        public string setButton7
+        {
+            get { return butt7.ToString(); }
+            set { butt7.Text = value; }
+        }
+        public string setButton8
+        {
+            get { return butt8.ToString(); }
+            set { butt8.Text = value; }
+        }
+        public string setButton9
+        {
+            get { return butt9.ToString(); }
+            set { butt9.Text = value; }
+        }
+        public string setButton10
+        {
+            get { return butt10.ToString(); }
+            set { butt10.Text = value; }
+        }
+        public string setButton11
+        {
+            get { return butt11.ToString(); }
+            set { butt11.Text = value; }
+        }
+        public string setButton12
+        {
+            get { return butt12.ToString(); }
+            set { butt12.Text = value; }
+        }
+        public string setButton13
+        {
+            get { return butt13.ToString(); }
+            set { butt13.Text = value; }
+        }
+        public string setButton14
+        {
+            get { return butt14.ToString(); }
+            set { butt14.Text = value; }
+        }
+        public string setButton15
+        {
+            get { return butt15.ToString(); }
+            set { butt15.Text = value; }
+        }
+
+        public string setButton16
+        {
+            get { return butt16.ToString(); }
+            set { butt16.Text = value; }
         }
 
         public BoggleView()
