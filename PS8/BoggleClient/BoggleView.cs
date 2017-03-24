@@ -12,15 +12,31 @@ namespace BoggleClient
 {
     public partial class BoggleView : Form
     {
+        private bool _userRegistered;
+
         public event Action<string, string> RegisterPressed;
 
-        public dynamic setUserIDBox { get; set;}
+        public dynamic setUserID
+        {
+            get { return userID.Text.ToString(); }
+            set { userID.Text = value; }
+        }
 
         public BoggleView()
         {
             InitializeComponent();
         }
 
+
+        public bool userRegistered
+        {
+            get { return _userRegistered; }
+            set
+            {
+                _userRegistered = value;
+
+            }
+        }
         public void EnableControls(bool state)
         {
             RegisterButton.Enabled = state;
