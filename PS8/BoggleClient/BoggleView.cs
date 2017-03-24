@@ -16,10 +16,16 @@ namespace BoggleClient
 
         public event Action<string, string> RegisterPressed;
 
-        public dynamic setUserID
+        public string setUserID
         {
             get { return userID.Text.ToString(); }
             set { userID.Text = value; }
+        }
+
+        public string setGameID
+        {
+            get { return gameID.Text.ToString(); }
+            set { gameID.Text.ToString(); }
         }
 
         public BoggleView()
