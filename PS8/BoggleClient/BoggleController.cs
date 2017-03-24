@@ -259,23 +259,24 @@ namespace BoggleClient
         /// </summary>
         private void AddLetters()
         {
-            object sBoard = this.board;
-            view.setButton1 = board[0];
-            view.setButton2 = board[1];
-            view.setButton3 = board[2];
-            view.setButton4 = board[3];
-            view.setButton5 = board[4];
-            view.setButton6 = board[5];
-            view.setButton7 = board[6];
-            view.setButton8 = board[7];
-            view.setButton9 = board[8];
-            view.setButton10 = board[9];
-            view.setButton11 = board[10];
-            view.setButton12 = board[11];
-            view.setButton13 = board[12];
-            view.setButton14 = board[13];
-            view.setButton15 = board[14];
-            view.setButton16 = board[15];
+            object aBoard = this.board.Value;
+            string bBoard = aBoard.ToString();
+            view.setButton1 = bBoard[0].ToString();
+            view.setButton2 = bBoard[1].ToString();
+            view.setButton3 = bBoard[2].ToString();
+            view.setButton4 = bBoard[3].ToString();
+            view.setButton5 = bBoard[4].ToString();
+            view.setButton6 = bBoard[5].ToString();
+            view.setButton7 = bBoard[6].ToString();
+            view.setButton8 = bBoard[7].ToString();
+            view.setButton9 = bBoard[8].ToString();
+            view.setButton10 = bBoard[9].ToString();
+            view.setButton11 = bBoard[10].ToString();
+            view.setButton12 = bBoard[11].ToString();
+            view.setButton13 = bBoard[12].ToString();
+            view.setButton14 = bBoard[13].ToString();
+            view.setButton15 = bBoard[14].ToString();
+            view.setButton16 = bBoard[15].ToString();
         }
     }
 }
