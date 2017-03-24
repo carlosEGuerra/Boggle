@@ -125,7 +125,6 @@ namespace BoggleClient
             }
         }
 
-
         /// <summary>
         /// Join a game.
         /// 
