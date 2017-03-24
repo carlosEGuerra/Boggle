@@ -25,6 +25,8 @@ namespace BoggleClient
         /// </summary>
         private string userToken;
 
+        private string gameID;
+
         /*
                 public event Action CloseGameEvent;
                 public event Action<string> CreateUserEvent;
@@ -45,6 +47,7 @@ namespace BoggleClient
             this.userToken = "0";
             view.RegisterPressed += Register;
             view.CancelPressed += Cancel;
+            view.JoinGamePressed += JoinPressed;
 
         }
 
@@ -148,7 +151,7 @@ namespace BoggleClient
         /// <summary>
         /// Join a game.
         /// 
-        /// If UserToken is invalid, TimeLimit <5, or TimeLimit> 120, responds with status 403 (Forbidden).
+        /// If UserToken is invalid, TimeLimit <5, or TimeLimit > 120, responds with status 403 (Forbidden).
         /// Otherwise, if UserToken is already a player in the pending game, responds with status 409 (Conflict).
         /// Otherwise, if there is already one player in the pending game, adds UserToken as the second player. 
         /// The pending game becomes active and a new pending game with no players is created. The active game's
@@ -158,9 +161,40 @@ namespace BoggleClient
         /// Otherwise, adds UserToken as the first player of the pending game, and the TimeLimit as the pending
         /// game's requested time limit. Returns the pending game's GameID. Responds with status 202 (Accepted).
         /// </summary>
-        private void HandleJoinGame()
+        private async void JoinPressed(string dTimeLimit)
         {
+            try
+            {
+                view.EnableControls(false);
+                using (HttpClient client = CreateClient())
+                {
+                    // Create the parameter
+                    dynamic userData = new ExpandoObject();
+                    userData.UserID = userToken;
+                    userData.TimeLimit = dTimeLimit;
 
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(userData), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync("users", content, tokenSource.Token);
+
+                    //If the status is successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        //Get the gameID
+                        String result = response.Content.ReadAsStringAsync().Result;
+                        gameID = JsonConvert.DeserializeObject(result).ToString();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error submitting: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
+                    }
+                }
+ 
+            }
+            finally
+            {
+                view.EnableControls(true);
+            }
         }
 
         /// <summary>
