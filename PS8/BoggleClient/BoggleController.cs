@@ -69,7 +69,7 @@ namespace BoggleClient
                     HttpResponseMessage response = await client.PostAsync("users", content, tokenSource.Token);
                     if (response.IsSuccessStatusCode)
                     {
-                        this.view.
+                        
                         MessageBox.Show(":D");
                     }
                     else
@@ -147,7 +147,7 @@ namespace BoggleClient
         /// </summary>
         private void HandleJoinGame()
         {
-
+           
         }
 
         /// <summary>

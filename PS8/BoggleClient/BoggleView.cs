@@ -14,7 +14,7 @@ namespace BoggleClient
     {
         public event Action<string, string> RegisterPressed;
 
-        public void setUserIDBox { get; set;}
+        public dynamic setUserIDBox { get; set;}
 
         public BoggleView()
         {
