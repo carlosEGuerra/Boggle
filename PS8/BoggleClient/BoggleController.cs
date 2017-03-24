@@ -35,6 +35,18 @@ namespace BoggleClient
         /// </summary>
         private dynamic board;
 
+        /// <summary>
+        /// Holds name of player 1.
+        /// </summary>
+        private dynamic player1;
+
+        /// <summary>
+        /// Holds name of player 2.
+        /// </summary>
+        private dynamic player2;
+
+
+
         /*
                 public event Action CloseGameEvent;
                 public event Action<string> CreateUserEvent;
@@ -235,6 +247,8 @@ namespace BoggleClient
                         dynamic token = JsonConvert.DeserializeObject(result);
 
                         board = token.Board; //THIS LINE NEEDS TO BE FIXED.
+                        player1 = token.Player1.Nickname;
+                        view.setP1 = player1;
 
                         //Put each letter in the view.
                         AddLetters();

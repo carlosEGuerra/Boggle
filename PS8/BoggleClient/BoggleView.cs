@@ -114,6 +114,18 @@ namespace BoggleClient
             set { butt16.Text = value; }
         }
 
+        public string setP1
+        {
+            get { return P1Box.ToString(); }
+            set { P1Box.Text = value; }
+        }
+
+        public string setP2
+        {
+            get { return P2Box.ToString(); }
+            set { P2Box.Text = value; }
+        }
+
         public BoggleView()
         {
             InitializeComponent();
@@ -151,6 +163,11 @@ namespace BoggleClient
             {
                 JoinGamePressed(timeDesiredBox.Text);
             }
+        }
+
+        private void CancelButton_Click(object sender, EventArgs e)
+        {
+            CancelPressed();
         }
     }
 }
