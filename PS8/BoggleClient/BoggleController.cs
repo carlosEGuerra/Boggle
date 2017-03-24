@@ -225,7 +225,7 @@ namespace BoggleClient
         /// </summary>
         private void HandleCancelJoinRequest()
         {
-
+            tokenSource.Cancel();
         }
 
         /// <summary>
