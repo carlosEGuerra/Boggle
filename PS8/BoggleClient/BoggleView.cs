@@ -27,6 +27,8 @@ namespace BoggleClient
             InitializeComponent();
         }
 
+        public event Action CancelPressed;
+
 
         public bool userRegistered
         {
