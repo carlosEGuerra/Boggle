@@ -69,8 +69,10 @@ namespace BoggleClient
                     HttpResponseMessage response = await client.PostAsync("users", content, tokenSource.Token);
                     if (response.IsSuccessStatusCode)
                     {
-                        this.view.
-                        MessageBox.Show(":D");
+                        //Get the user token
+                        String result = response.Content.ReadAsStringAsync().Result;
+                        userToken = JsonConvert.DeserializeObject(result).ToString();
+                        view.userRegistered = true;
                     }
                     else
                     {
