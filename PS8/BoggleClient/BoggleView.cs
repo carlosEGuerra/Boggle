@@ -15,6 +15,7 @@ namespace BoggleClient
         private bool _userRegistered;
 
         public event Action<string, string> RegisterPressed;
+        public event Action<string> JoinGamePressed;
 
         public string setUserID
         {
@@ -25,7 +26,7 @@ namespace BoggleClient
         public string setGameID
         {
             get { return gameID.Text.ToString(); }
-            set { gameID.Text.ToString(); }
+            set { gameID.Text = value; }
         }
 
         public BoggleView()
@@ -55,6 +56,15 @@ namespace BoggleClient
             if(RegisterPressed != null)
             {
                 RegisterPressed(userNameBox.Text.Trim(), domainBox.Text.Trim());
+            }
+        }
+
+        private void joinGameButton_Click(object sender, EventArgs e)
+        {
+
+            if (!String.IsNullOrEmpty(timeDesiredBox.Text))
+            {
+                JoinGamePressed(timeDesiredBox.Text);
             }
         }
     }

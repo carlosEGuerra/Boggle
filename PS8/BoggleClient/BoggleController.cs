@@ -23,7 +23,9 @@ namespace BoggleClient
         /// <summary>
         /// Holds the value of the user
         /// </summary>
-        private string userToken;
+        private dynamic userToken;
+
+        private dynamic gameID;
 
         /*
                 public event Action CloseGameEvent;
@@ -45,6 +47,7 @@ namespace BoggleClient
             this.userToken = "0";
             view.RegisterPressed += Register;
             view.CancelPressed += Cancel;
+            view.JoinGamePressed += JoinPressed;
 
         }
 
@@ -77,9 +80,9 @@ namespace BoggleClient
                     {
                         //Get the user token
                         String result = response.Content.ReadAsStringAsync().Result;
-                        userToken = JsonConvert.DeserializeObject(result).ToString();
+                        userToken = JsonConvert.DeserializeObject(result);
                         view.userRegistered = true;
-                        view.setUserID = userToken;
+                        view.setUserID = userToken.UserToken;
                         MessageBox.Show("You are registered! :D");
                     }
                     else
@@ -96,6 +99,9 @@ namespace BoggleClient
             finally
             {
                 view.EnableControls(true);
+                //Join game here
+
+
             }
         }
 
@@ -145,7 +151,7 @@ namespace BoggleClient
         /// <summary>
         /// Join a game.
         /// 
-        /// If UserToken is invalid, TimeLimit <5, or TimeLimit> 120, responds with status 403 (Forbidden).
+        /// If UserToken is invalid, TimeLimit <5, or TimeLimit > 120, responds with status 403 (Forbidden).
         /// Otherwise, if UserToken is already a player in the pending game, responds with status 409 (Conflict).
         /// Otherwise, if there is already one player in the pending game, adds UserToken as the second player. 
         /// The pending game becomes active and a new pending game with no players is created. The active game's
@@ -155,9 +161,46 @@ namespace BoggleClient
         /// Otherwise, adds UserToken as the first player of the pending game, and the TimeLimit as the pending
         /// game's requested time limit. Returns the pending game's GameID. Responds with status 202 (Accepted).
         /// </summary>
-        private void HandleJoinGame()
+        private async void JoinPressed(string dTimeLimit)
         {
+            try
+            {
+                view.EnableControls(false);
+                using (HttpClient client = CreateClient())
+                {
+                    int dTL;
+                    int.TryParse(dTimeLimit, out dTL);
+                    // Create the parameter
+                    dynamic userData = new ExpandoObject();
+                    userData.UserID = userToken.UserToken;
+                    userData.TimeLimit = dTL;
 
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(userData), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PostAsync("games", content, tokenSource.Token);
+
+                    //If the status is successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        //Get the gameID
+                        String result = response.Content.ReadAsStringAsync().Result;
+                        dynamic token = JsonConvert.DeserializeObject(result);
+                        
+                        gameID = token.GameID;
+                        view.setGameID = gameID;
+                        
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error submitting: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
+                    }
+                }
+ 
+            }
+            finally
+            {
+                view.EnableControls(true);
+            }
         }
 
         /// <summary>
