@@ -133,6 +133,18 @@ namespace BoggleClient
             set { P2Box.Text = value; }
         }
 
+        public string setPlayer2ScoreBox
+        {
+            get { return Player2ScoreBox.Text; }
+            set { Player2ScoreBox.Text = value; }
+        }
+
+        public string setTimeLeftBox
+        {
+            get { return timeLeftBox.Text; }
+            set { timeLeftBox.Text = value; }
+        }
+
         public BoggleView()
         {
             InitializeComponent();
@@ -145,15 +157,11 @@ namespace BoggleClient
         public bool userRegistered
         {
             get { return _userRegistered; }
-            set
-            {
-                _userRegistered = value;
-            }
+            set {  _userRegistered = value; }
         }
         public void EnableControls(bool state)
         {
             RegisterButton.Enabled = state;
-
         }
 
         private void RegisterButton_Click(object sender, EventArgs e)

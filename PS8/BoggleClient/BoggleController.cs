@@ -116,7 +116,6 @@ namespace BoggleClient
                         userToken = JsonConvert.DeserializeObject(result);
                         view.userRegistered = true;
                         view.setUserID = userToken.UserToken;
-                        MessageBox.Show("You are registered! :D");
                     }
                     else
                     {
@@ -178,12 +177,8 @@ namespace BoggleClient
                         gameID = token.GameID;
                         view.setGameID = gameID;
 
-
                         //Put all of the Boggle letters into the view.
                         SetUpBoggleBoard();
-
-                        //  HttpResponseMessage getResponse = await client.GetAsync("games/{+" + gameID.GameID + "}");
-
                     }
                     else
                     {
@@ -219,7 +214,66 @@ namespace BoggleClient
         /// <param name="brief"></param>
         private void HandleGameStatus(string brief)
         {
+            try
+            {
+                view.EnableControls(false);
+                using (HttpClient client = CreateClient())
+                {
+                    string getStatus = "games/" + gameID;
+                    HttpResponseMessage response = client.GetAsync(getStatus).Result;
 
+                    //If the status is successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        //Get the letters of the boggle board.
+                        String result = response.Content.ReadAsStringAsync().Result;
+                        dynamic token = JsonConvert.DeserializeObject(result);
+
+                        string gameState = token.GameState;
+                        board = token.Board;
+                        player1 = token.Player2.Nickname;
+                        player2 = token.Player1.Nickname;
+                        view.setP1 = player1;
+                        view.setP2 = player2;
+                        if (gameState == "active")
+                        {
+                            view.setPlayer2ScoreBox = token.Player2.Score;
+                            view.setTimeLeftBox = token.TimeLeft;
+                        }
+                        else if(gameState == "completed")
+                        {
+                            if(token.Player1.Score > token.Player2.Scrore)
+                            {
+                                MessageBox.Show(token.Player1.Nickname + " has won!");
+                            }
+                            else if(token.Player1.Score < token.Player2.Score)
+                            {
+                                MessageBox.Show(token.Player2.Nickname + " has won!");
+                            }
+                            else
+                            {
+                                MessageBox.Show("It's a tie");
+                            }
+                        }
+                        else if(gameState == "pending")
+                        {
+                            MessageBox.Show(gameState);
+                        }
+
+                        //Put each letter in the view.
+                        AddLetters();
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error submitting: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
+                    }
+                }
+            }
+            catch
+            {
+
+            }
         }
 
         /// <summary>
@@ -259,16 +313,8 @@ namespace BoggleClient
                         String result = response.Content.ReadAsStringAsync().Result;
                         dynamic token = JsonConvert.DeserializeObject(result);
 
-                        board = token.Board;
-                        player1 = token.Player2.Nickname;
-                   //     player2 = token.Player1.Nickname;
-                        view.setP1 = player1;
-                   //     view.setP2 = player2;
-
-
                         //Put each letter in the view.
                         AddLetters();
-
                     }
                     else
                     {
@@ -282,6 +328,23 @@ namespace BoggleClient
             {
 
             }
+            finally
+            {
+                timer.Start();
+                timer.Interval = 1000;
+                timer.Tick += updateBoard;
+            }
+        }
+
+        /// <summary>
+        /// Updates the boards timer and the board every 1000 ms
+
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void updateBoard(object sender, EventArgs e)
+        {
+            HandleGameStatus((string)gameID);
         }
 
         /// <summary>
