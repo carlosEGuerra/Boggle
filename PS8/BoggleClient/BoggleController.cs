@@ -73,7 +73,7 @@ namespace BoggleClient
                         String result = response.Content.ReadAsStringAsync().Result;
                         userToken = JsonConvert.DeserializeObject(result).ToString();
                         view.userRegistered = true;
-                        MessageBox.Show("You are registered! :D")
+                        MessageBox.Show("You are registered! :D");
                     }
                     else
                     {
@@ -89,6 +89,9 @@ namespace BoggleClient
             finally
             {
                 view.EnableControls(true);
+                //Join game here
+
+
             }
         }
 
