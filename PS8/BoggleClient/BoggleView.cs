@@ -34,7 +34,6 @@ namespace BoggleClient
             set
             {
                 _userRegistered = value;
-
             }
         }
         public void EnableControls(bool state)
