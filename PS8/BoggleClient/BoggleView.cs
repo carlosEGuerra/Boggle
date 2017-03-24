@@ -187,11 +187,10 @@ namespace BoggleClient
         {
             if (e.KeyChar == (char)Keys.Return || e.KeyChar == (char)Keys.Enter)
             {
-                
                 PlayWord(UserInput.Text);
                 string newText = UserInput.Text;
-                newText += "\n";
-                Player1Responces.Text += newText;
+                Player1Responces.Text += newText + "                              ";
+                UserInput.Text = "";
             }
         }
 

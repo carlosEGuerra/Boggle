@@ -55,6 +55,7 @@ namespace BoggleClient
         /// </summary>
         private dynamic p1Words;
 
+        private System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
 
         /*
@@ -347,7 +348,6 @@ namespace BoggleClient
                         Console.WriteLine(response.ReasonPhrase);
                     }
                 }
-
             }
             catch
             {
