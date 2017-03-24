@@ -23,9 +23,9 @@ namespace BoggleClient
         /// <summary>
         /// Holds the value of the user
         /// </summary>
-        private string userToken;
+        private dynamic userToken;
 
-        private string gameID;
+        private dynamic gameID;
 
         /*
                 public event Action CloseGameEvent;
@@ -80,9 +80,9 @@ namespace BoggleClient
                     {
                         //Get the user token
                         String result = response.Content.ReadAsStringAsync().Result;
-                        userToken = JsonConvert.DeserializeObject(result).ToString();
+                        userToken = JsonConvert.DeserializeObject(result);
                         view.userRegistered = true;
-                        view.setUserID = userToken;
+                        view.setUserID = userToken.UserToken;
                         MessageBox.Show("You are registered! :D");
                     }
                     else
@@ -168,20 +168,26 @@ namespace BoggleClient
                 view.EnableControls(false);
                 using (HttpClient client = CreateClient())
                 {
+                    int dTL;
+                    int.TryParse(dTimeLimit, out dTL);
                     // Create the parameter
                     dynamic userData = new ExpandoObject();
-                    userData.UserID = userToken;
-                    userData.TimeLimit = dTimeLimit;
+                    userData.UserID = userToken.UserToken;
+                    userData.TimeLimit = dTL;
 
                     StringContent content = new StringContent(JsonConvert.SerializeObject(userData), Encoding.UTF8, "application/json");
-                    HttpResponseMessage response = await client.PostAsync("users", content, tokenSource.Token);
+                    HttpResponseMessage response = await client.PostAsync("games", content, tokenSource.Token);
 
                     //If the status is successful
                     if (response.IsSuccessStatusCode)
                     {
                         //Get the gameID
                         String result = response.Content.ReadAsStringAsync().Result;
-                        gameID = JsonConvert.DeserializeObject(result).ToString();
+                        dynamic token = JsonConvert.DeserializeObject(result);
+                        
+                        gameID = token.GameID;
+                        view.setGameID = gameID;
+                        
                     }
                     else
                     {

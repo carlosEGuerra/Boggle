@@ -26,7 +26,7 @@ namespace BoggleClient
         public string setGameID
         {
             get { return gameID.Text.ToString(); }
-            set { gameID.Text.ToString(); }
+            set { gameID.Text = value; }
         }
 
         public BoggleView()
