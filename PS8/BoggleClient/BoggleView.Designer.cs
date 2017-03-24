@@ -356,6 +356,7 @@
             this.UserInput.Name = "UserInput";
             this.UserInput.Size = new System.Drawing.Size(305, 22);
             this.UserInput.TabIndex = 28;
+            this.UserInput.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.UserInput_KeyPress);
             // 
             // GameName
             // 

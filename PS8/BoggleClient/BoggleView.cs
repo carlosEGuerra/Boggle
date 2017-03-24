@@ -16,6 +16,13 @@ namespace BoggleClient
 
         public event Action<string, string> RegisterPressed;
         public event Action<string> JoinGamePressed;
+        public event Action<string> PlayWord;
+
+        public string setPlayer1Score
+        {
+            get { return Player1ScoreBox.Text.ToString(); }
+            set { Player1ScoreBox.Text = value; }
+        }
 
         public string setUserID
         {
@@ -168,6 +175,23 @@ namespace BoggleClient
         private void CancelButton_Click(object sender, EventArgs e)
         {
             CancelPressed();
+        }
+
+        /// <summary>
+        /// If the user plays a word.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void UserInput_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Return || e.KeyChar == (char)Keys.Enter)
+            {
+                
+                PlayWord(UserInput.Text);
+                string newText = UserInput.Text;
+                newText += "\n";
+                Player1Responces.Text += newText;
+            }
         }
     }
 }

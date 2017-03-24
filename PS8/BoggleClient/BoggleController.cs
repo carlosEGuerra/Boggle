@@ -45,6 +45,16 @@ namespace BoggleClient
         /// </summary>
         private dynamic player2;
 
+        /// <summary>
+        /// Holds name of player 2.
+        /// </summary>
+        private dynamic p1Score;
+
+        /// <summary>
+        /// Holds the words player 1 has played.
+        /// </summary>
+        private dynamic p1Words;
+
 
 
         /*
@@ -68,6 +78,7 @@ namespace BoggleClient
             view.RegisterPressed += Register;
             view.CancelPressed += Cancel;
             view.JoinGamePressed += JoinPressed;
+            view.PlayWord += WordPlayed;
 
         }
 
@@ -246,9 +257,12 @@ namespace BoggleClient
                         String result = response.Content.ReadAsStringAsync().Result;
                         dynamic token = JsonConvert.DeserializeObject(result);
 
-                        board = token.Board; //THIS LINE NEEDS TO BE FIXED.
-                        player1 = token.Player1.Nickname;
+                        board = token.Board;
+                        player1 = token.Player2.Nickname;
+                   //     player2 = token.Player1.Nickname;
                         view.setP1 = player1;
+                   //     view.setP2 = player2;
+
 
                         //Put each letter in the view.
                         AddLetters();
@@ -291,6 +305,53 @@ namespace BoggleClient
             view.setButton14 = bBoard[13].ToString();
             view.setButton15 = bBoard[14].ToString();
             view.setButton16 = bBoard[15].ToString();
+        }
+
+        /// <summary>
+        /// Handles when a word is played.
+        /// </summary>
+        /// <param name="word"></param>
+        private async void WordPlayed(string word)
+        {
+            try
+            {
+                view.EnableControls(false);
+                using (HttpClient client = CreateClient())
+                {
+                 
+                    // Create the parameter
+                    dynamic userData = new ExpandoObject();
+                    userData.UserToken = userToken.UserToken;
+                    userData.Word = word;
+
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(userData), Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage response = await client.PutAsync("games/" + gameID, content);
+
+                    //If the status is successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        //Get the score
+                        String result = response.Content.ReadAsStringAsync().Result;
+                        dynamic token = JsonConvert.DeserializeObject(result);
+
+
+                        p1Score = token.Score;
+                        view.setPlayer1Score = p1Score;
+
+                    }
+                    else
+                    {
+                        Console.WriteLine("Error submitting: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
+                    }
+                }
+
+            }
+            catch
+            {
+                //Do nothing.
+            }
         }
     }
 }
