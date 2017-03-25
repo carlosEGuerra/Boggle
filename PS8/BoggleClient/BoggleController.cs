@@ -180,15 +180,19 @@ namespace BoggleClient
         /// If UserToken is invalid or is not a player in the pending game, responds with status 403 (Forbidden).
         /// Otherwise, removes UserToken from the pending game and responds with status 200 (OK).
         /// </summary>
-        private void HandleCancelJoinRequest()
+        private async void HandleCancelJoinRequest()
         {
             try
             {
                 view.EnableControls(false);
                 using (HttpClient client = CreateClient())
                 {
-                    string getStatus = "games/" + userToken;
-                    HttpResponseMessage response = client.PutAsync(getStatus, content).Result;
+                    dynamic userData = new ExpandoObject();
+                    userData.UserToken = userToken.UserToken;
+
+                    string getStatus = "games";
+                    StringContent content = new StringContent(JsonConvert.SerializeObject(userData), Encoding.UTF8, "application/json");
+                    HttpResponseMessage response = await client.PutAsync(getStatus, content);
 
                     //If the status is successful
                     if (response.IsSuccessStatusCode)
@@ -196,6 +200,12 @@ namespace BoggleClient
                         //Get the letters of the boggle board.
                         string result = response.Content.ReadAsStringAsync().Result;
                         dynamic token = JsonConvert.DeserializeObject(result);
+                    }
+
+                    else
+                    {
+                        Console.WriteLine("Error submitting: " + response.StatusCode);
+                        Console.WriteLine(response.ReasonPhrase);
                     }
                 }
             }
