@@ -135,7 +135,7 @@ namespace BoggleClient
 
         public string setPlayer2ScoreBox
         {
-            get { return Player2Score.Text; }
+            get { return Player2Score.Text.ToString(); }
             set { Player2Score.Text = value; }
         }
 
@@ -197,7 +197,7 @@ namespace BoggleClient
             {
                 PlayWord(UserInput.Text);
                 string newText = UserInput.Text;
-                Player1Responces.Text += newText + "                              ";
+                Player2Responces.Text += newText + "                              ";
                 UserInput.Text = "";
             }
         }

@@ -81,7 +81,7 @@ namespace BoggleClient
                 {
                     //creating the user parameter
                     dynamic userData = new ExpandoObject();
-                    userData.Nickname = name;
+                    userData.Nickname = name;   
 
                     tokenSource = new CancellationTokenSource();
 
