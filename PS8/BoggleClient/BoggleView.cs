@@ -135,8 +135,8 @@ namespace BoggleClient
 
         public string setPlayer2ScoreBox
         {
-            get { return Player2ScoreBox.Text; }
-            set { Player2ScoreBox.Text = value; }
+            get { return Player2Score.Text; }
+            set { Player2Score.Text = value; }
         }
 
         public string setTimeLeftBox

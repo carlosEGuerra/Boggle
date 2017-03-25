@@ -61,7 +61,7 @@
             this.textBox7 = new System.Windows.Forms.TextBox();
             this.textBox8 = new System.Windows.Forms.TextBox();
             this.Player1ScoreBox = new System.Windows.Forms.TextBox();
-            this.Player2ScoreBox = new System.Windows.Forms.TextBox();
+            this.Player2Score = new System.Windows.Forms.TextBox();
             this.gameID = new System.Windows.Forms.TextBox();
             this.userID = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
@@ -368,12 +368,12 @@
             this.Player1ScoreBox.Size = new System.Drawing.Size(164, 29);
             this.Player1ScoreBox.TabIndex = 32;
             // 
-            // Player2ScoreBox
+            // Player2Score
             // 
-            this.Player2ScoreBox.Location = new System.Drawing.Point(758, 694);
-            this.Player2ScoreBox.Name = "Player2ScoreBox";
-            this.Player2ScoreBox.Size = new System.Drawing.Size(206, 29);
-            this.Player2ScoreBox.TabIndex = 33;
+            this.Player2Score.Location = new System.Drawing.Point(758, 694);
+            this.Player2Score.Name = "Player2Score";
+            this.Player2Score.Size = new System.Drawing.Size(206, 29);
+            this.Player2Score.TabIndex = 33;
             // 
             // gameID
             // 
@@ -458,7 +458,7 @@
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.userID);
             this.Controls.Add(this.gameID);
-            this.Controls.Add(this.Player2ScoreBox);
+            this.Controls.Add(this.Player2Score);
             this.Controls.Add(this.Player1ScoreBox);
             this.Controls.Add(this.textBox8);
             this.Controls.Add(this.textBox7);
@@ -539,7 +539,7 @@
         private System.Windows.Forms.TextBox textBox7;
         private System.Windows.Forms.TextBox textBox8;
         private System.Windows.Forms.TextBox Player1ScoreBox;
-        private System.Windows.Forms.TextBox Player2ScoreBox;
+        private System.Windows.Forms.TextBox Player2Score;
         private System.Windows.Forms.TextBox gameID;
         private System.Windows.Forms.TextBox userID;
         private System.Windows.Forms.TextBox textBox3;

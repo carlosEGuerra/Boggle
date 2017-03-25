@@ -45,29 +45,10 @@ namespace BoggleClient
         /// </summary>
         private dynamic player2;
 
-        /// <summary>
-        /// Holds name of player 2.
-        /// </summary>
-        private dynamic p1Score;
-
-        /// <summary>
-        /// Holds the words player 1 has played.
-        /// </summary>
-        private dynamic p1Words;
+        private int player2Score, player1Score;
 
         private System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
-
-        /*
-                public event Action CloseGameEvent;
-                public event Action<string> CreateUserEvent;
-                public event Action JoinGameEvent;
-                public event Action CancelJoinRequestEvent;
-                public event Action<string> PlayWordEvent;
-                public event Action<string> GameStatusEvent;
-
-
-        */
         /// <summary>
         /// Creates the controller for the provided view
         /// </summary>
@@ -80,7 +61,6 @@ namespace BoggleClient
             view.CancelPressed += Cancel;
             view.JoinGamePressed += JoinPressed;
             view.PlayWord += WordPlayed;
-
             view.CancelJoinRequest += HandleCancelJoinRequest;
         }
 
@@ -202,7 +182,27 @@ namespace BoggleClient
         /// </summary>
         private void HandleCancelJoinRequest()
         {
-            tokenSource.Cancel();
+            try
+            {
+                view.EnableControls(false);
+                using (HttpClient client = CreateClient())
+                {
+                    string getStatus = "games/" + gameID;
+                    HttpResponseMessage response = client.GetAsync(getStatus).Result;
+
+                    //If the status is successful
+                    if (response.IsSuccessStatusCode)
+                    {
+                        //Get the letters of the boggle board.
+                        string result = response.Content.ReadAsStringAsync().Result;
+                        dynamic token = JsonConvert.DeserializeObject(result);
+                    }
+                }
+            }
+            catch
+            {
+
+            }
         }
 
         /// <summary>
@@ -226,29 +226,35 @@ namespace BoggleClient
                     if (response.IsSuccessStatusCode)
                     {
                         //Get the letters of the boggle board.
-                        String result = response.Content.ReadAsStringAsync().Result;
+                        string result = response.Content.ReadAsStringAsync().Result;
                         dynamic token = JsonConvert.DeserializeObject(result);
 
-                        string gameState = token.GameState;
+                        string gameState = (string)token.GameState;
                         board = token.Board;
-                        player1 = token.Player2.Nickname;
-                        player2 = token.Player1.Nickname;
+                        player1 = (string)token.Player2.Nickname;
+                        player2 = (string)token.Player1.Nickname;
                         view.setP1 = player1;
                         view.setP2 = player2;
                         if (gameState == "active")
                         {
-                            view.setPlayer2ScoreBox = token.Player2.Score;
+                            //MessageBox.Show("active");
+                            view.setPlayer1Score = token.Player2.Score;
+                            view.setPlayer2ScoreBox = token.Player1.Score;
                             view.setTimeLeftBox = token.TimeLeft;
                         }
                         else if(gameState == "completed")
                         {
-                            if(token.Player1.Score > token.Player2.Scrore)
+                            //MessageBox.Show("Completed");
+                            view.setTimeLeftBox = "0";
+                            int.TryParse(token.Player2.Score, out player2Score);
+                            int.TryParse(token.Player1.Score, out player1Score);
+                            if (player1Score > player2Score)
                             {
-                                MessageBox.Show(token.Player1.Nickname + " has won!");
+                                MessageBox.Show("Player1 has won!");
                             }
-                            else if(token.Player1.Score < token.Player2.Score)
+                            else if (player1Score < player2Score)
                             {
-                                MessageBox.Show(token.Player2.Nickname + " has won!");
+                                MessageBox.Show("Player2 has won!");
                             }
                             else
                             {
@@ -257,7 +263,7 @@ namespace BoggleClient
                         }
                         else if(gameState == "pending")
                         {
-                            MessageBox.Show(gameState);
+                            MessageBox.Show("Pending Show");
                         }
 
                         //Put each letter in the view.
@@ -331,7 +337,7 @@ namespace BoggleClient
             finally
             {
                 timer.Start();
-                timer.Interval = 1000;
+                timer.Interval = 500;
                 timer.Tick += updateBoard;
             }
         }
@@ -401,8 +407,8 @@ namespace BoggleClient
                         dynamic token = JsonConvert.DeserializeObject(result);
 
 
-                        p1Score = token.Score;
-                        view.setPlayer1Score = p1Score;
+                        //p1Score = token.Score;
+                        //view.setPlayer1Score = p1Score;
 
                     }
                     else
