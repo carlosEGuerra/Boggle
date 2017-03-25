@@ -47,6 +47,16 @@ namespace BoggleClient
 
         private int player2Score, player1Score;
 
+        /// <summary>
+        /// To help us keep track of which side player names, words, and scores should appear.
+        /// </summary>
+        private bool weAreP1 = false;
+
+        /// <summary>
+        /// Holds the nickname the user put in.
+        /// </summary>
+        private string ourName;
+
         private System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
         /// <summary>
@@ -76,6 +86,7 @@ namespace BoggleClient
                 //disables the controls
                 view.EnableControls(false);
 
+                ourName = name;
                 //creates the HTTP client via user input domain
                 using (HttpClient client = CreateClient())
                 {
@@ -243,20 +254,47 @@ namespace BoggleClient
                         board = token.Board;
                         player1 = (string)token.Player2.Nickname;
                         player2 = (string)token.Player1.Nickname;
-                        view.setP1 = player1;
-                        view.setP2 = player2;
+
+
+                        if (player1 == ourName)
+                        {
+                            view.setP1 = player1;
+                            view.setP2 = player2;
+                            weAreP1 = true;
+                        }
+
+                        if(player2 == ourName)
+                        {
+                            view.setP1 = player2;
+                            view.setP1 = player1;
+                        }
+
+                       
                         if (gameState == "active")
                         {
                             //MessageBox.Show("active");
-                            view.setPlayer1Score = token.Player2.Score;
-                            view.setPlayer2ScoreBox = token.Player1.Score;
+                            if (weAreP1)
+                            {
+                                view.setPlayer1Score = token.Player1.Score;
+                                view.setPlayer2ScoreBox = token.Player2.Score;
+                            }
+
+                            else
+                            {
+                                view.setPlayer1Score = token.Player2.Score;
+                                view.setPlayer2ScoreBox = token.Player1.Score;
+                            }
+              
                             view.setTimeLeftBox = token.TimeLeft;
                         }
                         else if(gameState == "completed")
                         {
-                            //MessageBox.Show("Completed");
+                          
+                          
                             view.setTimeLeftBox = "0";
-                            int.TryParse(token.Player2.Score, out player2Score);
+                            timer.Stop();
+                            MessageBox.Show("Game has ended!");
+                            int.TryParse(token.Player2.Score, out player2Score);//Not parsing correctly.
                             int.TryParse(token.Player1.Score, out player1Score);
                             if (player1Score > player2Score)
                             {
@@ -386,6 +424,7 @@ namespace BoggleClient
             view.setButton14 = bBoard[13].ToString();
             view.setButton15 = bBoard[14].ToString();
             view.setButton16 = bBoard[15].ToString();
+            
         }
 
         /// <summary>
@@ -416,9 +455,16 @@ namespace BoggleClient
                         String result = response.Content.ReadAsStringAsync().Result;
                         dynamic token = JsonConvert.DeserializeObject(result);
 
+                        
+                        if (weAreP1)
+                        {
+                            view.player1Words += word + '\n';
+                        }
 
-                        //p1Score = token.Score;
-                        //view.setPlayer1Score = p1Score;
+                        if (!weAreP1)
+                        {
+                            view.player2Words += word + '\n';
+                        }
 
                     }
                     else
