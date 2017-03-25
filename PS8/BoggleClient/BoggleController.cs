@@ -187,8 +187,8 @@ namespace BoggleClient
                 view.EnableControls(false);
                 using (HttpClient client = CreateClient())
                 {
-                    string getStatus = "games/" + gameID;
-                    HttpResponseMessage response = client.GetAsync(getStatus).Result;
+                    string getStatus = "games/" + userToken;
+                    HttpResponseMessage response = client.PutAsync(getStatus, content).Result;
 
                     //If the status is successful
                     if (response.IsSuccessStatusCode)
@@ -237,14 +237,12 @@ namespace BoggleClient
                         view.setP2 = player2;
                         if (gameState == "active")
                         {
-                            //MessageBox.Show("active");
                             view.setPlayer1Score = token.Player2.Score;
                             view.setPlayer2ScoreBox = token.Player1.Score;
                             view.setTimeLeftBox = token.TimeLeft;
                         }
                         else if(gameState == "completed")
                         {
-                            //MessageBox.Show("Completed");
                             view.setTimeLeftBox = "0";
                             int.TryParse(token.Player2.Score, out player2Score);
                             int.TryParse(token.Player1.Score, out player1Score);
