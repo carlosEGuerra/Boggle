@@ -18,6 +18,7 @@ namespace BoggleClient
         public event Action<string> JoinGamePressed;
         public event Action<string> PlayWord;
 
+
         public string setPlayer1Score
         {
             get { return Player1ScoreBox.Text.ToString(); }
@@ -33,6 +34,18 @@ namespace BoggleClient
         {
             get { return gameID.Text.ToString(); }
             set { gameID.Text = value; }
+        }
+
+        public string player1Words
+        {
+            get { return Player1Responses.Text.ToString(); }
+            set { Player1Responses.Text = value; }
+        }
+
+        public string player2Words
+        {
+            get { return Player2Responses.Text.ToString(); }
+            set { Player2Responses.Text = value; }
         }
 
         //ALL OF THE GETTERS AND SETTERS FOR THE PANELS ON THE GAME BOARD
@@ -196,8 +209,11 @@ namespace BoggleClient
             if (e.KeyChar == (char)Keys.Return || e.KeyChar == (char)Keys.Enter)
             {
                 PlayWord(UserInput.Text);
-                string newText = UserInput.Text;
-                Player2Responces.Text += newText + "                              ";
+                string ourText = player1Words;
+                string theirText = player2Words;
+
+                Player1Responses.Text += ourText + "     "+ '\n';
+                Player2Responses.Text += theirText + "     " + '\n';
                 UserInput.Text = "";
             }
         }
