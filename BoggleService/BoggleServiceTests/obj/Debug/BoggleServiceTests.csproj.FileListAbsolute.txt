@@ -9,3 +9,14 @@ C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\BoggleServiceTes
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\BoggleServiceTests\obj\Debug\BoggleServiceTests.csproj.GenerateResource.Cache
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\BoggleServiceTests\obj\Debug\UnitTestProject1.dll
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\BoggleServiceTests\obj\Debug\UnitTestProject1.pdb
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\bin\Debug\UnitTestProject1.dll
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\bin\Debug\UnitTestProject1.pdb
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\bin\Debug\Newtonsoft.Json.dll
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\bin\Debug\Newtonsoft.Json.xml
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\obj\Debug\BoggleServiceTests.csprojResolveAssemblyReference.cache
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\obj\Debug\Boggle.Properties.Resources.resources
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\obj\Debug\BoggleServiceTests.csproj.GenerateResource.Cache
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\obj\Debug\UnitTestProject1.dll
+C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleServiceTests\obj\Debug\UnitTestProject1.pdb

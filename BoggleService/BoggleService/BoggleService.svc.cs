@@ -9,6 +9,17 @@ namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
+        // This amounts to a "poor man's" database.  The state of the service is
+        // maintained in users and items.  The sync object is used
+        // for synchronization (because multiple threads can be running
+        // simultaneously in the service).  The entire state is lost each time
+        // the service shuts down, so eventually we'll need to port this to
+        // a proper database.
+        private readonly static Dictionary<String, Games> games = new Dictionary<String, Games>();
+        private readonly static Dictionary<String, Users> users = new Dictionary<String, Users>();
+        private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();
+
+
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when
         /// an http response is sent.
