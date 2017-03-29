@@ -1,0 +1,11 @@
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\bin\Debug\BoggleClient.exe.config
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\bin\Debug\BoggleClient.exe
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\bin\Debug\BoggleClient.pdb
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\obj\Debug\BoggleClient.csprojResolveAssemblyReference.cache
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\obj\Debug\BoggleClient.BoggleView.resources
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\obj\Debug\BoggleClient.Properties.Resources.resources
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\obj\Debug\BoggleClient.csproj.GenerateResource.Cache
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\obj\Debug\BoggleClient.exe
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\PS8\BoggleClient\obj\Debug\BoggleClient.pdb
