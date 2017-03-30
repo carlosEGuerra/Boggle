@@ -80,9 +80,9 @@ namespace Boggle
         string GameStatus(Games game);
 
 
-        [WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
-        [WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
-        [WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
+        //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
+        //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
+        //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
 
     }
 }

@@ -55,7 +55,9 @@ namespace Boggle
             }
             else
             {
+                //creates a unique ID for the user
                 string userID = Guid.NewGuid().ToString();
+                //adds it to the user dictionary
                 users.Add(userID, user);
                 SetStatus(Created);
                 return userID;
@@ -69,7 +71,22 @@ namespace Boggle
 
         public int JoinGame(Users user, Games game)
         {
-            throw new NotImplementedException();
+            //if the user token is invalid, timelimit is less than 5 and greater than 120 then responds with a 403 error
+            if(user.UserId.Length == 0 || game.TimeLimit < 5 || game.TimeLimit > 120)
+            {
+                SetStatus(Forbidden);
+                return 0;
+            }
+            //if the user token is already a player in the pending game, the game reponds with 409 conflict error
+            else if((game.Player1 == user.UserId || game.Player2 == user.UserId) && game.GameStatus == "pending")
+            {
+                SetStatus(Conflict);
+                return 0;
+            }
+            else if()
+            {
+
+            }
         }
 
         public int PlayWord(Users user, Words word)
