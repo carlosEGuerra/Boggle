@@ -109,7 +109,7 @@ namespace Boggle
             }
             else if (!string.IsNullOrEmpty(game.Player1))
             {
-                games.Add();
+                game.Player2 = user.UserId;
             }
         }
 
