@@ -20,7 +20,7 @@ namespace Boggle
         private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();
 
         /// <summary>
-        /// The most recent call to SetStatus determines the response code used when
+        /// The most recent call to SetStatus determines the response code used when 
         /// an http response is sent.
         /// </summary>
         /// <param name="status"></param>
