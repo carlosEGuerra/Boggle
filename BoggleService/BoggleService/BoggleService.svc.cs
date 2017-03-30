@@ -18,6 +18,7 @@ namespace Boggle
         private readonly static Dictionary<String, Games> games = new Dictionary<String, Games>();
         private readonly static Dictionary<String, Users> users = new Dictionary<String, Users>();
         private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();
+        private int gameID = 0;
 
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when
@@ -83,9 +84,9 @@ namespace Boggle
                 SetStatus(Conflict);
                 return 0;
             }
-            else if()
+            else if (!string.IsNullOrEmpty(game.Player1))
             {
-
+                games.Add();
             }
         }
 
