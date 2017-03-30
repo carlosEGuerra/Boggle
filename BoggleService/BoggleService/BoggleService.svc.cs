@@ -42,11 +42,7 @@ namespace Boggle
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
         }
 
-        public void CancelJoinRequest(Users user)
-        {
-            throw new NotImplementedException();
-        }
-
+/*
         /// <summary>
         /// Create a new user.
         ///If Nickname is null, or is empty when trimmed, responds with status 403 (Forbidden).
@@ -78,12 +74,8 @@ namespace Boggle
             }
         }
 
-
-        public string GameStatus(Games game)
-        {
-            throw new NotImplementedException();
-        }
-
+*/
+  /*
         /// <summary>
         /// If UserToken is invalid, TimeLimit < 5, or TimeLimit > 120, responds with status 403 (Forbidden).
         /// Otherwise, if UserToken is already a player in the pending game, responds with status 409 (Conflict).
@@ -99,9 +91,10 @@ namespace Boggle
         /// <returns> an integer GameID </returns>
         public int JoinGame(Users user, Games game)
         {
+            return 0;
             lock(sync)
             {
-                //if the user token is invalid, timelimit is less than 5 and greater than 120 then responds with a 403 error
+                //If the time limit given by the user 
                 if (user.UserId.Length == 0 || game.TimeLimit < 5 || game.TimeLimit > 120)
                 {
                     SetStatus(Forbidden);
@@ -113,6 +106,7 @@ namespace Boggle
                     SetStatus(Conflict);
                     return 0;
                 }
+                //
                 else if (!string.IsNullOrEmpty(game.Player1))
                 {
                     game.Player2 = user.UserId;
@@ -123,26 +117,14 @@ namespace Boggle
 
 
                 }
+                else
+                {
+                    return 0;
+                }
             }
+        
         }
-
-
-        /// <summary>
-        /// Play a word in a game.
-        /// If Word is null or empty when trimmed, or if GameID or UserToken is missing or invalid, or if UserToken 
-        /// is not a player in the game identified by GameID, responds with response code 403 (Forbidden).
-        /// Otherwise, if the game state is anything other than "active", responds with response code 409 (Conflict).
-        /// Otherwise, records the trimmed Word as being played by UserToken in the game identified by GameID.
-        /// Returns the score for Word in the context of the game(e.g. if Word has been played 
-        /// before the score is zero). Responds with status 200 (OK). Note: The word is not case sensitive.
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="word"></param>
-        /// <returns> returns the integer score of the current word. </returns>
-        public int PlayWord(Users user, Words word)
-        {
-            throw new NotImplementedException();
-        }
+*/
 
         /// <summary>
         /// Demo.  You can delete this.
@@ -175,6 +157,36 @@ namespace Boggle
                 SetStatus(Forbidden);
                 return null;
             }
+        }
+
+        public string CreateUser(CreateUserData userData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int JoinGame(JoinGameData userData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CancelJoinRequest(CancelJoinData userData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int PlayWord(PlayWordData userData)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GameStatus(GameStatusData game)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GameStatusBYes(GameStatusData game)
+        {
+            throw new NotImplementedException();
         }
     }
 }
