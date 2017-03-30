@@ -19,7 +19,6 @@ namespace Boggle
         private readonly static Dictionary<String, Users> users = new Dictionary<String, Users>();
         private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();
 
-
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when
         /// an http response is sent.
@@ -39,6 +38,43 @@ namespace Boggle
             SetStatus(OK);
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
+        }
+
+        public void CancelJoinRequest(Users user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public string CreateUser(Users user)
+        {
+            //Checks if the nickname entered by the user is valid
+            if (user.Nickname.Trim() == null || user.Nickname.Trim().Length == 0)
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+            else
+            {
+                string userID = Guid.NewGuid().ToString();
+                users.Add(userID, user);
+                SetStatus(Created);
+                return userID;
+            }
+        }
+
+        public string GameStatus(Games game)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int JoinGame(Users user, Games game)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int PlayWord(Users user, Words word)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

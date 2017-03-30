@@ -62,3 +62,6 @@ C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleSe
 C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleService\obj\Debug\BoggleService.csprojResolveAssemblyReference.cache
 C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleService\obj\Debug\BoggleService.dll
 C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL2\BoggleService\BoggleService\obj\Debug\BoggleService.pdb
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleService\obj\Debug\BoggleService.csprojResolveAssemblyReference.cache
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleService\obj\Debug\BoggleService.dll
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleService\obj\Debug\BoggleService.pdb
