@@ -45,7 +45,6 @@ namespace Boggle
         /// </summary>
         public int TimeLimit { get; set; }
 
-
         /// <summary>
         /// Time the game started.
         /// </summary>

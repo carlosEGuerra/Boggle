@@ -15,9 +15,10 @@ namespace Boggle
         // simultaneously in the service).  The entire state is lost each time
         // the service shuts down, so eventually we'll need to port this to
         // a proper database.
-        private readonly static Dictionary<String, Games> games = new Dictionary<String, Games>();
-        private readonly static Dictionary<String, Users> users = new Dictionary<String, Users>();
-        private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();
+        private readonly static Dictionary<int, Games> games = new Dictionary<int, Games>();    //mapped via gameID
+        private readonly static Dictionary<String, Users> users = new Dictionary<String, Users>();  //maped via userID
+        private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();  //mapped via userID
+        private static readonly object sync = new object();
         private int gameID = 0;
 
         /// <summary>
@@ -57,20 +58,23 @@ namespace Boggle
         /// <returns> string of the userToken </returns>
         public string CreateUser(Users user)
         {
-            //Checks if the nickname entered by the user is valid
-            if (user.Nickname.Trim() == null || user.Nickname.Trim().Length == 0)
+            lock (sync)
             {
-                SetStatus(Forbidden);
-                return null;
-            }
-            else
-            {
-                //creates a unique ID for the user
-                string userID = Guid.NewGuid().ToString();
-                //adds it to the user dictionary
-                users.Add(userID, user);
-                SetStatus(Created);
-                return userID;
+                //Checks if the nickname entered by the user is valid
+                if (user.Nickname.Trim() == null || user.Nickname.Trim().Length == 0)
+                {
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                else
+                {
+                    //creates a unique ID for the user
+                    string userID = Guid.NewGuid().ToString();
+                    //adds it to the user dictionary
+                    users.Add(userID, user);
+                    SetStatus(Created);
+                    return userID;
+                }
             }
         }
 
@@ -95,21 +99,30 @@ namespace Boggle
         /// <returns> an integer GameID </returns>
         public int JoinGame(Users user, Games game)
         {
-            //if the user token is invalid, timelimit is less than 5 and greater than 120 then responds with a 403 error
-            if(user.UserId.Length == 0 || game.TimeLimit < 5 || game.TimeLimit > 120)
+            lock(sync)
             {
-                SetStatus(Forbidden);
-                return 0;
-            }
-            //if the user token is already a player in the pending game, the game reponds with 409 conflict error
-            else if((game.Player1 == user.UserId || game.Player2 == user.UserId) && game.GameStatus == "pending")
-            {
-                SetStatus(Conflict);
-                return 0;
-            }
-            else if (!string.IsNullOrEmpty(game.Player1))
-            {
-                game.Player2 = user.UserId;
+                //if the user token is invalid, timelimit is less than 5 and greater than 120 then responds with a 403 error
+                if (user.UserId.Length == 0 || game.TimeLimit < 5 || game.TimeLimit > 120)
+                {
+                    SetStatus(Forbidden);
+                    return 0;
+                }
+                //if the user token is already a player in the pending game, the game reponds with 409 conflict error
+                else if ((game.Player1 == user.UserId || game.Player2 == user.UserId) && game.GameStatus == "pending")
+                {
+                    SetStatus(Conflict);
+                    return 0;
+                }
+                else if (!string.IsNullOrEmpty(game.Player1))
+                {
+                    game.Player2 = user.UserId;
+                    gameID++;
+                    game.GameID = gameID;
+                    game.GameStatus = "active";
+                    games.Add(game.GameID, game);
+
+
+                }
             }
         }
 
