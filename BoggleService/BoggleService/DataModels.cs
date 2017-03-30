@@ -29,6 +29,11 @@ namespace Boggle
         /// Second player to enter a game.
         /// </summary>
         public string Player2 { get; set; }
+
+        /// <summary>
+        /// The current game ID.
+        /// </summary>
+        public int GameID { get; set; }
         
         /// <summary>
         ///The 16-letter string representation of the current game board.
@@ -39,6 +44,7 @@ namespace Boggle
         /// Time limit given by the server.
         /// </summary>
         public int TimeLimit { get; set; }
+
 
         /// <summary>
         /// Time the game started.
