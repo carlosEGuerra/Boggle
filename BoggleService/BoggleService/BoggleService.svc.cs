@@ -21,7 +21,7 @@ namespace Boggle
         private static readonly object sync = new object();
         private static int gameID = 1;
         private HashSet<string> dictionary = new HashSet<string>();
-
+        private bool dictionaryLoaded = false;
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when 
         /// an http response is sent.
@@ -42,90 +42,6 @@ namespace Boggle
             WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
         }
-
-        /*
-                /// <summary>
-                /// Create a new user.
-                ///If Nickname is null, or is empty when trimmed, responds with status 403 (Forbidden).
-                ///Otherwise, creates a new user with a unique UserToken and the trimmed Nickname.
-                ///The returned UserToken should be used to identify the user in subsequent requests.
-                ///Responds with status 201 (Created).
-                /// </summary>
-                /// <param name="item"></param>
-                /// <returns> string of the userToken </returns>
-                public string CreateUser(Users user)
-                {
-                    lock (sync)
-                    {
-                        //Checks if the nickname entered by the user is valid
-                        if (user.Nickname.Trim() == null || user.Nickname.Trim().Length == 0)
-                        {
-                            SetStatus(Forbidden);
-                            return null;
-                        }
-                        else
-                        {
-                            //creates a unique ID for the user
-                            string userID = Guid.NewGuid().ToString();
-                            //adds it to the user dictionary
-                            users.Add(userID, user);
-                            SetStatus(Created);
-                            return userID;
-                        }
-                    }
-                }
-
-        */
-        /*
-              /// <summary>
-              /// If UserToken is invalid, TimeLimit < 5, or TimeLimit > 120, responds with status 403 (Forbidden).
-              /// Otherwise, if UserToken is already a player in the pending game, responds with status 409 (Conflict).
-              /// Otherwise, if there is already one player in the pending game, adds UserToken as the second player.
-              /// The pending game becomes active and a new pending game with no players is created.The active game's time
-              /// limit is the integer average of the time limits requested by the two players. Returns the new active game's 
-              /// GameID(which should be the same as the old pending game's GameID). Responds with status 201 (Created).
-              /// Otherwise, adds UserToken as the first player of the pending game, and the TimeLimit as the pending game's 
-              /// requested time limit. Returns the pending game's GameID. Responds with status 202 (Accepted).
-              /// </summary>
-              /// <param name="user"></param>
-              /// <param name="game"></param>
-              /// <returns> an integer GameID </returns>
-              public int JoinGame(Users user, Games game)
-              {
-                  return 0;
-                  lock(sync)
-                  {
-                      //If the time limit given by the user 
-                      if (user.UserId.Length == 0 || game.TimeLimit < 5 || game.TimeLimit > 120)
-                      {
-                          SetStatus(Forbidden);
-                          return 0;
-                      }
-                      //if the user token is already a player in the pending game, the game reponds with 409 conflict error
-                      else if ((game.Player1 == user.UserId || game.Player2 == user.UserId) && game.GameStatus == "pending")
-                      {
-                          SetStatus(Conflict);
-                          return 0;
-                      }
-                      //
-                      else if (!string.IsNullOrEmpty(game.Player1))
-                      {
-                          game.Player2 = user.UserId;
-                          gameID++;
-                          game.GameID = gameID;
-                          game.GameStatus = "active";
-                          games.Add(game.GameID, game);
-
-
-                      }
-                      else
-                      {
-                          return 0;
-                      }
-                  }
-
-              }
-      */
 
         /// <summary>
         /// Demo.  You can delete this.
@@ -209,6 +125,7 @@ namespace Boggle
         {
             lock (sync)
             {
+
                 if (!users.ContainsKey(userData.UserToken) || userData.TimeLimit < 5 || userData.TimeLimit > 120)//If we don't have the current user in our database
                 {
                     SetStatus(Forbidden);
@@ -220,6 +137,20 @@ namespace Boggle
                 {
                     SetStatus(Conflict);
                     return null;
+                }
+
+                //Store the dictionry only the first time this method is called.
+                if (!dictionaryLoaded)
+                {
+                    string word;
+                    StreamReader reader = new StreamReader("dictionary.txt");
+                    while ((word = reader.ReadLine()) != null)
+                    {
+                        dictionary.Add(word);
+                    }
+
+                    reader.Close();
+                    dictionaryLoaded = true;
                 }
 
                 //Take in the time limit given by the current player.
@@ -267,33 +198,27 @@ namespace Boggle
         /// <param name="user"></param>
         public void CancelJoinRequest(CancelJoinData userData)
         {
-            if (userData.UserToken == null || (games[gameID].Player1 != userData.UserToken && games[gameID].Player2 != userData.UserToken))
+            lock (sync)
             {
-                SetStatus(Forbidden);
-                return;
-            }
-            //TODO: cancel lock, dictionary.txt access
-            else
-            {
-                if (games[users[userData.UserToken].CurrentGameID].Player1 == userData.UserToken)//If player 1 is being removed
+                if (userData.UserToken == null || (games[gameID].Player1 != userData.UserToken && !users[userData.UserToken].HasPendingGame))
                 {
-                    if(games[gameID].Player2 != null)
-                    {
-                        users[userData.UserToken].CurrentGameID = 0;//Make sure the player has no gameID.
-                        games[users[userData.UserToken].CurrentGameID].Player1 = games[gameID].Player2; //Set player 2 to be player 1.
-                        games[users[userData.UserToken].CurrentGameID].Player2 = null;
-                        games[users[userData.UserToken].CurrentGameID].TimeLimit = 0;
-                    }
-                }
-                if (games[users[userData.UserToken].CurrentGameID].Player2 == userData.UserToken)//If player 2 is being removed
-                {
-                    users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has no gameID.
-                    games[users[userData.UserToken].CurrentGameID].Player2 = null;
+                    SetStatus(Forbidden);
+                    return;
                 }
 
-                SetStatus(OK);
-            }
+                else
+                {
+                    int thisGameID = users[userData.UserToken].CurrentGameID;
+                    users[userData.UserToken].HasPendingGame = false; //Make sure the user's game is no longer pending.
 
+                    //Only player 1 can choose to quit the game. Clear the first player.
+                    games[gameID].Player1 = null;
+                    users[userData.UserToken].CurrentGameID = 0;//Make sure the player has no gameID.
+                    games[gameID].TimeLimit = 0;
+
+                    SetStatus(OK);
+                }
+            }
         }
 
         /// <summary>
@@ -397,8 +322,9 @@ namespace Boggle
 
 
 
-                }
-            }
+        public GameStatusResponse GameStatus(GameStatusData game)
+        {
+            throw new NotImplementedException();
         }
 
         public GameStatusResponse GameStatusBYes(GameStatusData game, int GameID)
