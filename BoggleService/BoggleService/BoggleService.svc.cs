@@ -391,9 +391,11 @@ namespace Boggle
                     response.Board = games[GameID].Board;
                     response.TimeLimit = games[GameID].TimeLimit;
                     response.TimeLeft = (int) (games[GameID].TimeLimit - (DateTime.Now.Ticks -  games[GameID].StartTime.Ticks));
-                    response.Player1 = new Player1();
+                    response.Player1 = new Player();
                     response.Player1.Nickname = users[games[GameID].Player1].Nickname;
-                    response.Player1.Score = games[GameID];
+                    response.Player1.Score = users[games[GameID].Player1].CurrentTotalScore;
+
+
 
                 }
             }
