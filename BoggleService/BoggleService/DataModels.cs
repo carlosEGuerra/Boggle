@@ -78,9 +78,9 @@ namespace Boggle
             public string Nickname { get; set; }
             public int Score { get; set; }
 
-            //TODO
-            //public HashSet<> TODO
+            public Dictionary<string, int> WordsPlayed = new Dictionary<string, int>();
         }
+
 
     }
 
@@ -114,6 +114,16 @@ namespace Boggle
         /// Lets us know if the current user is in a pending game already.
         /// </summary>
         public bool HasPendingGame = false;
+
+        /// <summary>
+        /// The current game ID of the user.
+        /// </summary>
+        public int CurrentGameID { get; set; }
+
+        /// <summary>
+        /// All words played by the user.
+        /// </summary>
+        public Dictionary<string, int> WordsPlayed = new Dictionary<string, int>();
 
     }
 
