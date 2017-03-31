@@ -76,13 +76,7 @@ namespace Boggle
         PlayWordResponse PlayWord(PlayWordData userData, string GameID);
 
 
-        [WebGet(UriTemplate = "/games/{GameID}")]
-        dynamic GameStatus(string GameID);
-
-
-        [WebGet(UriTemplate = "/games/{GameID}?brief=yes")]
-        dynamic GameStatusBYes(string GameID);
-
-        //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
+        [WebGet(UriTemplate = "/games/{GameID}?brief={brief}")]
+        dynamic GameStatus(string GameID, string brief);
     }
 }

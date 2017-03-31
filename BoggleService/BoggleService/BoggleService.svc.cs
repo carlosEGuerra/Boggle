@@ -255,16 +255,6 @@ namespace Boggle
                 return null;
 
             }
-/*
-            int ourGameID = users[userData.UserToken].CurrentGameID;
-
-            if (!games[ourGameID].GameStatus.Equals("active"))
-            {
-                SetStatus(Conflict);
-                return null;
-            }
-
-    */
             else
             {
                 PlayWordResponse response = new PlayWordResponse();
@@ -286,7 +276,8 @@ namespace Boggle
         
         public int TimeLeft()
         {
-            return (int)(games[gameID].TimeLimit - (DateTime.Now.Ticks - games[gameID].StartTime.Ticks));
+            int timeLeft = games[gameID].TimeLimit - (int)(DateTime.Now.Ticks - games[gameID].StartTime.Ticks);
+            return timeLeft;
         }
 
         /// <summary>
@@ -299,7 +290,7 @@ namespace Boggle
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        public dynamic GameStatus(string GameID)
+        public dynamic GameStatus(string GameID, string Brief)
         {
             int gameID;
             int.TryParse(GameID, out gameID);
@@ -308,15 +299,21 @@ namespace Boggle
                 SetStatus(Forbidden);
                 return null;
             }
-            else
+            else if(Brief == "no" || Brief == null)
             {
-                if(games[gameID].GameStatus == "pending")
+                if (games[gameID].GameStatus == "pending")
                 {
                     PendingStatusResponse response = new PendingStatusResponse();
                     response.GameState = "pending";
                     return response;
                 }
-                else if(games[gameID].GameStatus == "active")
+
+                if (TimeLeft() <= 0)
+                {
+                    games[gameID].GameStatus = "completed";
+                }
+
+                if (games[gameID].GameStatus == "active")
                 {
                     NonBriefStatusResponse response = new NonBriefStatusResponse();
                     response.GameState = "active";
@@ -347,19 +344,7 @@ namespace Boggle
                     response.Player2.WordsPlayed = users[games[gameID].Player2].WordsPlayed;
                 }
             }
-            return null;
-        }
-
-        public dynamic GameStatusBYes(string GameID)
-        {
-            int gameID;
-            int.TryParse(GameID, out gameID);
-            if (!games.ContainsKey(gameID))
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-            else
+            else if(Brief == "no" || Brief == null)
             {
                 if (games[gameID].GameStatus == "pending")
                 {
@@ -399,8 +384,6 @@ namespace Boggle
             }
             return null;
         }
-
-
 
         /// <summary>
         /// Scores a word based on the rules of Boggle.
