@@ -1,5 +1,4 @@
 ﻿// Written by Joe Zachary for CS 3500, November 2012.
-
 using System;
 
 namespace Boggle
