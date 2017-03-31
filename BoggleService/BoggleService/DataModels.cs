@@ -118,7 +118,7 @@ namespace Boggle
         /// <summary>
         /// The current game ID of the user.
         /// </summary>
-        public int CurrentGameID { get; set; }
+        public int CurrentGameID = 0;
 
         /// <summary>
         /// All words played by the user.
