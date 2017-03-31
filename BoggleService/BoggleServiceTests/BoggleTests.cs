@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static System.Net.HttpStatusCode;
 using System.Diagnostics;
 using Newtonsoft.Json;
+using System.Dynamic;
 
 namespace Boggle
 {
@@ -82,5 +83,16 @@ namespace Boggle
             string word = (string) r.Data;
             Assert.AreEqual("AAL", word);
         }
+        /*
+        public void TestCreateUser()
+        {
+            //creates a user who's desired nickname is JoeBro
+            dynamic user = new ExpandoObject();
+            user.Nickname = "JoeBro";
+
+            Response r = client.Do
+
+        }
+        */
     }
 }

@@ -73,15 +73,15 @@ namespace Boggle
         /// <param name="word"></param>
         /// <returns> returns the integer score of the current word. </returns>
         [WebInvoke(Method = "PUT", UriTemplate = "/games/{GameID}")]
-        PlayWordResponse PlayWord(PlayWordData userData);
+        PlayWordResponse PlayWord(PlayWordData userData, string GameID);
 
 
         [WebGet(UriTemplate = "/games/{GameID}")]
-        GameStatusResponse GameStatus(GameStatusData game, int GameID);
+        dynamic GameStatus(string GameID);
 
 
-        [WebGet(UriTemplate = "/games/{GameID}?=brief=yes")]
-        GameStatusResponse GameStatusBYes(GameStatusData game, int GameID);
+        [WebGet(UriTemplate = "/games/{GameID}?brief=yes")]
+        dynamic GameStatusBYes(string GameID);
 
         //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
     }

@@ -64,24 +64,38 @@ namespace Boggle
         public string Brief { get; set; }
     }
 
+    public class PendingStatusResponse
+    {
+        public string GameState { get; set; }
+    }
     /// <summary>
     /// The literal API output for Game
     /// </summary>
-    public class GameStatusResponse
+    public class NonBriefStatusResponse
     {
         public string GameState { get; set; }
         public string Board { get; set; }
         public int TimeLimit { get; set; }
         public int TimeLeft { get; set; }
-        public Player Player1 { get; set; }
-        public Player Player2 { get; set; }
+        public dynamic Player1 { get; set; }
+        public dynamic Player2 { get; set; }
     }
+
+    public class BriefStausResponse
+    {
+        public string GameState { get; set; }
+        public int TimeLeft { get; set; }
+        public dynamic Player1 { get; set; }
+        public dynamic Player2 { get; set; }
+    }
+    /*
     public class Player
     {
         public string Nickname { get; set; }
         public int Score { get; set; }
         public Dictionary<string, int> WordsPlayed = new Dictionary<string, int>();
     }
+    */
 
 
     public class User
