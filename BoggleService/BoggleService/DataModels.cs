@@ -73,25 +73,15 @@ namespace Boggle
         public string Board { get; set; }
         public int TimeLimit { get; set; }
         public int TimeLeft { get; set; }
-        public class Player1
-        {
-            public string Nickname { get; set; }
-            public int Score { get; set; }
-
-            public Dictionary<string, int> WordsPlayed = new Dictionary<string, int>();
-        }
-
-
+        public Player Player1 { get; set; }
+        public Player Player2 { get; set; }
     }
-
-   // public class Word
-
-    public class GameStatusDataBrief
+    public class Player
     {
-
+        public string Nickname { get; set; }
+        public int Score { get; set; }
+        public Dictionary<string, int> WordsPlayed = new Dictionary<string, int>();
     }
-
-
 
 
     public class User
@@ -119,6 +109,11 @@ namespace Boggle
         /// The current game ID of the user.
         /// </summary>
         public int CurrentGameID = 0;
+
+        /// <summary>
+        /// The current total score of the player
+        /// </summary>
+        public int CurrentTotalScore = 0;
 
         /// <summary>
         /// All words played by the user.
@@ -191,6 +186,5 @@ namespace Boggle
         /// Score of the individual word.
         /// </summary>
         public int Score { get; set; }
-
     }
 }
