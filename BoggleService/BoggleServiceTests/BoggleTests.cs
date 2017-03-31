@@ -98,7 +98,7 @@ namespace Boggle
             CreateUserData.Nickname = "Nate";
             Response r = client.DoPostAsync("users", CreateUserData).Result;
             Assert.AreEqual(Created, r.Status);
-            Assert.IsTrue(r.Data.Length == 16);
+            Assert.IsTrue(r.Data.Length > 0);
         }
         
         /// <summary>
