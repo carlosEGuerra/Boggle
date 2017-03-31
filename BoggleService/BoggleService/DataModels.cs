@@ -57,9 +57,17 @@ namespace Boggle
     }
 
     /// <summary>
-    /// The literal API input for GameS
+    /// Literal API optional input for a game.
     /// </summary>
     public class GameStatusData
+    {
+        public string Brief { get; set; }
+    }
+
+    /// <summary>
+    /// The literal API output for Game
+    /// </summary>
+    public class GameStatusResponse
     {
         public string GameState { get; set; }
         public string Board { get; set; }
@@ -86,7 +94,7 @@ namespace Boggle
 
 
 
-    public class Users
+    public class User
     {
         /// <summary>
         /// This is the userToken
@@ -102,9 +110,14 @@ namespace Boggle
         /// </summary>
         public int GivenTimeLimit { get; set; }
 
+        /// <summary>
+        /// Lets us know if the current user is in a pending game already.
+        /// </summary>
+        public bool HasPendingGame = false;
+
     }
 
-    public class Games
+    public class Game
     {
         /// <summary>
         /// The first player to enter a game.

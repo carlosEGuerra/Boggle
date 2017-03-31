@@ -32,7 +32,7 @@ namespace Boggle
         /// <param name="item"></param>
         /// <returns> string of the userToken </returns>
         [WebInvoke(Method = "POST", UriTemplate = "/users")]
-        string CreateUser(CreateUserData userData);
+        CreateUserResponse CreateUser(CreateUserData userData);
 
         /// <summary>
         /// If UserToken is invalid, TimeLimit < 5, or TimeLimit > 120, responds with status 403 (Forbidden).
@@ -48,7 +48,7 @@ namespace Boggle
         /// <param name="game"></param>
         /// <returns> an integer GameID </returns>
         [WebInvoke(Method = "POST", UriTemplate = "/games")]
-        int JoinGame(JoinGameData userData);
+         JoinGameResponse JoinGame(JoinGameData userData);
 
         /// <summary>
         /// Cancel a pending request to join a game.
@@ -73,15 +73,16 @@ namespace Boggle
         /// <param name="word"></param>
         /// <returns> returns the integer score of the current word. </returns>
         [WebInvoke(Method = "PUT", UriTemplate = "/games/{GameID}")]
-        int PlayWord(PlayWordData userData);
+        PlayWordResponse PlayWord(PlayWordData userData);
 
 
         [WebGet(UriTemplate = "/games/{GameID}")]
-        string GameStatus(GameStatusData game);
+        GameStatusResponse GameStatus(GameStatusData game);
 
 ]
         [WebGet(UriTemplate = "/?=brief=yes")]
-        string GameStatusBYes(GameStatusData game);
+        GameStatusResponse GameStatusBYes(GameStatusData game);
+
 
         //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
         //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]

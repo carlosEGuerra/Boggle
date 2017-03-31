@@ -49,7 +49,7 @@ namespace Boggle
             }
 
             // Make a string by choosing one character at random
-            // frome each cube.
+            // from each cube.
             string letters = "";
             for (int i = 0; i < cubes.Length; i++)
             {
