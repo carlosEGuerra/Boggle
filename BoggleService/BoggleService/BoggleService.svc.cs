@@ -19,7 +19,8 @@ namespace Boggle
         private readonly static Dictionary<String, User> users = new Dictionary<String, User>();  //maped via userID
         private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();  //mapped via userID
         private static readonly object sync = new object();
-        private int gameID = 0;
+        private static int gameID = 1;
+        private HashSet<string> dictionary = new HashSet<string>();
 
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when 
@@ -211,12 +212,14 @@ namespace Boggle
                 if (!users.ContainsKey(userData.UserToken) || userData.TimeLimit < 5 || userData.TimeLimit > 120)//If we don't have the current user in our database
                 {
                     SetStatus(Forbidden);
+                    return null;
                 }
 
                 //Otherwise, if UserToken is already a player in the pending game, responds with status 409(Conflict).
                 if (users[userData.UserToken].HasPendingGame)
                 {
                     SetStatus(Conflict);
+                    return null;
                 }
 
                 //Take in the time limit given by the current player.
@@ -234,6 +237,7 @@ namespace Boggle
                     games[gameID].GameID = gameID; //Store the current gameID to our database
                     games[gameID].GameStatus = "pending";
                     games[gameID].Player1 = userData.UserToken;
+                    users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
                     SetStatus(Accepted); //For the first player only.
                 }
                 //If the current game ID exists, it only has 1 player; add the user as a second player.
@@ -242,6 +246,7 @@ namespace Boggle
                     int p1TimeLimit = users[games[gameID].Player1].GivenTimeLimit;//The time limit given by player 1.
                     games[gameID].Player2 = userData.UserToken;//Set player 2 to be the second player to the existing game.
                     games[gameID].TimeLimit = (userData.TimeLimit + p1TimeLimit) / 2; //The average time limit given by the two players.
+                    users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
                     games[gameID].GameStatus = "active"; //The game is now active.
                     games[gameID].Board = new BoggleBoard().ToString();
                     SetStatus(Created);//For the second player only.
@@ -262,7 +267,33 @@ namespace Boggle
         /// <param name="user"></param>
         public void CancelJoinRequest(CancelJoinData userData)
         {
-            throw new NotImplementedException();
+            if (userData.UserToken == null || (games[gameID].Player1 != userData.UserToken && games[gameID].Player2 != userData.UserToken))
+            {
+                SetStatus(Forbidden);
+                return;
+            }
+
+            else
+            {
+                if (games[gameID].Player1 == userData.UserToken)//If player 1 is being removed
+                {
+                    if(games[gameID].Player2 != null)
+                    {
+                        users[userData.UserToken].CurrentGameID = 0;//Make sure the player has no gameID.
+                        games[gameID].Player1 = games[gameID].Player2; //Set player 2 to be player 1.
+                        games[gameID].Player2 = null;
+                        games[gameID].TimeLimit = 0;
+                    }
+                }
+                if (games[gameID].Player2 == userData.UserToken)//If player 2 is being removed
+                {
+                    users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has no gameID.
+                    games[gameID].Player2 = null;
+                }
+
+                SetStatus(OK);
+            }
+
         }
 
         /// <summary>
@@ -279,7 +310,53 @@ namespace Boggle
         /// <returns> returns the integer score of the current word. </returns>
         public PlayWordResponse PlayWord(PlayWordData userData)
         {
-            throw new NotImplementedException();
+            if (String.IsNullOrEmpty(userData.Word) || userData.UserToken == null || userData.UserToken.Length == 0 
+                || !games.ContainsKey(users[userData.UserToken].CurrentGameID)
+                || (games[users[userData.UserToken].CurrentGameID].Player1 != userData.UserToken && games[users[userData.UserToken].CurrentGameID].Player2 != userData.UserToken))
+            {
+                SetStatus(Forbidden);
+                return null;
+
+            }
+
+            int ourGameID = users[userData.UserToken].CurrentGameID;
+
+            if (!games[ourGameID].GameStatus.Equals("active"))
+            {
+                SetStatus(Conflict);
+                return null;
+            }
+
+            else
+            {
+                PlayWordResponse response = new PlayWordResponse();
+                string trimmedWord = userData.Word;      
+                //If player 1 played the word
+                if(userData.UserToken == games[ourGameID].Player1)
+                {
+                    //Add the word to our database if we haven't already.
+                    if (!users[userData.UserToken].WordsPlayed.ContainsKey(userData.Word))
+                    {
+                        //Check the word.
+                        //Score the word.
+                        //response.Score = 
+                      //  users[userData.UserToken].WordsPlayed.Add()
+                    }
+                   
+             
+                }
+                //If player 2 played the word
+                if (userData.UserToken == games[ourGameID].Player2)
+                {
+                    //Add the word to our database.
+                    //Check the word.
+                    //Score the word.
+                    //response.Score = 
+                }
+
+                return response;
+            }
+         
         }
 
 
