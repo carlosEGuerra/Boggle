@@ -262,7 +262,17 @@ namespace Boggle
         /// <param name="user"></param>
         public void CancelJoinRequest(CancelJoinData userData)
         {
-            throw new NotImplementedException();
+            lock (sync) //needs the lock in order to avoid errors when canceling game
+            {
+                if(userData.UserToken.Length == 0 || !users.ContainsKey(userData.UserToken))
+                {
+                    SetStatus(Forbidden);
+                }
+                else
+                {
+                    
+                }
+            }
         }
 
         /// <summary>
