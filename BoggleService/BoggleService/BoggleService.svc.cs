@@ -90,7 +90,6 @@ namespace Boggle
         {
             lock (sync)
             {
-
                 if (userData.Nickname == null || userData.Nickname.Trim().Length == 0)
                 {
                     SetStatus(Forbidden);
@@ -180,7 +179,8 @@ namespace Boggle
                     games[gameID].TimeLimit = (userData.TimeLimit + p1TimeLimit) / 2; //The average time limit given by the two players.
                     users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
                     games[gameID].GameStatus = "active"; //The game is now active.
-                    games[gameID].Board = new BoggleBoard().ToString();
+                    games[gameID].BogBoard = new BoggleBoard();//Actual board with all methods.
+                    games[gameID].Board = games[gameID].BogBoard.ToString();//sTRING 
                     SetStatus(Created);//For the second player only.
                     gameID++; //Create a new empty game.
                     games[gameID].StartTime = DateTime.Now;
@@ -226,7 +226,9 @@ namespace Boggle
         /// Play a word in a game.
         /// If Word is null or empty when trimmed, or if GameID or UserToken is missing or invalid, or if UserToken 
         /// is not a player in the game identified by GameID, responds with response code 403 (Forbidden).
+        /// 
         /// Otherwise, if the game state is anything other than "active", responds with response code 409 (Conflict).
+        /// 
         /// Otherwise, records the trimmed Word as being played by UserToken in the game identified by GameID.
         /// Returns the score for Word in the context of the game(e.g. if Word has been played 
         /// before the score is zero). Responds with status 200 (OK). Note: The word is not case sensitive.
@@ -236,7 +238,16 @@ namespace Boggle
         /// <returns> returns the integer score of the current word. </returns>
         public PlayWordResponse PlayWord(PlayWordData userData, string GameID)
         {
-            if (String.IsNullOrEmpty(userData.Word) || userData.UserToken == null || userData.UserToken.Length == 0 
+            int thisgameID;
+            int.TryParse(GameID, out thisgameID);
+            if (!games[thisgameID].GameStatus.Equals("active")) //If our game isn't active.
+            {
+                SetStatus(Conflict);
+                return null;
+            }
+
+            //Check for invalid
+            if (String.IsNullOrEmpty(userData.Word) || userData.UserToken == null || userData.UserToken.Length == 0
                 || !games.ContainsKey(users[userData.UserToken].CurrentGameID)
                 || (games[users[userData.UserToken].CurrentGameID].Player1 != userData.UserToken && games[users[userData.UserToken].CurrentGameID].Player2 != userData.UserToken))
             {
@@ -244,7 +255,7 @@ namespace Boggle
                 return null;
 
             }
-
+/*
             int ourGameID = users[userData.UserToken].CurrentGameID;
 
             if (!games[ourGameID].GameStatus.Equals("active"))
@@ -253,36 +264,24 @@ namespace Boggle
                 return null;
             }
 
+    */
             else
             {
                 PlayWordResponse response = new PlayWordResponse();
-                string trimmedWord = userData.Word;      
-                //If player 1 played the word
-                if(userData.UserToken == games[ourGameID].Player1)
-                {
-                    //Add the word to our database if we haven't already.
-                    if (!users[userData.UserToken].WordsPlayed.ContainsKey(userData.Word))
-                    {
-                        //Check the word.
-                        //Score the word.
-                        //response.Score = 
-                        //users[userData.UserToken].WordsPlayed.Add()
-                    }
-                   
-             
-                }
-                //If player 2 played the word
-                if (userData.UserToken == games[ourGameID].Player2)
-                {
-                    //Add the word to our database.
-                    //Check the word.
-                    //Score the word.
-                    //response.Score = 
-                }
+                string trimmedWord = userData.Word.Trim();
+                int score = 0;
+
+                string token = userData.UserToken;
+
+                score = ScoreWord(trimmedWord, token); //Score the word;
+                users[token].WordsPlayed.Add(trimmedWord, score);//Add the word and its coinciding score to our database.
+                users[token].CurrentTotalScore += score;//Add the word 
+
+                response.Score = score;
 
                 return response;
             }
-         
+
         }
         
         public int TimeLeft()
@@ -399,6 +398,61 @@ namespace Boggle
                 }
             }
             return null;
+        }
+
+
+
+        /// <summary>
+        /// Scores a word based on the rules of Boggle.
+        /// </summary>
+        /// <param name="word"></param>
+        /// <param name="token"></param>
+        /// <returns>the integer score that </returns>
+        private int ScoreWord(string word, string token)
+        {
+            // If a string has fewer than three characters, it scores zero points.
+            //Otherwise, if a string has a duplicate that occurs earlier in the list, it scores zero points.
+            if (word.Length < 3 || users[token].WordsPlayed.ContainsKey(word))
+            {
+                return 0;
+            }
+
+            //Otherwise, if a string is legal (it appears in the dictionary and occurs on the board),
+            if (dictionary.Contains(word) && games[users[token].CurrentGameID].BogBoard.CanBeFormed(word))
+            {
+                //it receives a score that depends on its length.
+                //Three - and four - letter words are worth one point,
+                if (word.Length == 3 || word.Length == 4)
+                {
+                    return 1;
+                }
+                //five - letter words are worth two points, 
+                else if (word.Length == 5)
+                {
+                    return 2;
+                }
+                //six - letter words are worth three points,
+                else if (word.Length == 6)
+                {
+                    return 3;
+                }
+
+                //seven - letter words are worth five points
+                else if (word.Length == 7)
+                {
+                    return 5;
+                }
+                //and longer words are worth 11 points.
+                else
+                {
+                    return 11;
+                }
+            }
+            //Otherwise, the string scores negative one point.
+            else
+            {
+                return -1;
+            }
         }
     }
 }
