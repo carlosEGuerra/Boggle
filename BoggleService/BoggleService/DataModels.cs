@@ -144,6 +144,8 @@ namespace Boggle
         /// </summary>
         public string Board { get; set; }
 
+        public BoggleBoard BogBoard { get; set;}
+
         /// <summary>
         /// Time limit given by the server.
         /// </summary>
@@ -160,12 +162,16 @@ namespace Boggle
         public string GameStatus { get; set; }
 
     }
+
+    /// <summary>
+    /// Representation of all of the words in the game.
+    /// </summary>
     public class Words
     {
         /// <summary>
         /// Id of the word??
         /// </summary>
-        public int Id { get; set; }
+   //     public int Id { get; set; }
 
         /// <summary>
         /// String reprsentation of the word played.
