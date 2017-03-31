@@ -77,16 +77,12 @@ namespace Boggle
 
 
         [WebGet(UriTemplate = "/games/{GameID}")]
-        GameStatusResponse GameStatus(GameStatusData game);
+        GameStatusResponse GameStatus(GameStatusData game, int GameID);
 
-]
-        [WebGet(UriTemplate = "/?=brief=yes")]
-        GameStatusResponse GameStatusBYes(GameStatusData game);
 
+        [WebGet(UriTemplate = "/games/{GameID}?=brief=yes")]
+        GameStatusResponse GameStatusBYes(GameStatusData game, int GameID);
 
         //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
-        //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
-        //[WebGet(UriTemplate = "/GetAllItems?completed={completedOnly}&user={userID}")]
-
     }
 }

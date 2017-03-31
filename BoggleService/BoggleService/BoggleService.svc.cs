@@ -272,23 +272,23 @@ namespace Boggle
                 SetStatus(Forbidden);
                 return;
             }
-
+            //TODO: cancel lock, dictionary.txt access
             else
             {
-                if (games[gameID].Player1 == userData.UserToken)//If player 1 is being removed
+                if (games[users[userData.UserToken].CurrentGameID].Player1 == userData.UserToken)//If player 1 is being removed
                 {
                     if(games[gameID].Player2 != null)
                     {
                         users[userData.UserToken].CurrentGameID = 0;//Make sure the player has no gameID.
-                        games[gameID].Player1 = games[gameID].Player2; //Set player 2 to be player 1.
-                        games[gameID].Player2 = null;
-                        games[gameID].TimeLimit = 0;
+                        games[users[userData.UserToken].CurrentGameID].Player1 = games[gameID].Player2; //Set player 2 to be player 1.
+                        games[users[userData.UserToken].CurrentGameID].Player2 = null;
+                        games[users[userData.UserToken].CurrentGameID].TimeLimit = 0;
                     }
                 }
-                if (games[gameID].Player2 == userData.UserToken)//If player 2 is being removed
+                if (games[users[userData.UserToken].CurrentGameID].Player2 == userData.UserToken)//If player 2 is being removed
                 {
                     users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has no gameID.
-                    games[gameID].Player2 = null;
+                    games[users[userData.UserToken].CurrentGameID].Player2 = null;
                 }
 
                 SetStatus(OK);
@@ -340,7 +340,7 @@ namespace Boggle
                         //Check the word.
                         //Score the word.
                         //response.Score = 
-                      //  users[userData.UserToken].WordsPlayed.Add()
+                        //users[userData.UserToken].WordsPlayed.Add()
                     }
                    
              
@@ -359,13 +359,47 @@ namespace Boggle
          
         }
 
-
-        public GameStatusResponse GameStatus(GameStatusData game)
+        /// <summary>
+        /// Get game status information.
+        /// If GameID is invalid, responds with status 403 (Forbidden).
+        /// Otherwise, returns information about the game named by GameID as illustrated below.
+        /// Note that the information returned depends on whether "Brief=yes" was included as a 
+        /// parameter as well as on the state of the game. Responds with status code 200 (OK). 
+        /// Note: The Board and Words are not case sensitive.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <returns></returns>
+        public GameStatusResponse GameStatus(GameStatusData game, int GameID)
         {
-            throw new NotImplementedException();
+            if (!games.ContainsKey(GameID))
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+            else
+            {
+                GameStatusResponse response = new GameStatusResponse();
+                string GameStat = games[GameID].GameStatus;
+                if (GameStat == "pending")
+                {
+                    response.GameState = "pending";
+                    return response;
+                }
+                else if (GameStat == "active")
+                {
+                    response.GameState = "active";
+                    response.Board = games[GameID].Board;
+                    response.TimeLimit = games[GameID].TimeLimit;
+                    response.TimeLeft = (int) (games[GameID].TimeLimit - (DateTime.Now.Ticks -  games[GameID].StartTime.Ticks));
+                    response.Player1 = new Player1();
+                    response.Player1.Nickname = users[games[GameID].Player1].Nickname;
+                    response.Player1.Score = games[GameID];
+
+                }
+            }
         }
 
-        public GameStatusResponse GameStatusBYes(GameStatusData game)
+        public GameStatusResponse GameStatusBYes(GameStatusData game, int GameID)
         {
             throw new NotImplementedException();
         }

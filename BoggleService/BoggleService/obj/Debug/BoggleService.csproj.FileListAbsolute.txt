@@ -94,3 +94,6 @@ C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleService\b
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleService\bin\System.Net.Http.Formatting.xml
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleService\bin\System.Web.Http.xml
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleService\bin\System.Web.Http.WebHost.xml
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick4\BoggleService\BoggleService\obj\Debug\BoggleService.csprojResolveAssemblyReference.cache
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick4\BoggleService\BoggleService\obj\Debug\BoggleService.dll
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick4\BoggleService\BoggleService\obj\Debug\BoggleService.pdb
