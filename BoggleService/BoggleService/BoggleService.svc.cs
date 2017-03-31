@@ -237,6 +237,15 @@ namespace Boggle
         /// <returns> returns the integer score of the current word. </returns>
         public PlayWordResponse PlayWord(PlayWordData userData, string GameID)
         {
+            int thisgameID;
+            int.TryParse(GameID, out thisgameID);
+            if (!games[thisgameID].GameStatus.Equals("active")) //If our game isn't active.
+            {
+                SetStatus(Conflict);
+                return null;
+            }
+
+            //Check for invalid
             if (String.IsNullOrEmpty(userData.Word) || userData.UserToken == null || userData.UserToken.Length == 0
                 || !games.ContainsKey(users[userData.UserToken].CurrentGameID)
                 || (games[users[userData.UserToken].CurrentGameID].Player1 != userData.UserToken && games[users[userData.UserToken].CurrentGameID].Player2 != userData.UserToken))
@@ -245,7 +254,7 @@ namespace Boggle
                 return null;
 
             }
-
+/*
             int ourGameID = users[userData.UserToken].CurrentGameID;
 
             if (!games[ourGameID].GameStatus.Equals("active"))
@@ -254,6 +263,7 @@ namespace Boggle
                 return null;
             }
 
+    */
             else
             {
                 PlayWordResponse response = new PlayWordResponse();
