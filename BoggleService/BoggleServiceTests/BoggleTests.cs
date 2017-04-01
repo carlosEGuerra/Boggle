@@ -178,6 +178,21 @@ namespace Boggle
         {
             dynamic JoinGameData = new ExpandoObject();
             JoinGameData.UserToken = testerUserToken;
+            JoinGameData.TimeLimit = 200;
+            Response r = client.DoPostAsync("games", JoinGameData).Result;
+            Assert.AreEqual(Forbidden, r.Status);
+            Assert.IsTrue(r.Data == null);
+        }
+
+
+        /// <summary>
+        /// TimeLimit > 120, responds with status 403 (Forbidden).
+        /// </summary>
+        [TestMethod]
+        public void TestJoinGame4()
+        {
+            dynamic JoinGameData = new ExpandoObject();
+            JoinGameData.UserToken = testerUserToken;
             JoinGameData.TimeLimit = 4;
             Response r = client.DoPostAsync("games", JoinGameData).Result;
             Assert.AreEqual(Forbidden, r.Status);
