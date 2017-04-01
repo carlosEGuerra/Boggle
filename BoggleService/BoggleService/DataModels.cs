@@ -99,7 +99,7 @@ namespace Boggle
         //[DataMember(EmitDefaultValue = false)]
         //public Dictionary<string, WordItem> WordsPlayed = new Dictionary<string, WordItem>();
 
-        public List<WordItem> WordsPlayed = new List<WordItem>;
+        public List<WordItem> WordsPlayed = new List<WordItem>();
     }
 
     public class User
