@@ -276,12 +276,10 @@ namespace Boggle
         
         public int TimeLeft(int gameID)
         {
+            int thisTimeLimit = games[gameID].TimeLimit;
             DateTime now = DateTime.UtcNow;
-            //TimeSpan difference = now.Subtract(games[gameID].StartTime);
-            TimeSpan TL;
-            TimeSpan.TryParse(games[gameID].TimeLimit.ToString(), out TL);
-            TimeSpan difference =  now.Subtract((games[gameID].StartTime.Add(TL)));
-            return  (int)difference.TotalSeconds;
+            TimeSpan difference =  now.Subtract(games[gameID].StartTime);
+            return thisTimeLimit - (int)difference.Seconds;
         }
 
         /// <summary>
