@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.IO;
 using System.Net;
 using System.ServiceModel.Web;
+using System.Collections;
 using static System.Net.HttpStatusCode;
 
 namespace Boggle
