@@ -20,7 +20,7 @@ namespace Boggle
         private readonly static Dictionary<String, User> users = new Dictionary<String, User>();  //maped via userID
         private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();  //mapped via userID
         private static readonly object sync = new object();
-        private static int gameID = 1;
+        private static int gameID = 0;
         private HashSet<string> dictionary = new HashSet<string>();
         private bool dictionaryLoaded = false;
         /// <summary>
@@ -182,8 +182,8 @@ namespace Boggle
                     games[gameID].BogBoard = new BoggleBoard();//Actual board with all methods.
                     games[gameID].Board = games[gameID].BogBoard.ToString();//sTRING 
                     SetStatus(Created);//For the second player only.
-                    gameID++; //Create a new empty game.
                     games[gameID].StartTime = DateTime.Now;
+                    gameID++; //Create a new empty game.
                 }
 
                 return response;
@@ -274,7 +274,7 @@ namespace Boggle
 
         }
         
-        public int TimeLeft()
+        public int TimeLeft(int gameID)
         {
             int timeLeft = games[gameID].TimeLimit - (int)(DateTime.Now.Ticks - games[gameID].StartTime.Ticks);
             return timeLeft;
@@ -290,10 +290,11 @@ namespace Boggle
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        public dynamic GameStatus(string GameID, string Brief)
+        public StatusResponse GameStatus(string GameID, string Brief)
         {
             int gameID;
             int.TryParse(GameID, out gameID);
+            StatusResponse response = new StatusResponse();
             if (!games.ContainsKey(gameID))
             {
                 SetStatus(Forbidden);
@@ -303,19 +304,16 @@ namespace Boggle
             {
                 if (games[gameID].GameStatus == "pending")
                 {
-                    PendingStatusResponse response = new PendingStatusResponse();
                     response.GameState = "pending";
                     return response;
                 }
 
-                if (TimeLeft() <= 0)
+                if (TimeLeft(gameID) <= 0)
                 {
                     games[gameID].GameStatus = "completed";
                 }
-
                 if (games[gameID].GameStatus == "active")
                 {
-                    NonBriefStatusResponse response = new NonBriefStatusResponse();
                     response.GameState = "active";
                     response.Board = games[gameID].Board;
                     response.TimeLimit = games[gameID].TimeLimit;
@@ -327,34 +325,36 @@ namespace Boggle
 
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
-                    return response;
                 }
                 else if(games[gameID].GameStatus == "completed")
                 {
-                    NonBriefStatusResponse response = new NonBriefStatusResponse();
                     response.GameState = "completed";
                     response.Board = games[gameID].Board;
                     response.TimeLimit = games[gameID].TimeLimit;
                     response.TimeLeft = (int)(games[gameID].TimeLimit - (DateTime.Now.Ticks - games[gameID].StartTime.Ticks));
+                    response.Player1 = new player();
+                    response.Player2 = new player();
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
-                    response.Player1.WordsPlayed = users[games[gameID].Player1].WordsPlayed;
+                    //response.Player1.WordsPlayed = users[games[gameID].Player1].WordsPlayed;
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
-                    response.Player2.WordsPlayed = users[games[gameID].Player2].WordsPlayed;
+                    //response.Player2.WordsPlayed = users[games[gameID].Player2].WordsPlayed;
                 }
             }
-            else if(Brief == "no" || Brief == null)
+            else if(Brief == "yes")
             {
                 if (games[gameID].GameStatus == "pending")
                 {
-                    PendingStatusResponse response = new PendingStatusResponse();
                     response.GameState = "pending";
-                    return response;
+                }
+
+                if(TimeLeft(gameID) == 0)
+                {
+                    games[gameID].GameStatus = "completed";
                 }
                 else if (games[gameID].GameStatus == "active")
                 {
-                    NonBriefStatusResponse response = new NonBriefStatusResponse();
                     response.GameState = "active";
                     response.TimeLeft = (int)(games[gameID].TimeLimit - (DateTime.Now.Ticks - games[gameID].StartTime.Ticks));
 
@@ -364,25 +364,22 @@ namespace Boggle
 
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
-                    return response;
                 }
                 else if (games[gameID].GameStatus == "completed")
                 {
-                    NonBriefStatusResponse response = new NonBriefStatusResponse();
                     response.GameState = "completed";
                     response.Board = games[gameID].Board;
                     response.TimeLimit = games[gameID].TimeLimit;
                     response.TimeLeft = (int)(games[gameID].TimeLimit - (DateTime.Now.Ticks - games[gameID].StartTime.Ticks));
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
-                    response.Player1.WordsPlayed = users[games[gameID].Player1].WordsPlayed;
+                    //response.Player1.WordsPlayed = users[games[gameID].Player1].WordsPlayed;
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
-                    response.Player2.WordsPlayed = users[games[gameID].Player2].WordsPlayed;
-                    return response;
+                    //response.Player2.WordsPlayed = users[games[gameID].Player2].WordsPlayed;
                 }
             }
-            return null;
+            return response;
         }
 
         /// <summary>
