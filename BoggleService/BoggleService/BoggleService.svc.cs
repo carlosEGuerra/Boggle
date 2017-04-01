@@ -314,6 +314,7 @@ namespace Boggle
                 if (TimeLeft(gameID) <= 0)
                 {
                     games[gameID].GameStatus = "completed";
+                    response.TimeLeft = 0;
                 }
                 if (games[gameID].GameStatus == "active")
                 {
