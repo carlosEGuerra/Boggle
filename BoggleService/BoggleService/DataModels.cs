@@ -122,7 +122,7 @@ namespace Boggle
         /// <summary>
         /// The current game ID of the user.
         /// </summary>
-        public int CurrentGameID = 0;
+        public int CurrentGameID = -1;
 
         /// <summary>
         /// The current total score of the player
