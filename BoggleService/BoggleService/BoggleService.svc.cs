@@ -312,6 +312,7 @@ namespace Boggle
                     return response;
                 }
 
+                //If the time left int the game is less than or equal to zero seconds.
                 if (TimeLeft(gameID) <= 0)
                 {
                     games[gameID].GameStatus = "completed";
