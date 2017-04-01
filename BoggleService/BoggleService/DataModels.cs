@@ -97,10 +97,10 @@ namespace Boggle
         public int Score { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
-        public List<WordItem> WordsPlayed = new List<WordItem>();
+        public List<string> WordsPlayed = new List<string>();
+        //public List<WordItem> WordsPlayed = new List<WordItem>();
         //public Dictionary<string, WordItem> WordsPlayed = new Dictionary<string, WordItem>();
-
-        public List<WordItem> WordsPlayed = new List<WordItem>;
+       
     }
 
     public class User
