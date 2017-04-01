@@ -277,8 +277,11 @@ namespace Boggle
         public int TimeLeft(int gameID)
         {
             DateTime now = DateTime.UtcNow;
-            TimeSpan difference = now.Subtract(games[gameID].StartTime);
-            return (int)difference.TotalSeconds;
+            //TimeSpan difference = now.Subtract(games[gameID].StartTime);
+            TimeSpan TL;
+            TimeSpan.TryParse(games[gameID].TimeLimit.ToString(), out TL);
+            TimeSpan difference =  now.Subtract((games[gameID].StartTime.Add(TL)));
+            return  (int)difference.TotalSeconds;
         }
 
         /// <summary>
@@ -318,7 +321,7 @@ namespace Boggle
                     response.GameState = "active";
                     response.Board = games[gameID].Board;
                     response.TimeLimit = games[gameID].TimeLimit;
-                    response.TimeLeft = 0;
+                    response.TimeLeft = TimeLeft(gameID);
                     response.Player1 = new player();
                     response.Player2 = new player();
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
@@ -331,7 +334,7 @@ namespace Boggle
                     response.GameState = "completed";
                     response.Board = games[gameID].Board;
                     response.TimeLimit = games[gameID].TimeLimit;
-                    response.TimeLeft = (int)(games[gameID].TimeLimit - (DateTime.Now.Ticks - games[gameID].StartTime.Ticks));
+                    response.TimeLeft = 0;
                     response.Player1 = new player();
                     response.Player2 = new player();
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
@@ -356,7 +359,7 @@ namespace Boggle
                 else if (games[gameID].GameStatus == "active")
                 {
                     response.GameState = "active";
-                    response.TimeLeft = (int)(games[gameID].TimeLimit - (DateTime.Now.Ticks - games[gameID].StartTime.Ticks));
+                    response.TimeLeft = TimeLeft(gameID);
 
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
@@ -370,7 +373,7 @@ namespace Boggle
                     response.GameState = "completed";
                     response.Board = games[gameID].Board;
                     response.TimeLimit = games[gameID].TimeLimit;
-                    response.TimeLeft = (int)(games[gameID].TimeLimit - (DateTime.Now.Ticks - games[gameID].StartTime.Ticks));
+                    response.TimeLeft = 0;
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
                     //response.Player1.WordsPlayed = users[games[gameID].Player1].WordsPlayed;
