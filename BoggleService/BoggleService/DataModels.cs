@@ -130,7 +130,7 @@ namespace Boggle
         /// <summary>
         /// All words played by the user.
         /// </summary>
-        public Dictionary<string, int> WordsPlayed = new Dictionary<string, int>();
+        public Dictionary<string, WordItem> WordsPlayed = new Dictionary<string, WordItem>();
 
     }
 
@@ -205,4 +205,15 @@ namespace Boggle
         /// </summary>
         public int Score { get; set; }
     }
+    [DataContract]
+    public class WordItem
+    {
+        [DataMember(EmitDefaultValue = false)]
+        string Word { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        string Score { get; set; }
+
+    }
+
 }
