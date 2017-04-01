@@ -85,8 +85,9 @@ namespace Boggle
         public player Player1 { get; set; }
         [DataMember(EmitDefaultValue = false)]
         public player Player2 { get; set; }
+
     }
-    
+
     [DataContract]
     public class player
     {
@@ -94,6 +95,9 @@ namespace Boggle
         public string Nickname { get; set; }
         [DataMember(EmitDefaultValue = false)]
         public int Score { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public Dictionary<string, WordItem> WordsPlayed = new Dictionary<string, WordItem>();
     }
 
     public class User
@@ -130,7 +134,7 @@ namespace Boggle
         /// <summary>
         /// All words played by the user.
         /// </summary>
-        public Dictionary<string, WordItem> WordsPlayed = new Dictionary<string, WordItem>();
+        public Dictionary<string, int> WordsPlayed = new Dictionary<string, int>();
 
     }
 
@@ -175,6 +179,16 @@ namespace Boggle
 
     }
 
+    [DataContract]
+    public class WordItem
+    {
+        [DataMember(EmitDefaultValue = false)]
+        public string Word { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public int Score { get; set; }
+    }
+
     /// <summary>
     /// Representation of all of the words in the game.
     /// </summary>
@@ -204,16 +218,6 @@ namespace Boggle
         /// Score of the individual word.
         /// </summary>
         public int Score { get; set; }
-    }
-    [DataContract]
-    public class WordItem
-    {
-        [DataMember(EmitDefaultValue = false)]
-        string Word { get; set; }
-
-        [DataMember(EmitDefaultValue = false)]
-        string Score { get; set; }
-
     }
 
 }

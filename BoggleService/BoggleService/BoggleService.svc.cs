@@ -336,10 +336,26 @@ namespace Boggle
                     response.Player2 = new player();
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
-                    //response.Player1.WordsPlayed = users[games[gameID].Player1].WordsPlayed;
+                   //PLAYER 1'S WORDS
+                    foreach(KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                    {
+                        WordItem w= new WordItem();
+                        w.Word = p.Key;
+                        w.Score = p.Value;
+                        response.Player1.WordsPlayed.Add(p.Key, w);
+                    }
+
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
-                    //response.Player2.WordsPlayed = users[games[gameID].Player2].WordsPlayed;
+
+                    //PLAYER 2'S WORDS
+                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                    {
+                        WordItem w = new WordItem();
+                        w.Word = p.Key;
+                        w.Score = p.Value;
+                        response.Player2.WordsPlayed.Add(p.Key, w);
+                    }
                 }
             }
             else if(Brief == "yes")
@@ -373,10 +389,24 @@ namespace Boggle
                     response.TimeLeft = (int)(games[gameID].TimeLimit - (DateTime.Now.Ticks - games[gameID].StartTime.Ticks));
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
-                    //response.Player1.WordsPlayed = users[games[gameID].Player1].WordsPlayed;
+                    //Player 1's words
+                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                    {
+                        WordItem w = new WordItem();
+                        w.Word = p.Key;
+                        w.Score = p.Value;
+                        response.Player1.WordsPlayed.Add(p.Key, w);
+                    }
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
-                    //response.Player2.WordsPlayed = users[games[gameID].Player2].WordsPlayed;
+                    //Player 2's words
+                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                    {
+                        WordItem w = new WordItem();
+                        w.Word = p.Key;
+                        w.Score = p.Value;
+                        response.Player1.WordsPlayed.Add(p.Key, w);
+                    }
                 }
             }
             return response;
