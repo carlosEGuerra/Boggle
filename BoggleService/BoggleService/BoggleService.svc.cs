@@ -368,9 +368,11 @@ namespace Boggle
                     response.GameState = "pending";
                 }
 
-                if(TimeLeft(gameID) == 0)
+                if(TimeLeft(gameID) <= 0)
                 {
                     games[gameID].GameStatus = "completed";
+                    games[gameID].TimeLimit = 0;
+
                 }
                 else if (games[gameID].GameStatus == "active")
                 {
