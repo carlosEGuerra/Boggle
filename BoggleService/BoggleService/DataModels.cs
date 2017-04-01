@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Web;
@@ -97,7 +98,8 @@ namespace Boggle
         public int Score { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
-        public List<List<object>> WordsPlayed = new List<List<object>>();
+        public ArrayList WordsPlayed = new ArrayList();
+        //public List<List<object>> WordsPlayed = new List<List<object>>();
         //public List<WordItem> WordsPlayed = new List<WordItem>();
         //public Dictionary<string, WordItem> WordsPlayed = new Dictionary<string, WordItem>();
        

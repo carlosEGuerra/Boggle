@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Net;
+using System.Collections;
 using System.ServiceModel.Web;
 using System.Collections;
 using static System.Net.HttpStatusCode;
@@ -346,10 +347,10 @@ namespace Boggle
                            WordItem w= new WordItem();
                            w.Word = p.Key;
                            w.Score = p.Value;
-                        List<object> temp = new List<object>();
-                        temp.Add(w.Word);
-                        temp.Add(w.Score);
-                           response.Player1.WordsPlayed.Add(temp);
+                        ArrayList temp = new ArrayList();
+                        // temp.Add(w.Word);
+                        // temp.Add(w.Score);
+                        response.Player1.WordsPlayed.Add(w);
                        }
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
