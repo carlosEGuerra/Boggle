@@ -276,8 +276,9 @@ namespace Boggle
         
         public int TimeLeft(int gameID)
         {
-            int timeLeft = games[gameID].TimeLimit - (int)(DateTime.Now.Ticks - games[gameID].StartTime.Ticks);
-            return timeLeft;
+            DateTime now = DateTime.UtcNow;
+            TimeSpan difference = now.Subtract(games[gameID].StartTime);
+            return (int)difference.TotalSeconds;
         }
 
         /// <summary>
@@ -317,12 +318,11 @@ namespace Boggle
                     response.GameState = "active";
                     response.Board = games[gameID].Board;
                     response.TimeLimit = games[gameID].TimeLimit;
-                    response.TimeLeft = (int)(games[gameID].TimeLimit - (DateTime.Now.Ticks - games[gameID].StartTime.Ticks));
-
+                    response.TimeLeft = 0;
+                    response.Player1 = new player();
+                    response.Player2 = new player();
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
-
-
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
                 }

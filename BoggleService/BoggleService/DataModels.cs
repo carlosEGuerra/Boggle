@@ -90,7 +90,7 @@ namespace Boggle
     [DataContract]
     public class player
     {
-       // [DataMember(EmitDefaultValue = false)]
+        [DataMember(EmitDefaultValue = false)]
         public string Nickname { get; set; }
         [DataMember(EmitDefaultValue = false)]
         public int Score { get; set; }
