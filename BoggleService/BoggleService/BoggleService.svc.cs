@@ -342,7 +342,6 @@ namespace Boggle
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
                     //PLAYER 1'S WORDS
-                    int i = 0;
                     foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
                     {
 
@@ -355,7 +354,7 @@ namespace Boggle
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
 
                     //PLAYER 2'S WORDS NEED THESE
-                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player2].WordsPlayed)
                     {
 
                         WordItem w = new WordItem();
@@ -412,7 +411,7 @@ namespace Boggle
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
                     //Player 2's words NEED THIS.
-                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player2].WordsPlayed)
                     {
 
                         WordItem w = new WordItem();
