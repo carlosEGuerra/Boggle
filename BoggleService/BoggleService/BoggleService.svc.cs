@@ -382,7 +382,8 @@ namespace Boggle
                 {
                     response.GameState = "active";
                     response.TimeLeft = TimeLeft(gameID);
-
+                    response.Player1 = new player();
+                    response.Player2 = new player();
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
 
