@@ -340,19 +340,13 @@ namespace Boggle
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
                     //PLAYER 1'S WORDS
-                    /*   foreach(KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                      foreach(KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
                        {
                            WordItem w= new WordItem();
                            w.Word = p.Key;
                            w.Score = p.Value;
                            response.Player1.WordsPlayed.Add(w);
                        }
-                       */
-                    response.Player1.WordsPlayed.Add("THIS");
-                    response.Player1.WordsPlayed.Add("IS");
-                    response.Player1.WordsPlayed.Add("A");
-                    response.Player1.WordsPlayed.Add("TEST");
-
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
 
