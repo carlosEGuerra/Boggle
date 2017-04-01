@@ -345,7 +345,10 @@ namespace Boggle
                            WordItem w= new WordItem();
                            w.Word = p.Key;
                            w.Score = p.Value;
-                           response.Player1.WordsPlayed.Add(w);
+                        List<object> temp = new List<object>();
+                        temp.Add(w.Word);
+                        temp.Add(w.Score);
+                           response.Player1.WordsPlayed.Add(temp);
                        }
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
