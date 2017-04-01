@@ -349,24 +349,20 @@ namespace Boggle
                         WordItem w = new WordItem();
                         w.Word = p.Key;
                         w.Score = p.Value;
-                        WordItem[] temp = new WordItem[100];
-                        temp[i] = w;
-                        i++;
-                        response.Player1.WordsPlayed = temp;
+                        response.Player1.WordsPlayed.Add(p.Key);
                     }
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
 
                     //PLAYER 2'S WORDS NEED THESE
-                    /*      foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
-                          {
-                              WordItem w = new WordItem();
-                              w.Word = p.Key;
-                              w.Score = p.Value;
-                              response.Player2.WordsPlayed.Add(w);
-                          }
+                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                    {
 
-                          */
+                        WordItem w = new WordItem();
+                        w.Word = p.Key;
+                        w.Score = p.Value;
+                        response.Player2.WordsPlayed.Add(p.Key);
+                    }
                 }
 
             }
@@ -403,28 +399,29 @@ namespace Boggle
                     response.TimeLeft = 0;
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
-                    //Player 1's words
-                    /*     foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
-                         {
-                             WordItem w = new WordItem();
-                             w.Word = p.Key;
-                             w.Score = p.Value;
-                             response.Player1.WordsPlayed.Add(w);
-                         }
-                         */
+                    //PLAYER 1'S WORDS
+                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                    {
+
+                        WordItem w = new WordItem();
+                        w.Word = p.Key;
+                        w.Score = p.Value;
+                        response.Player1.WordsPlayed.Add(p.Key);
+                    }
 
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
                     response.Player2.Score = users[games[gameID].Player2].CurrentTotalScore;
                     //Player 2's words NEED THIS.
-                    /* foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
-                     {
-                         WordItem w = new WordItem();
-                         w.Word = p.Key;
-                         w.Score = p.Value;
-                         response.Player1.WordsPlayed.Add(w);
-                     }
+                    foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
+                    {
 
-     */
+                        WordItem w = new WordItem();
+                        w.Word = p.Key;
+                        w.Score = p.Value;
+                        response.Player2.WordsPlayed.Add(p.Key);
+                    }
+
+                    
                 }
             }
             return response;
