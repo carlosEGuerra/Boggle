@@ -341,14 +341,12 @@ namespace Boggle
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
                     //PLAYER 1'S WORDS
-                    int i = 0;
                     foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
                     {
-
+   
                         WordItem w = new WordItem();
                         w.Word = p.Key;
                         w.Score = p.Value;
-
                         response.Player1.WordsPlayed.Add(w);
                     }
                     response.Player2.Nickname = users[games[gameID].Player2].Nickname;
@@ -383,7 +381,8 @@ namespace Boggle
                 {
                     response.GameState = "active";
                     response.TimeLeft = TimeLeft(gameID);
-
+                    response.Player1 = new player();
+                    response.Player2 = new player();
                     response.Player1.Nickname = users[games[gameID].Player1].Nickname;
                     response.Player1.Score = users[games[gameID].Player1].CurrentTotalScore;
 

@@ -98,11 +98,11 @@ namespace Boggle
         public int Score { get; set; }
 
         [DataMember(EmitDefaultValue = false)]
-        public List<WordItem>WordsPlayed = new List<WordItem>();
+        public List<WordItem> WordsPlayed = new List<WordItem>();
         //public List<List<object>> WordsPlayed = new List<List<object>>();
         //public List<WordItem> WordsPlayed = new List<WordItem>();
         //public Dictionary<string, WordItem> WordsPlayed = new Dictionary<string, WordItem>();
-       
+
     }
 
     public class User
@@ -199,11 +199,6 @@ namespace Boggle
     /// </summary>
     public class Words
     {
-        /// <summary>
-        /// Id of the word??
-        /// </summary>
-   //     public int Id { get; set; }
-
         /// <summary>
         /// String reprsentation of the word played.
         /// </summary>
