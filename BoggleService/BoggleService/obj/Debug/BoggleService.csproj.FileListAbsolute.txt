@@ -126,3 +126,35 @@ C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick4\BoggleService\BoggleService\b
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick4\BoggleService\BoggleService\bin\System.Net.Http.Formatting.xml
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick4\BoggleService\BoggleService\bin\System.Web.Http.xml
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick4\BoggleService\BoggleService\bin\System.Web.Http.WebHost.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\BoggleService.dll.config
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\BoggleService.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\BoggleService.pdb
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.Agent.Intercept.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.DependencyCollector.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.PerfCounterCollector.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.ServerTelemetryChannel.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.Web.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.WindowsServer.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.ApplicationInsights.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.Azure.AppService.ApiApps.Service.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Newtonsoft.Json.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Swashbuckle.Core.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\System.Net.Http.Formatting.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\System.Web.Http.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\System.Web.Http.WebHost.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\WebActivatorEx.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.DependencyCollector.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.ServerTelemetryChannel.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.Web.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.AI.WindowsServer.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Microsoft.ApplicationInsights.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Newtonsoft.Json.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\System.IdentityModel.Tokens.Jwt.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\System.Net.Http.Formatting.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\System.Web.Http.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\System.Web.Http.WebHost.xml
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\obj\Debug\BoggleService.csprojResolveAssemblyReference.cache
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\obj\Debug\BoggleService.dll
+C:\Users\brigance\Source\Repos\GunsNLipstick\BoggleService\BoggleService\obj\Debug\BoggleService.pdb
