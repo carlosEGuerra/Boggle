@@ -155,7 +155,7 @@ namespace Boggle
             if (userData.TimeLimit < 5 || userData.TimeLimit > 120)
             {
                 SetStatus(Forbidden);
-                return null;
+                return null;    
             }
             else
             {
