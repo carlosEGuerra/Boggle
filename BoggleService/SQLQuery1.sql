@@ -1,0 +1,1 @@
+﻿INSERT into Users (GivenTimeLimit) SELECT @GivenTimeLimit WHERE UserToken = @UserToken

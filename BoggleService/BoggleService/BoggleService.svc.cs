@@ -188,8 +188,11 @@ namespace Boggle
                                     }
                                 }
                             }
-                            //If the user is already a player in a pending game.
-                            string cmd = "SELECT UserToken FROM Users WHERE UserToken = @UserToken";
+
+                    /*      
+
+                            //If the user is already a player in a pending game. //CARLOS 
+                            string cmd = "SELECT UserToken FROM Users WHERE UserToken = @UserToken AND HasPendingGame = false";
                             using (SqlCommand command = new SqlCommand(cmd, conn, trans))
                             {
                                 command.Parameters.AddWithValue("@UserToken", userData.UserToken);
@@ -204,6 +207,10 @@ namespace Boggle
                                     }
                                 }
                             }
+
+                            /*
+
+                            /**************** NO MORE BAD STATUSES *************************************/
                             //Store the dictionry only the first time this method is called.
                             if (!dictionaryLoaded)
                             {
@@ -219,7 +226,7 @@ namespace Boggle
                             }
 
                             //Take in the time limit given by the current player.
-                            cmd = "INSERT into Users (GivenTimeLimit) values(@GivenTimeLimit) WHERE UserToken = @UserToken";
+                           string cmd = "INSERT into Users (GivenTimeLimit) SELECT @GivenTimeLimit WHERE UserToken = @UserToken";
                             using (SqlCommand command = new SqlCommand(cmd, conn, trans))
                             {
                                 command.Parameters.AddWithValue("@GivenTimeLimit", userData.TimeLimit);
@@ -234,6 +241,54 @@ namespace Boggle
                                         trans.Commit();
                                         return null;
                                     }
+                                }
+                            }
+
+                            JoinGameResponse response = new JoinGameResponse();
+                            response.GameID = gameID.ToString();
+
+                            //If the game does not have the current game ID in it, 
+                            //add the game id to games
+                            cmd = "INSERT into Games (GameID) SELECT @gameID WHERE Player1 is not null AND Player2 is not null";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@gameID", gameID);
+                                command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    //Add player 1 if there is a game without one.
+                                    if (reader.HasRows)
+                                    {
+                                        cmd = "INSERT into Games (Player1) SELECT @UserToken WHERE Player1 is null AND Player2 is null";
+                                        using (SqlCommand command2 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command2.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                            SetStatus(Accepted);
+                                        }
+                                    }
+
+                                    //Add player 2 if we have existing game
+                                    if (!reader.HasRows)
+                                    {
+                                        //Add player 2.
+                                        cmd = "INSERT into Games (Player2) SELECT @UserToken WHERE Player1 is not null AND Player2 is null";
+                                        using (SqlCommand command3 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command3.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                            SetStatus(Created);
+                                        }
+
+                                        //Now calculate a time limit for the game.
+                                        cmd = "INSERT into Games (Player2) SELECT @UserToken WHERE Player1 is not null AND Player2 is null";
+                                        using (SqlCommand command4 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command4.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                            SetStatus(Created);
+                                        }
+
+                                    }
+                                    
                                 }
                             }
                         }
