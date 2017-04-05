@@ -14,7 +14,7 @@ namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
-        //ALMOST DONE
+        //Last try.
         //Connection string for the DB
         private static string BoggleDB;
         /// <summary>
