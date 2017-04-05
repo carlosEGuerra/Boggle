@@ -159,84 +159,152 @@ namespace Boggle
             }
             else
             {
-                using (SqlConnection conn = new SqlConnection(BoggleDB))
+                if (userData.TimeLimit < 5 || userData.TimeLimit > 120)
                 {
-                    conn.Open();
-                    using (SqlTransaction trans = conn.BeginTransaction())
+                    SetStatus(Forbidden);
+                    return null;
+                }
+                else
+                {
+                    using (SqlConnection conn = new SqlConnection(BoggleDB))
                     {
-                        using (SqlCommand command = new SqlCommand("select UserID from Users where UserID = @UserID", conn, trans))
+                        conn.Open();
+                        using (SqlTransaction trans = conn.BeginTransaction())
                         {
-                            command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                            using (SqlCommand command = new SqlCommand("select UserToken from Users where UserToken = @UserToken", conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@UserToken", userData.UserToken);
 
+                                // This executes a query (i.e. a select statement).  The result is an
+                                // SqlDataReader that you can use to iterate through the rows in the response.
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    //If we don't have a valid UserToken
+                                    if (!reader.HasRows)
+                                    {
+                                        SetStatus(Forbidden);
+                                        trans.Commit();
+                                        return null;
+                                    }
+                                }
+                            }
+                            //If the user is already a player in a pending game.
+                            string cmd = "SELECT UserToken FROM Users WHERE UserToken = @UserToken";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    //If the user already had a pending game, no result were HasPendingGame was false.
+                                    if (!reader.HasRows)
+                                    {
+                                        SetStatus(Conflict);
+                                        trans.Commit();
+                                        return null;
+                                    }
+                                }
+                            }
+                            //Store the dictionry only the first time this method is called.
+                            if (!dictionaryLoaded)
+                            {
+                                string line;
+                                using (StreamReader file = new System.IO.StreamReader(AppDomain.CurrentDomain.BaseDirectory + "dictionary.txt"))
+                                {
+                                    while ((line = file.ReadLine()) != null)
+                                    {
+                                        dictionary.Add(line);
+                                    }
+                                }
+                                dictionaryLoaded = true;
+                            }
+
+                            //Take in the time limit given by the current player.
+                            cmd = "INSERT into Users (GivenTimeLimit) values(@GivenTimeLimit) WHERE UserToken = @UserToken";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@GivenTimeLimit", userData.TimeLimit);
+                                command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+
+                                    if (!reader.HasRows)
+                                    {
+                                        SetStatus(Forbidden);
+                                        trans.Commit();
+                                        return null;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-            }
-            return null;
-            /*
-            if (!users.ContainsKey(userData.UserToken) || userData.TimeLimit < 5 || userData.TimeLimit > 120)//If we don't have the current user in our database
-            {
-                SetStatus(Forbidden);
                 return null;
-            }
-
-            //Otherwise, if UserToken is already a player in the pending game, responds with status 409(Conflict).
-            if (users[userData.UserToken].HasPendingGame)
-            {
-                SetStatus(Conflict);
-                return null;
-            }
-
-            //Store the dictionry only the first time this method is called.
-            if (!dictionaryLoaded)
-            {
-                string line;
-                using (StreamReader file = new System.IO.StreamReader(AppDomain.CurrentDomain.BaseDirectory + "dictionary.txt"))
+                /*
+                if (!users.ContainsKey(userData.UserToken) || userData.TimeLimit < 5 || userData.TimeLimit > 120)//If we don't have the current user in our database
                 {
-                    while ((line = file.ReadLine()) != null)
-                    {
-                        dictionary.Add(line);
-                    }
+                    SetStatus(Forbidden);
+                    return null;
                 }
-                dictionaryLoaded = true;
+
+                //Otherwise, if UserToken is already a player in the pending game, responds with status 409(Conflict).
+                if (users[userData.UserToken].HasPendingGame)
+                {
+                    SetStatus(Conflict);
+                    return null;
+                }
+
+                //Store the dictionry only the first time this method is called.
+                if (!dictionaryLoaded)
+                {
+                    string line;
+                    using (StreamReader file = new System.IO.StreamReader(AppDomain.CurrentDomain.BaseDirectory + "dictionary.txt"))
+                    {
+                        while ((line = file.ReadLine()) != null)
+                        {
+                            dictionary.Add(line);
+                        }
+                    }
+                    dictionaryLoaded = true;
+                }
+
+                //Take in the time limit given by the current player.
+                users[userData.UserToken].GivenTimeLimit = userData.TimeLimit;
+                users[userData.UserToken].HasPendingGame = true; //Player will now be put into a pending game no matter what.
+
+                JoinGameResponse response = new JoinGameResponse();
+                response.GameID = gameID.ToString();
+
+                //If the game does not have the current game ID in it, 
+                //add the game id to games and the new player to the game as player 1.
+                if (!games.ContainsKey(gameID))
+                {
+                    games.Add(gameID, new Game());
+                    games[gameID].GameID = gameID; //Store the current gameID to our database
+                    games[gameID].GameStatus = "pending";
+                    games[gameID].Player1 = userData.UserToken;
+                    users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
+                    SetStatus(Accepted); //For the first player only.
+                }
+                //If the current game ID exists, it only has 1 player; add the user as a second player.
+                else if (games.ContainsKey(gameID))
+                {
+                    int p1TimeLimit = users[games[gameID].Player1].GivenTimeLimit;//The time limit given by player 1.
+                    games[gameID].Player2 = userData.UserToken;//Set player 2 to be the second player to the existing game.
+                    games[gameID].TimeLimit = (userData.TimeLimit + p1TimeLimit) / 2; //The average time limit given by the two players.
+                    users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
+                    games[gameID].GameStatus = "active"; //The game is now active.
+                    games[gameID].BogBoard = new BoggleBoard();//Actual board with all methods.
+                    games[gameID].Board = games[gameID].BogBoard.ToString();//sTRING 
+                    SetStatus(Created);//For the second player only.
+                    games[gameID].StartTime = DateTime.Now;
+                    gameID++; //Create a new empty game.
+                }
+
+                return response;
+                */
+
             }
-
-            //Take in the time limit given by the current player.
-            users[userData.UserToken].GivenTimeLimit = userData.TimeLimit;
-            users[userData.UserToken].HasPendingGame = true; //Player will now be put into a pending game no matter what.
-
-            JoinGameResponse response = new JoinGameResponse();
-            response.GameID = gameID.ToString();
-
-            //If the game does not have the current game ID in it, 
-            //add the game id to games and the new player to the game as player 1.
-            if (!games.ContainsKey(gameID))
-            {
-                games.Add(gameID, new Game());
-                games[gameID].GameID = gameID; //Store the current gameID to our database
-                games[gameID].GameStatus = "pending";
-                games[gameID].Player1 = userData.UserToken;
-                users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
-                SetStatus(Accepted); //For the first player only.
-            }
-            //If the current game ID exists, it only has 1 player; add the user as a second player.
-            else if (games.ContainsKey(gameID))
-            {
-                int p1TimeLimit = users[games[gameID].Player1].GivenTimeLimit;//The time limit given by player 1.
-                games[gameID].Player2 = userData.UserToken;//Set player 2 to be the second player to the existing game.
-                games[gameID].TimeLimit = (userData.TimeLimit + p1TimeLimit) / 2; //The average time limit given by the two players.
-                users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
-                games[gameID].GameStatus = "active"; //The game is now active.
-                games[gameID].BogBoard = new BoggleBoard();//Actual board with all methods.
-                games[gameID].Board = games[gameID].BogBoard.ToString();//sTRING 
-                SetStatus(Created);//For the second player only.
-                games[gameID].StartTime = DateTime.Now;
-                gameID++; //Create a new empty game.
-            }
-
-            return response;
-            */
-
         }
 
         /// <summary>
