@@ -1,16 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using System.Net;
-using System.Collections;
 using System.ServiceModel.Web;
 using static System.Net.HttpStatusCode;
+using System.Configuration;
+using System.Data.SqlClient;
+using Newtonsoft.Json;
+using System.Dynamic;
+using System.Net.Http;
 
 namespace Boggle
 {
     public class BoggleService : IBoggleService
     {
+        //Connection string for the DB
+        private static string BoggleDB;
+        /// <summary>
+        /// Saves the connection string 
+        /// </summary>
+        static BoggleService()
+        {
+            BoggleDB = ConfigurationManager.ConnectionStrings["BoggleDB"].ConnectionString;
+        }
+
         // This amounts to a "poor man's" database.  The state of the service is
         // maintained in users and items.  The sync object is used
         // for synchronization (because multiple threads can be running
@@ -19,11 +32,11 @@ namespace Boggle
         // a proper database.
         private readonly static Dictionary<int, Game> games = new Dictionary<int, Game>();    //mapped via gameID
         private readonly static Dictionary<String, User> users = new Dictionary<String, User>();  //maped via userID
-        private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();  //mapped via userID
         private static readonly object sync = new object();
         private static int gameID = 0;
         private HashSet<string> dictionary = new HashSet<string>();
         private bool dictionaryLoaded = false;
+
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when 
         /// an http response is sent.
@@ -89,23 +102,38 @@ namespace Boggle
         /// <returns> string of the userToken </returns>
         public CreateUserResponse CreateUser(CreateUserData userData)
         {
-            lock (sync)
+            //Checks the data the user entered for null names, names with length of 0, or an empty nickname
+            if (userData.Nickname == null || userData.Nickname.Trim().Length == 0 || userData.Nickname.Trim() == null)
             {
-                if (userData.Nickname == null || userData.Nickname.Trim().Length == 0)
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            using (SqlConnection conn = new SqlConnection(BoggleDB))
+            {
+                conn.Open();
+                using (SqlTransaction trans = conn.BeginTransaction())
                 {
-                    SetStatus(Forbidden);
-                    return null;
+                    using (SqlCommand command = new SqlCommand("insert into Users (UserToken, Nickname) values(@UserToken, @Nickname)", conn, trans))
+                    {
+                        //Generates the User ID
+                        string userToken = Guid.NewGuid().ToString();
+
+                        //Replaces the UserID and Nickname from the SQL command
+                        command.Parameters.AddWithValue("@UserToken", userToken);
+                        command.Parameters.AddWithValue("@Nickname", userData.Nickname);
+
+                        //creates the object that will need to be changed into a Json Object
+                        CreateUserResponse Response = new CreateUserResponse();
+                        Response.UserToken = userToken;
+
+                        command.ExecuteNonQuery();
+                        SetStatus(Created);
+
+                        trans.Commit();
+                        return Response;
+                    }
                 }
-
-                string userToken = Guid.NewGuid().ToString(); //Generate our userToken
-                CreateUserResponse response = new CreateUserResponse();
-                response.UserToken = userToken;
-                users.Add(userToken, new User()); //Add it to our database; set the fields of our own User class.
-                users[userToken].UserId = userToken;
-                users[userToken].Nickname = userData.Nickname.Trim();
-                SetStatus(Created);
-
-                return response;
             }
         }
 
@@ -124,71 +152,91 @@ namespace Boggle
         /// <returns> an integer GameID </returns>
         public JoinGameResponse JoinGame(JoinGameData userData)
         {
-            lock (sync)
+            if (userData.TimeLimit < 5 || userData.TimeLimit > 120)
             {
-
-                if (!users.ContainsKey(userData.UserToken) || userData.TimeLimit < 5 || userData.TimeLimit > 120)//If we don't have the current user in our database
+                SetStatus(Forbidden);
+                return null;
+            }
+            else
+            {
+                using (SqlConnection conn = new SqlConnection(BoggleDB))
                 {
-                    SetStatus(Forbidden);
-                    return null;
-                }
-
-                //Otherwise, if UserToken is already a player in the pending game, responds with status 409(Conflict).
-                if (users[userData.UserToken].HasPendingGame)
-                {
-                    SetStatus(Conflict);
-                    return null;
-                }
-
-                //Store the dictionry only the first time this method is called.
-                if (!dictionaryLoaded)
-                {
-                    string line;
-                    using (StreamReader file = new System.IO.StreamReader(AppDomain.CurrentDomain.BaseDirectory + "dictionary.txt"))
+                    conn.Open();
+                    using (SqlTransaction trans = conn.BeginTransaction())
                     {
-                        while ((line = file.ReadLine()) != null)
+                        using (SqlCommand command = new SqlCommand("select UserID from Users where UserID = @UserID", conn, trans))
                         {
-                            dictionary.Add(line);
+                            command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+
                         }
                     }
-                    dictionaryLoaded = true;
                 }
-
-                //Take in the time limit given by the current player.
-                users[userData.UserToken].GivenTimeLimit = userData.TimeLimit;
-                users[userData.UserToken].HasPendingGame = true; //Player will now be put into a pending game no matter what.
-
-                JoinGameResponse response = new JoinGameResponse();
-                response.GameID = gameID.ToString();
-
-                //If the game does not have the current game ID in it, 
-                //add the game id to games and the new player to the game as player 1.
-                if (!games.ContainsKey(gameID))
-                {
-                    games.Add(gameID, new Game());
-                    games[gameID].GameID = gameID; //Store the current gameID to our database
-                    games[gameID].GameStatus = "pending";
-                    games[gameID].Player1 = userData.UserToken;
-                    users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
-                    SetStatus(Accepted); //For the first player only.
-                }
-                //If the current game ID exists, it only has 1 player; add the user as a second player.
-                else if (games.ContainsKey(gameID))
-                {
-                    int p1TimeLimit = users[games[gameID].Player1].GivenTimeLimit;//The time limit given by player 1.
-                    games[gameID].Player2 = userData.UserToken;//Set player 2 to be the second player to the existing game.
-                    games[gameID].TimeLimit = (userData.TimeLimit + p1TimeLimit) / 2; //The average time limit given by the two players.
-                    users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
-                    games[gameID].GameStatus = "active"; //The game is now active.
-                    games[gameID].BogBoard = new BoggleBoard();//Actual board with all methods.
-                    games[gameID].Board = games[gameID].BogBoard.ToString();//sTRING 
-                    SetStatus(Created);//For the second player only.
-                    games[gameID].StartTime = DateTime.Now;
-                    gameID++; //Create a new empty game.
-                }
-
-                return response;
             }
+            return null;
+            /*
+            if (!users.ContainsKey(userData.UserToken) || userData.TimeLimit < 5 || userData.TimeLimit > 120)//If we don't have the current user in our database
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            //Otherwise, if UserToken is already a player in the pending game, responds with status 409(Conflict).
+            if (users[userData.UserToken].HasPendingGame)
+            {
+                SetStatus(Conflict);
+                return null;
+            }
+
+            //Store the dictionry only the first time this method is called.
+            if (!dictionaryLoaded)
+            {
+                string line;
+                using (StreamReader file = new System.IO.StreamReader(AppDomain.CurrentDomain.BaseDirectory + "dictionary.txt"))
+                {
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        dictionary.Add(line);
+                    }
+                }
+                dictionaryLoaded = true;
+            }
+
+            //Take in the time limit given by the current player.
+            users[userData.UserToken].GivenTimeLimit = userData.TimeLimit;
+            users[userData.UserToken].HasPendingGame = true; //Player will now be put into a pending game no matter what.
+
+            JoinGameResponse response = new JoinGameResponse();
+            response.GameID = gameID.ToString();
+
+            //If the game does not have the current game ID in it, 
+            //add the game id to games and the new player to the game as player 1.
+            if (!games.ContainsKey(gameID))
+            {
+                games.Add(gameID, new Game());
+                games[gameID].GameID = gameID; //Store the current gameID to our database
+                games[gameID].GameStatus = "pending";
+                games[gameID].Player1 = userData.UserToken;
+                users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
+                SetStatus(Accepted); //For the first player only.
+            }
+            //If the current game ID exists, it only has 1 player; add the user as a second player.
+            else if (games.ContainsKey(gameID))
+            {
+                int p1TimeLimit = users[games[gameID].Player1].GivenTimeLimit;//The time limit given by player 1.
+                games[gameID].Player2 = userData.UserToken;//Set player 2 to be the second player to the existing game.
+                games[gameID].TimeLimit = (userData.TimeLimit + p1TimeLimit) / 2; //The average time limit given by the two players.
+                users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
+                games[gameID].GameStatus = "active"; //The game is now active.
+                games[gameID].BogBoard = new BoggleBoard();//Actual board with all methods.
+                games[gameID].Board = games[gameID].BogBoard.ToString();//sTRING 
+                SetStatus(Created);//For the second player only.
+                games[gameID].StartTime = DateTime.Now;
+                gameID++; //Create a new empty game.
+            }
+
+            return response;
+            */
+
         }
 
         /// <summary>
@@ -343,7 +391,7 @@ namespace Boggle
                     //PLAYER 1'S WORDS
                     foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
                     {
-   
+
                         WordItem w = new WordItem();
                         w.Word = p.Key;
                         w.Score = p.Value;
@@ -419,7 +467,7 @@ namespace Boggle
                         response.Player2.WordsPlayed.Add(w);
                     }
 
-                    
+
                 }
             }
             return response;
