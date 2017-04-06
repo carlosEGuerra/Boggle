@@ -198,7 +198,7 @@ namespace Boggle
 
                         //If the game with the GameID exists then it will run this
 
-                        using (SqlCommand CreateGameCommand = new SqlCommand("insert into Games (Player1, Board, TimeLimit, GameState) values(@Player1, @Board, @TimeLimit, @GameState)", conn, trans))
+                        using (SqlCommand CreateGameCommand = new SqlCommand("insert into Games (Player1, Board, TimeLimit, GameState) output inserted.GameID values(@Player1, @Board, @TimeLimit, @GameState)", conn, trans))
                         {
                             BoggleBoard board = new BoggleBoard();
                             CreateGameCommand.Parameters.AddWithValue("@Player1", userData.UserToken);
@@ -206,13 +206,16 @@ namespace Boggle
                             CreateGameCommand.Parameters.AddWithValue("@TimeLimit", userData.TimeLimit);
                             CreateGameCommand.Parameters.AddWithValue("@GameState", 0);
 
-                            JoinGameResponse joinGameData = new JoinGameResponse();
+                            string GameID = CreateGameCommand.ExecuteScalar().ToString();
+
+                            JoinGameResponse response= new JoinGameResponse();
+                            response.GameID = GameID;
 
                             CreateGameCommand.ExecuteNonQuery();
                             SetStatus(Created);
 
                             trans.Commit();
-                            return joinGameData;
+                            return response;
                         }
                     
                         /*
