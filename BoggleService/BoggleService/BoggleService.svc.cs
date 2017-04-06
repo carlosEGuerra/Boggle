@@ -285,26 +285,55 @@ namespace Boggle
                                         int providedTimeLimit = 0;
                                         int intTimeLimit;
                                         cmd = "SELECT * from Games(GameID)";
-                                         using (SqlCommand command3 = new SqlCommand(cmd, conn, trans))
+                                        using (SqlCommand command3 = new SqlCommand(cmd, conn, trans))
                                         {
                                             using (SqlDataReader reader2 = command3.ExecuteReader())
                                             {
-                                                while(reader2.Read())
+                                                while (reader2.Read())
                                                 {
                                                     string ourTimeLimit = (reader2["TimeLimit"].ToString());
                                                     int.TryParse(ourTimeLimit, out intTimeLimit);
                                                     providedTimeLimit = (intTimeLimit + userData.TimeLimit) / 2;
-                 
+
                                                 }
                                             }
                                         }
-                                            //Set the time limit for the game.
-                                            cmd = "INSERT into Games (TimeLimit) SELECT @TimeLimit WHERE Player1 is not null AND Player2 is null";
+                                        //Set the time limit for the game.
+                                        cmd = "INSERT into Games (TimeLimit) SELECT @TimeLimit WHERE Player1 is not null AND Player2 is null";
                                         using (SqlCommand command4 = new SqlCommand(cmd, conn, trans))
                                         {
                                             command4.Parameters.AddWithValue("@TimeLimit", providedTimeLimit);
-         
+
                                         }
+
+                                        //Set the GameStatus
+                                        cmd = "INSERT into Games (GameStatus) SELECT @gameStatus WHERE GameID = @gameID";
+                                        using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command5.Parameters.AddWithValue("@gameStatus", "active");
+                                            command5.Parameters.AddWithValue("@gameID", gameID);
+                                        }
+
+                                        //Players added. Create the new boggle board.
+                                        BoggleBoard currentBoard = new BoggleBoard();
+                                        string bogBoardString = currentBoard.ToString();
+
+                                        cmd = "INSERT into Games (Board) SELECT @board WHERE Player2 = @UserToken";
+                                        using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command5.Parameters.AddWithValue("@board", "bogBoardString");
+                                            command5.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                        }
+
+                                        //games[gameID].StartTime = DateTime.Now;
+                                        cmd = "INSERT into Games (StartTime) SELECT @StartTime WHERE GameID = @gameID";
+                                        using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command5.Parameters.AddWithValue("@", "bogBoardString");
+                                            command5.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                            gameID++;
+                                        }
+
                                     }
                                 }
                             }
