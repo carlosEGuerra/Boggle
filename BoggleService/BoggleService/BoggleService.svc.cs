@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using Newtonsoft.Json;
 using System.Dynamic;
 using System.Net.Http;
+using System.Diagnostics;
 
 namespace Boggle
 {
@@ -34,11 +35,11 @@ namespace Boggle
         private readonly static Dictionary<int, Game> games = new Dictionary<int, Game>();    //mapped via gameID
         private readonly static Dictionary<String, User> users = new Dictionary<String, User>();  //maped via userID
         private static readonly object sync = new object();
-        private HashSet<string> dictionary = new HashSet<string>();
-        private bool dictionaryLoaded = false;
-        private string ourGameStatus = null;
-        private int PendingTimeLimit = 0;
-
+        private static HashSet<string> dictionary = new HashSet<string>();
+        private static bool dictionaryLoaded = false;
+        private static string ourGameStatus = null;
+        private static int PendingTimeLimit = 0;
+        private static string lastGameID = "";
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when 
         /// an http response is sent.
@@ -104,6 +105,19 @@ namespace Boggle
         /// <returns> string of the userToken </returns>
         public CreateUserResponse CreateUser(CreateUserData userData)
         {
+            if (!dictionaryLoaded)
+            {
+                string line;
+                using (StreamReader file = new System.IO.StreamReader(AppDomain.CurrentDomain.BaseDirectory + "dictionary.txt"))
+                {
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        dictionary.Add(line);
+                    }
+                }
+                dictionaryLoaded = true;
+            }
+
             //Checks the data the user entered for null names, names with length of 0, or an empty nickname
             if (userData.Nickname == null || userData.Nickname.Trim().Length == 0 || userData.Nickname.Trim() == null)
             {
@@ -154,6 +168,8 @@ namespace Boggle
         /// <returns> an integer GameID </returns>
         public JoinGameResponse JoinGame(JoinGameData userData)
         {
+            //Console.WriteLine("Running Join Game");
+            //Debug.WriteLine("Running bitches!");
             //Checks the time limits whether they are correct
             if (userData.TimeLimit < 5 || userData.TimeLimit > 120)
             {
@@ -163,11 +179,12 @@ namespace Boggle
             //if the time limits are correct it will move into this else statement
             else
             {
-                using (SqlConnection conn = new SqlConnection(BoggleDB))
+                using (SqlConnection conn = new SqlConnection(BoggleDB)) //REUSE ME
                 {
                     conn.Open();
                     using (SqlTransaction trans = conn.BeginTransaction())
                     {
+                        //checks to see if the user token exists in the users table
                         using (SqlCommand command = new SqlCommand("select UserToken from Users where UserToken = @UserToken", conn, trans))
                         {
                             command.Parameters.AddWithValue("@UserToken", userData.UserToken);
@@ -185,18 +202,7 @@ namespace Boggle
                                 }
                             }
                         }
-                        if (!dictionaryLoaded)
-                        {
-                            string line;
-                            using (StreamReader file = new System.IO.StreamReader(AppDomain.CurrentDomain.BaseDirectory + "dictionary.txt"))
-                            {
-                                while ((line = file.ReadLine()) != null)
-                                {
-                                    dictionary.Add(line);
-                                }
-                            }
-                            dictionaryLoaded = true;
-                        }
+                       
 
                         //First we need to see if the player is already in a game.
                         string cmd = "select * from Games where Player1 = @UserToken";
@@ -210,7 +216,6 @@ namespace Boggle
                                 if (reader.HasRows)
                                 {
                                     SetStatus(Conflict);
-                                    trans.Commit();
                                     return null;
                                 }
                             }
@@ -241,16 +246,20 @@ namespace Boggle
                         {
                             //If we don't have a player 1 in the game.
                             //cmd = "update Games(Player1, TimeLimit, GameState) output inserted.GameID values(@Player1, @TimeLimit, @GameState) where Player1 = @isNull";   //Incorrect syntax near the keyword 'where'.
-                            cmd = "insert into Games (Player1, TimeLimit, GameState) values(@Player1, @TimeLimit, @GameState)";
+                            cmd = "insert into Games (Player1, TimeLimit, GameState, Board) output inserted.GameID values(@Player1, @TimeLimit, @GameState, @Board)";
                             using (SqlCommand CreateGameCommand = new SqlCommand(cmd, conn, trans))
                             {
+                                //Console.WriteLine("Addihg player 1");
+                                BoggleBoard board = new BoggleBoard();
+                                CreateGameCommand.Parameters.AddWithValue("@Board", board.ToString());
                                 CreateGameCommand.Parameters.AddWithValue("@Player1", userData.UserToken);
                                 CreateGameCommand.Parameters.AddWithValue("@TimeLimit", userData.TimeLimit);
                                 CreateGameCommand.Parameters.AddWithValue("@GameState", "pending");
                                 ourGameStatus = "pending";
                                 PendingTimeLimit = userData.TimeLimit;
-                                string GameID = CreateGameCommand.ExecuteScalar().ToString();
 
+                                string GameID = CreateGameCommand.ExecuteScalar().ToString();
+                                lastGameID = GameID;
                                 response.GameID = GameID;
 
                                 CreateGameCommand.ExecuteNonQuery();
@@ -267,144 +276,29 @@ namespace Boggle
 
                         if (ourGameStatus.Equals("pending"))
                         {
-
                             //If we have a player 1 but not a player 2.
                             //cmd = "insert into Games(Player2, Board, TimeLimit, GameState, StartTime) output inserted.GameID values(@Player2, @Board, @TimeLimit, @GameState, @StartTime) where Player1 != @isNull";
-                            cmd = "update Games set Player2=@Player2, TimeLimit=@TimeLimit, GameState=@GameState, StartTime=@StartTime";
-                            using (SqlCommand CreateGameCommand = new SqlCommand(cmd, conn, trans))
+                            cmd = "update Games set Player2=@Player2, TimeLimit=@TimeLimit, GameState=@GameState, StartTime=@StartTime where GameID =@LastGameID";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
                             {
+                                //Console.WriteLine("Addihg player 2");
                                 BoggleBoard board = new BoggleBoard();
-                                CreateGameCommand.Parameters.AddWithValue("@isNull", null);
-                                CreateGameCommand.Parameters.AddWithValue("@Player2", userData.UserToken);
-                                CreateGameCommand.Parameters.AddWithValue("@Board", board.ToString());
-                                CreateGameCommand.Parameters.AddWithValue("@TimeLimit", (PendingTimeLimit + userData.TimeLimit) / 2);
-                                CreateGameCommand.Parameters.AddWithValue("@GameState", "active");
-                                CreateGameCommand.Parameters.AddWithValue("@StartTime", DateTime.Now);
+                                command.Parameters.AddWithValue("@LastGameID", lastGameID);
+                                command.Parameters.AddWithValue("@Player2", userData.UserToken);
+                                command.Parameters.AddWithValue("@Board", board.ToString());
+                                command.Parameters.AddWithValue("@TimeLimit", (PendingTimeLimit + userData.TimeLimit) / 2);
+                                command.Parameters.AddWithValue("@GameState", "active");
+                                command.Parameters.AddWithValue("@StartTime", DateTime.Now);
                                 SetStatus(Created);//For the second player only;
 
-                                string GameID = CreateGameCommand.ExecuteScalar().ToString();
                                 ourGameStatus = "active";
-                                response.GameID = GameID;
+                                response.GameID = lastGameID;
 
-                                CreateGameCommand.ExecuteNonQuery();
+                                command.ExecuteNonQuery();
                                 trans.Commit();
                                 return response;
                             }
                         }
-
-                        //If the current user being added is player 2.
-
-                        /*
-                        //Take in the time limit given by the current player.
-                        string cmd = "INSERT into Users (GivenTimeLimit) SELECT @GivenTimeLimit WHERE UserToken = @UserToken";
-                        using (SqlCommand command = new SqlCommand(cmd, conn, trans))
-                        {
-                            command.Parameters.AddWithValue("@GivenTimeLimit", userData.TimeLimit);
-                            command.Parameters.AddWithValue("@UserToken", userData.UserToken);
-
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
-
-                                if (!reader.HasRows)
-                                {
-                                    SetStatus(Forbidden);
-                                    trans.Commit();
-                                    return null;
-                                }
-                            }
-                        }
-                        */
-
-                        /*
-                        JoinGameResponse response = new JoinGameResponse();
-                        response.GameID = gameID.ToString();
-                        //If the game does not have the current game ID in it, 
-                        //add the game id to games
-                        string cmd = "INSERT into Games (GameID) SELECT @gameID WHERE Player1 is not null AND Player2 is not null";
-                        using (SqlCommand command = new SqlCommand(cmd, conn, trans))
-                        {
-                            command.Parameters.AddWithValue("@gameID", gameID);
-                            command.Parameters.AddWithValue("@UserToken", userData.UserToken);
-
-                            using (SqlDataReader reader = command.ExecuteReader())
-                            {
-                                //Add player 1 if there is a game without one.
-                                if (reader.HasRows)
-                                {
-                                    cmd = "INSERT into Games (Player1) SELECT @UserToken WHERE Player1 is null AND Player2 is null";
-                                    using (SqlCommand command2 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command2.Parameters.AddWithValue("@UserToken", userData.UserToken);
-                                        SetStatus(Accepted);
-                                    }
-                                }
-
-                                //Add player 2 if we have existing game
-                                if (!reader.HasRows)
-                                {
-                                    //Add player 2.
-                                    cmd = "INSERT into Games (Player2) SELECT @UserToken WHERE Player1 is not null AND Player2 is null";
-                                    using (SqlCommand command3 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command3.Parameters.AddWithValue("@UserToken", userData.UserToken);
-                                        SetStatus(Created);
-                                    }
-
-
-                                    //Now calculate a time limit for the game.
-                                    int providedTimeLimit = 0;
-                                    int intTimeLimit;
-                                    cmd = "SELECT * from Games(GameID)";
-                                    using (SqlCommand command3 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        using (SqlDataReader reader2 = command3.ExecuteReader())
-                                        {
-                                            while (reader2.Read())
-                                            {
-                                                string ourTimeLimit = (reader2["TimeLimit"].ToString());
-                                                int.TryParse(ourTimeLimit, out intTimeLimit);
-                                                providedTimeLimit = (intTimeLimit + userData.TimeLimit) / 2;
-
-                                            }
-                                        }
-                                    }
-                                    //Set the time limit for the game.
-                                    cmd = "INSERT into Games (TimeLimit) SELECT @TimeLimit WHERE Player1 is not null AND Player2 is null";
-                                    using (SqlCommand command4 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command4.Parameters.AddWithValue("@TimeLimit", providedTimeLimit);
-                                    }
-
-                                    //Set the GameStatus
-                                    cmd = "INSERT into Games (GameStatus) SELECT @gameStatus WHERE GameID = @gameID";
-                                    using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command5.Parameters.AddWithValue("@gameStatus", "active");
-                                        command5.Parameters.AddWithValue("@gameID", gameID);
-                                    }
-
-                                    //Players added. Create the new boggle board.
-                                    BoggleBoard currentBoard = new BoggleBoard();
-                                    string bogBoardString = currentBoard.ToString();
-
-                                    cmd = "INSERT into Games (Board) SELECT @board WHERE Player2 = @UserToken";
-                                    using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command5.Parameters.AddWithValue("@board", "bogBoardString");
-                                        command5.Parameters.AddWithValue("@UserToken", userData.UserToken);
-                                    }
-                                    //games[gameID].StartTime = DateTime.Now;
-                                    cmd = "INSERT into Games (StartTime) SELECT @StartTime WHERE GameID = @gameID";
-                                    using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command5.Parameters.AddWithValue("@", "bogBoardString");
-                                        command5.Parameters.AddWithValue("@UserToken", userData.UserToken);
-                                        gameID++;
-                                    }
-                                }
-                            }
-                        }
-                        */
                     }
                 }
                 return null;
@@ -420,30 +314,43 @@ namespace Boggle
         /// <param name="user"></param>
         public void CancelJoinRequest(CancelJoinData userData)
         {
-            /*
-            lock (sync)
+            if ((userData.UserToken == null))
             {
-                if (userData.UserToken == null || (games[gameID].Player1 != userData.UserToken && !users[userData.UserToken].HasPendingGame))
+                SetStatus(Forbidden);
+                return;
+            }
+
+            using (SqlConnection conn = new SqlConnection(BoggleDB))
+            {
+                conn.Open();
+                using (SqlTransaction trans = conn.BeginTransaction())
                 {
-                    SetStatus(Forbidden);
-                    return;
-                }
 
-                else
-                {
-                    int thisGameID = users[userData.UserToken].CurrentGameID;
-                    users[userData.UserToken].HasPendingGame = false; //Make sure the user's game is no longer pending.
+                    string cmd = "delete from Games where  Player1 = @Player1";
+                    using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@Player1", userData.UserToken);
 
-                    //Only player 1 can choose to quit the game. Clear the first player.
-                    games[gameID].Player1 = null;
-                    users[userData.UserToken].CurrentGameID = 0;//Make sure the player has no gameID.
-                    games[gameID].TimeLimit = 0;
+                        if (command.ExecuteNonQuery() == 0)
+                        {
+                            SetStatus(Forbidden);
 
-                    SetStatus(OK);
+                        }
+                        else
+                        {
+                            SetStatus(OK);
+
+                        }
+                        ourGameStatus = "";
+                        trans.Commit();
+
+                        return;
+
+                    }
                 }
             }
-            */
         }
+
 
         /// <summary>
         /// Play a word in a game.
@@ -461,7 +368,98 @@ namespace Boggle
         /// <returns> returns the integer score of the current word. </returns>
         public PlayWordResponse PlayWord(PlayWordData userData, string GameID)
         {
-            int thisgameID;
+            PlayWordResponse response = new PlayWordResponse();
+            string trimmedString = userData.Word.Trim().ToUpper();
+
+            if (String.IsNullOrEmpty(trimmedString) || String.IsNullOrEmpty(GameID))
+            {
+                SetStatus(Forbidden);
+                return null;
+            }
+
+            using (SqlConnection conn = new SqlConnection(BoggleDB))
+            {
+                conn.Open();
+                using (SqlTransaction trans = conn.BeginTransaction())
+                {
+                    //checks to see if the user token exists in the users table
+                    using (SqlCommand command = new SqlCommand("select UserToken from Users where UserToken = @UserToken", conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+
+                        // This executes a query (i.e. a select statement).  The result is an
+                        // SqlDataReader that you can use to iterate through the rows in the response.
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            //If we don't have a valid UserToken
+                            if (!reader.HasRows)
+                            {
+                                SetStatus(Forbidden);
+                                trans.Commit();
+                                return null;
+                            }
+                        }
+                    }
+                    //Check to see if the gameID is valid
+                    string cmd = "select GameID from Games where GameID = @GameID";
+                    using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                        command.Parameters.AddWithValue("@GameStatus", "active");
+                        command.Parameters.AddWithValue("@GameID", GameID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            //If we don't have a valid UserToken
+                            if (!reader.HasRows)
+                            {
+                                SetStatus(Forbidden);
+                                trans.Commit();
+                                return null;
+                            }
+                        }
+                    }   
+                    //See if the UserToken is not a player in an active game
+                    cmd = "select GameID from Games where ((Player1 = @UserToken OR Player2 = @UserToken) AND GameState = @GameStatus AND GameID = @GameID)";
+                    using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                        command.Parameters.AddWithValue("@GameStatus", "active");
+                        command.Parameters.AddWithValue("@GameID", GameID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            //If we don't have a valid UserToken
+                            if (!reader.HasRows)
+                            {
+                                SetStatus(Conflict);
+                                trans.Commit();
+                                return null;
+                            }
+                        }
+
+                    }
+
+                    cmd = "insert into Words(Word, GameID, Player, Score) values(@Word, @GameID, @Player, @Score)";
+                    using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                    {
+                        int score = ScoreWord(trimmedString, userData.UserToken, GameID);
+                        command.Parameters.AddWithValue("@Word", trimmedString);
+                        command.Parameters.AddWithValue("@Player", userData.UserToken);
+                        command.Parameters.AddWithValue("@GameID", GameID);
+                        command.Parameters.AddWithValue("@Score", score);
+
+                        response.Score = score;
+                        command.ExecuteNonQuery();
+                        trans.Commit();
+                    }
+                }
+                return response;
+
+                //END OF CONN
+            }
+
+            /*int thisgameID;
             int.TryParse(GameID, out thisgameID);
             if (!games[thisgameID].GameStatus.Equals("active")) //If our game isn't active.
             {
@@ -494,6 +492,8 @@ namespace Boggle
 
                 return response;
             }
+*/
+            return null;
 
         }
 
@@ -517,8 +517,178 @@ namespace Boggle
         /// <returns></returns>
         public StatusResponse GameStatus(string GameID, string Brief)
         {
-            int gameID;
-            int.TryParse(GameID, out gameID);
+
+            StatusResponse response = new StatusResponse();
+
+           //nt TimeLeft = 0;
+
+            using (SqlConnection conn = new SqlConnection(BoggleDB)) //REUSE ME
+            {
+                conn.Open();
+                using (SqlTransaction trans = conn.BeginTransaction())
+                {
+
+                    string cmd = "select GameID from Games where GameID = @GameID";
+                    using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                    {
+                        command.Parameters.AddWithValue("@GameID", GameID);
+
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            if (!reader.HasRows)
+                            {
+                                SetStatus(Forbidden);
+                                return null;
+                            }
+                        }
+                    }
+
+                    string curStatus = "";
+                    //If we don't have have Brief
+                    if(Brief == "no" || Brief == null)
+                    {
+                        cmd = "select GameState from Games where GameID = @GameID";
+                        using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                        {
+                            command.Parameters.AddWithValue("@GameID", GameID);
+                            string GameState = command.ExecuteScalar().ToString();
+                            if(GameState == "pending")
+                            {
+                                response.GameState = "pending";
+                            }
+                        }
+
+                        //Get start time.
+                        DateTime curStartTime;
+                        cmd = "select StartTime from Games where GameID = @GameID";
+                        using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                        {
+                            command.Parameters.AddWithValue("@GameID", GameID);
+                            curStartTime = (DateTime)command.ExecuteScalar();
+                        }
+                        //Get time limit.
+                        int curTimeLimit = 0;
+                        cmd = "select TimeLimit from Games where GameID = @GameID";
+                        using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                        {
+                            command.Parameters.AddWithValue("@GameID", GameID);
+                            curTimeLimit = (int)command.ExecuteScalar();
+                            response.TimeLimit = curTimeLimit;
+                        }
+                        //Generate the time left.
+                        DateTime now = DateTime.UtcNow;
+                        TimeSpan difference = now.Subtract(curStartTime);
+                        int timeLeft = curTimeLimit - difference.Seconds;
+
+                        string localGameStatus = "";
+                       
+                        //Change the status
+                        if(timeLeft <= 0)
+                        {
+                            localGameStatus = "completed";
+                        }
+
+                        if(timeLeft > 0)
+                        {
+                            localGameStatus = "active";
+                        }
+
+                        response.GameState = localGameStatus;
+
+                        if (localGameStatus == "active")
+                        {
+                            //cmd = "update Games set Player2=@Player2, TimeLimit=@TimeLimit, GameState=@GameState, StartTime=@StartTime where GameID =@LastGameID";
+                            cmd = "update Games set GameStatus=@GameStatus where GameID = @GameID  ";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@GameStatus", localGameStatus);
+                            }
+                            cmd = "select Board from Games where GameID = @GameID";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@GameID", GameID);
+                                response.Board = command.ExecuteScalar().ToString();
+                            }
+                            
+                            //Get the player tokens
+                            response.Player1 = new player();
+                            string Player1Token = "";
+                            cmd = "select Player1 from Games where GameID = @GameID";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@GameID", GameID);
+                                Player1Token = command.ExecuteScalar().ToString();
+                            }
+                            response.Player2 = new player();
+                            string Player2Token = "";
+                            cmd = "select Player2 from Games where GameID = @GameID";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@GameID", GameID);
+                                Player2Token = command.ExecuteScalar().ToString();
+                            }
+
+                            //Get the players individual scores
+                            cmd = "select Score from Words where Player = @Player1 AND GameID = @GameID";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@GameID", GameID);
+                                command.Parameters.AddWithValue("@Player1", Player1Token);
+                                int finalScore = 0;
+
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        int temp;
+                                        int.TryParse(reader["Score"].ToString(), out temp);
+
+                                        finalScore += temp;
+
+                                    }
+                                }
+
+                                response.Player1.Score = finalScore;
+                            }
+                            //fOR PLAYER 2'S SCORE
+                            cmd = "select Score from Words where Player = @Player2 AND GameID = @GameID";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@GameID", GameID);
+                                command.Parameters.AddWithValue("@Player2", Player2Token);
+                                int finalScore = 0;
+
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        int temp;
+                                        int.TryParse(reader["Score"].ToString(), out temp);
+
+                                        finalScore += temp;
+
+                                    }
+                                }
+
+                                response.Player2.Score = finalScore;
+                            }
+
+                        }//end of activeS
+
+                        if(curStatus == "completed")
+                        {
+
+                        }
+                    }
+
+                    
+                    
+
+                }//END TRANSACTION
+            }//END Conn
+        
+/*
+        int.TryParse(GameID, out gameID);
             StatusResponse response = new StatusResponse();
             if (!games.ContainsKey(gameID))
             {
@@ -640,10 +810,8 @@ namespace Boggle
                         w.Score = p.Value;
                         response.Player2.WordsPlayed.Add(w);
                     }
-
-
                 }
-            }
+            } */
             return response;
         }
 
@@ -653,17 +821,47 @@ namespace Boggle
         /// <param name="word"></param>
         /// <param name="token"></param>
         /// <returns>the integer score that </returns>
-        private int ScoreWord(string word, string token)
+        private int ScoreWord(string word, string token, string gID)
         {
             // If a string has fewer than three characters, it scores zero points.
             //Otherwise, if a string has a duplicate that occurs earlier in the list, it scores zero points.
-            if (word.Length < 3 || users[token].WordsPlayed.ContainsKey(word))
+            if (word.Length < 3)
             {
                 return 0;
             }
 
+            BoggleBoard curBoard = null;
             //Otherwise, if a string is legal (it appears in the dictionary and occurs on the board),
-            if (dictionary.Contains(word) && games[users[token].CurrentGameID].BogBoard.CanBeFormed(word))
+            if (dictionary.Contains(word))
+            {
+                //&& games[users[token].CurrentGameID].BogBoard.CanBeFormed(word))
+
+                using (SqlConnection conn = new SqlConnection(BoggleDB)) //REUSE ME
+                {
+                    conn.Open();
+                    using (SqlTransaction trans = conn.BeginTransaction())
+                    {
+                        //Check to see if the boggle board can be formed.
+                        string cmd = "select Board from Games where GameID = @GameID";
+                        using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                        {
+                            command.Parameters.AddWithValue("@GameID", gID);
+                            string gotBoard = command.ExecuteScalar().ToString();
+
+                            using (SqlDataReader reader = command.ExecuteReader())
+                            {
+                                //If we don't have a valid UserToken
+                                if (reader.HasRows)
+                                {
+                                    curBoard = new BoggleBoard(gotBoard);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (curBoard != null && curBoard.CanBeFormed(word))
             {
                 //it receives a score that depends on its length.
                 //Three - and four - letter words are worth one point,
@@ -692,6 +890,7 @@ namespace Boggle
                 {
                     return 11;
                 }
+
             }
             //Otherwise, the string scores negative one point.
             else
@@ -701,3 +900,4 @@ namespace Boggle
         }
     }
 }
+
