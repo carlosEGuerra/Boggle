@@ -77,6 +77,6 @@ namespace Boggle
 
 
         [WebGet(UriTemplate = "/games/{GameID}?brief={brief}")]
-        dynamic GameStatus(string GameID, string brief);
+        StatusResponse GameStatus(string GameID, string brief);
     }
 }

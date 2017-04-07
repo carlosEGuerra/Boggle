@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Web;
 
 namespace Boggle
@@ -64,39 +66,44 @@ namespace Boggle
         public string Brief { get; set; }
     }
 
-    public class PendingStatusResponse
-    {
-        public string GameState { get; set; }
-    }
     /// <summary>
     /// The literal API output for Game
     /// </summary>
-    public class NonBriefStatusResponse
+    [DataContract]
+    public class StatusResponse
     {
+        [DataMember]
         public string GameState { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
         public string Board { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
         public int TimeLimit { get; set; }
+        [DataMember(EmitDefaultValue = false)]
         public int TimeLeft { get; set; }
-        public dynamic Player1 { get; set; }
-        public dynamic Player2 { get; set; }
+        [DataMember(EmitDefaultValue = false)]
+        public player Player1 { get; set; }
+        [DataMember(EmitDefaultValue = false)]
+        public player Player2 { get; set; }
+
     }
 
-    public class BriefStausResponse
+    [DataContract]
+    public class player
     {
-        public string GameState { get; set; }
-        public int TimeLeft { get; set; }
-        public dynamic Player1 { get; set; }
-        public dynamic Player2 { get; set; }
-    }
-    /*
-    public class Player
-    {
+        [DataMember(EmitDefaultValue = false)]
         public string Nickname { get; set; }
+        [DataMember(EmitDefaultValue = false)]
         public int Score { get; set; }
-        public Dictionary<string, int> WordsPlayed = new Dictionary<string, int>();
-    }
-    */
 
+        [DataMember(EmitDefaultValue = false)]
+        public List<WordItem> WordsPlayed = new List<WordItem>();
+        //public List<List<object>> WordsPlayed = new List<List<object>>();
+        //public List<WordItem> WordsPlayed = new List<WordItem>();
+        //public Dictionary<string, WordItem> WordsPlayed = new Dictionary<string, WordItem>();
+
+    }
 
     public class User
     {
@@ -122,7 +129,7 @@ namespace Boggle
         /// <summary>
         /// The current game ID of the user.
         /// </summary>
-        public int CurrentGameID = 0;
+        public int CurrentGameID = -1;
 
         /// <summary>
         /// The current total score of the player
@@ -177,16 +184,21 @@ namespace Boggle
 
     }
 
+    [DataContract]
+    public class WordItem
+    {
+        [DataMember(EmitDefaultValue = false)]
+        public string Word { get; set; }
+
+        [DataMember(EmitDefaultValue = false)]
+        public int Score { get; set; }
+    }
+
     /// <summary>
     /// Representation of all of the words in the game.
     /// </summary>
     public class Words
     {
-        /// <summary>
-        /// Id of the word??
-        /// </summary>
-   //     public int Id { get; set; }
-
         /// <summary>
         /// String reprsentation of the word played.
         /// </summary>
@@ -207,4 +219,5 @@ namespace Boggle
         /// </summary>
         public int Score { get; set; }
     }
+
 }
