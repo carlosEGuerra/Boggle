@@ -237,7 +237,7 @@ namespace Boggle
                         JoinGameResponse response = new JoinGameResponse();
 
                         //If we don't have a player 1 in the game.
-                        cmd = "insert into Games(Player1, TimeLimit, GameState) output inserted.GameID values(@Player1, @TimeLimit, @GameState) where Player1 = @isNull";
+                        cmd = "insert into Games(Player1, TimeLimit, GameState) output inserted.GameID values(@Player1, @TimeLimit, @GameState) where Player1 = @isNull";   //Incorrect syntax near the keyword 'where'.
                         using (SqlCommand CreateGameCommand = new SqlCommand(cmd, conn, trans))
                         {
                             CreateGameCommand.Parameters.AddWithValue("@isNull", null);
