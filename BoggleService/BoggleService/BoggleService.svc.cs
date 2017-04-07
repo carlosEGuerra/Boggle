@@ -237,7 +237,8 @@ namespace Boggle
                         JoinGameResponse response = new JoinGameResponse();
 
                         //If we don't have a player 1 in the game.
-                        cmd = "insert into Games(Player1, TimeLimit, GameState) output inserted.GameID values(@Player1, @TimeLimit, @GameState) where Player1 = @isNull";   //Incorrect syntax near the keyword 'where'.
+                        //cmd = "update Games(Player1, TimeLimit, GameState) output inserted.GameID values(@Player1, @TimeLimit, @GameState) where Player1 = @isNull";   //Incorrect syntax near the keyword 'where'.
+                        cmd = "update Games set Player1=@Player1, TimeLimit=@TimeLimit, GameState=@GameState where Player1 = @isNull";
                         using (SqlCommand CreateGameCommand = new SqlCommand(cmd, conn, trans))
                         {
                             CreateGameCommand.Parameters.AddWithValue("@isNull", null);
@@ -258,6 +259,9 @@ namespace Boggle
 
 
 
+                        /**************************ALL FOR PLAYER 1 DONE************************************/
+
+
                         int P1TimeLimit = 0;
                         //To save the time limit of the first user. 
                         cmd = "select TimeLimit from Games where ((Player1 != @isNull) AND (Player2 = @isNull)) output Games.TimeLimit"; //Double check query.
@@ -272,7 +276,8 @@ namespace Boggle
 
 
                         //If we have a player 1 but not a player 2.
-                        cmd = "insert into Games(Player2, Board, TimeLimit, GameState, StartTime) output inserted.GameID values(@Player2, @Board, @TimeLimit, @GameState, @StartTime) where Player1 != @isNull";
+                        //cmd = "insert into Games(Player2, Board, TimeLimit, GameState, StartTime) output inserted.GameID values(@Player2, @Board, @TimeLimit, @GameState, @StartTime) where Player1 != @isNull";
+                        cmd = "update Games set Player2=@Player2, TimeLimit=@TimeLimit, GameState=@GameState, StartTime=@StartTime where Player1 != @isNull";
                         using (SqlCommand CreateGameCommand = new SqlCommand(cmd, conn, trans))
                         {
                             BoggleBoard board = new BoggleBoard();
