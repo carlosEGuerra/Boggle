@@ -196,141 +196,218 @@ namespace Boggle
                             dictionaryLoaded = true;
                         }
 
-                        //If the game with the GameID exists then it will run this
-
-                        using (SqlCommand CreateGameCommand = new SqlCommand("insert into Games (Player1, Board, TimeLimit, GameState) output inserted.GameID values(@Player1, @Board, @TimeLimit, @GameState)", conn, trans))
-                        {
-                            BoggleBoard board = new BoggleBoard();
-                            CreateGameCommand.Parameters.AddWithValue("@Player1", userData.UserToken);
-                            CreateGameCommand.Parameters.AddWithValue("@Board", board.ToString());
-                            CreateGameCommand.Parameters.AddWithValue("@TimeLimit", userData.TimeLimit);
-                            CreateGameCommand.Parameters.AddWithValue("@GameState", 0);
-
-                            string GameID = CreateGameCommand.ExecuteScalar().ToString();
-
-                            JoinGameResponse response= new JoinGameResponse();
-                            response.GameID = GameID;
-
-                            CreateGameCommand.ExecuteNonQuery();
-                            SetStatus(Created);
-
-                            trans.Commit();
-                            return response;
-                        }
-                    
-                        /*
-                        //Take in the time limit given by the current player.
-                        string cmd = "INSERT into Users (GivenTimeLimit) SELECT @GivenTimeLimit WHERE UserToken = @UserToken";
+                        //First we need to see if the player is already in a game.
+                        string cmd = "select * from Games where Player1 = @UserToken";
                         using (SqlCommand command = new SqlCommand(cmd, conn, trans))
                         {
-                            command.Parameters.AddWithValue("@GivenTimeLimit", userData.TimeLimit);
                             command.Parameters.AddWithValue("@UserToken", userData.UserToken);
 
                             using (SqlDataReader reader = command.ExecuteReader())
                             {
-
-                                if (!reader.HasRows)
+                                //If we don't have a valid UserToken
+                                if (reader.HasRows)
                                 {
-                                    SetStatus(Forbidden);
+                                    SetStatus(Conflict);
                                     trans.Commit();
                                     return null;
                                 }
                             }
-                        }
-                        */
 
-                        /*
-                        JoinGameResponse response = new JoinGameResponse();
-                        response.GameID = gameID.ToString();
-                        //If the game does not have the current game ID in it, 
-                        //add the game id to games
-                        string cmd = "INSERT into Games (GameID) SELECT @gameID WHERE Player1 is not null AND Player2 is not null";
+                        }
+
+                        //First we need to see if the player is already in a game.
+                        cmd = "select * from Games where Player2 = @UserToken";
                         using (SqlCommand command = new SqlCommand(cmd, conn, trans))
                         {
-                            command.Parameters.AddWithValue("@gameID", gameID);
                             command.Parameters.AddWithValue("@UserToken", userData.UserToken);
 
                             using (SqlDataReader reader = command.ExecuteReader())
                             {
-                                //Add player 1 if there is a game without one.
+                                //If we don't have a valid UserToken
                                 if (reader.HasRows)
                                 {
-                                    cmd = "INSERT into Games (Player1) SELECT @UserToken WHERE Player1 is null AND Player2 is null";
-                                    using (SqlCommand command2 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command2.Parameters.AddWithValue("@UserToken", userData.UserToken);
-                                        SetStatus(Accepted);
-                                    }
+                                    SetStatus(Conflict);
+                                    trans.Commit();
+                                    return null;
                                 }
+                            }
 
-                                //Add player 2 if we have existing game
-                                if (!reader.HasRows)
+                        }
+
+                        JoinGameResponse response = new JoinGameResponse();
+
+                        //If we don't have a player 1 in the game.
+                        cmd = "insert into Games(Player1, TimeLimit, GameState) output inserted.GameID values(@Player1, @TimeLimit, @GameState) where Player1 = @isNull";
+                        using (SqlCommand CreateGameCommand = new SqlCommand(cmd, conn, trans))
+                        {
+                            CreateGameCommand.Parameters.AddWithValue("@isNull", null);
+                            CreateGameCommand.Parameters.AddWithValue("@Player1", userData.UserToken);
+                            CreateGameCommand.Parameters.AddWithValue("@TimeLimit", userData.TimeLimit);
+                            CreateGameCommand.Parameters.AddWithValue("@GameState", "pending");
+
+                            string GameID = CreateGameCommand.ExecuteScalar().ToString();
+
+                            response.GameID = GameID;
+
+                            CreateGameCommand.ExecuteNonQuery();
+                            SetStatus(Accepted); //Player 1 only
+
+                            trans.Commit();
+                            return response;
+                        }
+
+
+
+                        int P1TimeLimit = 0;
+                        //To save the time limit of the first user. 
+                        cmd = "select TimeLimit from Games where ((Player1 != @isNull) AND (Player2 = @isNull)) output Games.TimeLimit"; //Double check query.
+                        using (SqlCommand CreateGameCommand = new SqlCommand(cmd, conn, trans))
+                        {
+                            CreateGameCommand.Parameters.AddWithValue("@isNull", null);
+                            CreateGameCommand.Parameters.AddWithValue("@Player1", userData.UserToken);
+                            CreateGameCommand.Parameters.AddWithValue("@TimeLimit", userData.TimeLimit);
+                            CreateGameCommand.Parameters.AddWithValue("@GameState", "pending");
+                            P1TimeLimit = (int)CreateGameCommand.ExecuteScalar();
+                        }
+
+
+                        //If we have a player 1 but not a player 2.
+                        cmd = "insert into Games(Player2, Board, TimeLimit, GameState, StartTime) output inserted.GameID values(@Player2, @Board, @TimeLimit, @GameState, @StartTime) where Player1 != @isNull";
+                        using (SqlCommand CreateGameCommand = new SqlCommand(cmd, conn, trans))
+                        {
+                            BoggleBoard board = new BoggleBoard();
+                            CreateGameCommand.Parameters.AddWithValue("@isNull", null);
+                            CreateGameCommand.Parameters.AddWithValue("@Player2", userData.UserToken);
+                            CreateGameCommand.Parameters.AddWithValue("@Board", board.ToString());
+                            CreateGameCommand.Parameters.AddWithValue("@TimeLimit", (P1TimeLimit + userData.TimeLimit)/2);
+                            CreateGameCommand.Parameters.AddWithValue("@GameState", "active");
+                            CreateGameCommand.Parameters.AddWithValue("@StartTime", DateTime.Now);
+                            SetStatus(Created);//For the second player only;
+
+                            string GameID = CreateGameCommand.ExecuteScalar().ToString();
+
+                            response.GameID = GameID;
+
+                            CreateGameCommand.ExecuteNonQuery();
+                            trans.Commit();
+                            return response;
+                        }
+
+                            //If the current user being added is player 2.
+
+                            /*
+                            //Take in the time limit given by the current player.
+                            string cmd = "INSERT into Users (GivenTimeLimit) SELECT @GivenTimeLimit WHERE UserToken = @UserToken";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@GivenTimeLimit", userData.TimeLimit);
+                                command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+
+                                using (SqlDataReader reader = command.ExecuteReader())
                                 {
-                                    //Add player 2.
-                                    cmd = "INSERT into Games (Player2) SELECT @UserToken WHERE Player1 is not null AND Player2 is null";
-                                    using (SqlCommand command3 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command3.Parameters.AddWithValue("@UserToken", userData.UserToken);
-                                        SetStatus(Created);
-                                    }
 
-
-                                    //Now calculate a time limit for the game.
-                                    int providedTimeLimit = 0;
-                                    int intTimeLimit;
-                                    cmd = "SELECT * from Games(GameID)";
-                                    using (SqlCommand command3 = new SqlCommand(cmd, conn, trans))
+                                    if (!reader.HasRows)
                                     {
-                                        using (SqlDataReader reader2 = command3.ExecuteReader())
-                                        {
-                                            while (reader2.Read())
-                                            {
-                                                string ourTimeLimit = (reader2["TimeLimit"].ToString());
-                                                int.TryParse(ourTimeLimit, out intTimeLimit);
-                                                providedTimeLimit = (intTimeLimit + userData.TimeLimit) / 2;
-
-                                            }
-                                        }
-                                    }
-                                    //Set the time limit for the game.
-                                    cmd = "INSERT into Games (TimeLimit) SELECT @TimeLimit WHERE Player1 is not null AND Player2 is null";
-                                    using (SqlCommand command4 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command4.Parameters.AddWithValue("@TimeLimit", providedTimeLimit);
-                                    }
-
-                                    //Set the GameStatus
-                                    cmd = "INSERT into Games (GameStatus) SELECT @gameStatus WHERE GameID = @gameID";
-                                    using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command5.Parameters.AddWithValue("@gameStatus", "active");
-                                        command5.Parameters.AddWithValue("@gameID", gameID);
-                                    }
-
-                                    //Players added. Create the new boggle board.
-                                    BoggleBoard currentBoard = new BoggleBoard();
-                                    string bogBoardString = currentBoard.ToString();
-
-                                    cmd = "INSERT into Games (Board) SELECT @board WHERE Player2 = @UserToken";
-                                    using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command5.Parameters.AddWithValue("@board", "bogBoardString");
-                                        command5.Parameters.AddWithValue("@UserToken", userData.UserToken);
-                                    }
-                                    //games[gameID].StartTime = DateTime.Now;
-                                    cmd = "INSERT into Games (StartTime) SELECT @StartTime WHERE GameID = @gameID";
-                                    using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
-                                    {
-                                        command5.Parameters.AddWithValue("@", "bogBoardString");
-                                        command5.Parameters.AddWithValue("@UserToken", userData.UserToken);
-                                        gameID++;
+                                        SetStatus(Forbidden);
+                                        trans.Commit();
+                                        return null;
                                     }
                                 }
                             }
+                            */
+
+                            /*
+                            JoinGameResponse response = new JoinGameResponse();
+                            response.GameID = gameID.ToString();
+                            //If the game does not have the current game ID in it, 
+                            //add the game id to games
+                            string cmd = "INSERT into Games (GameID) SELECT @gameID WHERE Player1 is not null AND Player2 is not null";
+                            using (SqlCommand command = new SqlCommand(cmd, conn, trans))
+                            {
+                                command.Parameters.AddWithValue("@gameID", gameID);
+                                command.Parameters.AddWithValue("@UserToken", userData.UserToken);
+
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    //Add player 1 if there is a game without one.
+                                    if (reader.HasRows)
+                                    {
+                                        cmd = "INSERT into Games (Player1) SELECT @UserToken WHERE Player1 is null AND Player2 is null";
+                                        using (SqlCommand command2 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command2.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                            SetStatus(Accepted);
+                                        }
+                                    }
+
+                                    //Add player 2 if we have existing game
+                                    if (!reader.HasRows)
+                                    {
+                                        //Add player 2.
+                                        cmd = "INSERT into Games (Player2) SELECT @UserToken WHERE Player1 is not null AND Player2 is null";
+                                        using (SqlCommand command3 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command3.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                            SetStatus(Created);
+                                        }
+
+
+                                        //Now calculate a time limit for the game.
+                                        int providedTimeLimit = 0;
+                                        int intTimeLimit;
+                                        cmd = "SELECT * from Games(GameID)";
+                                        using (SqlCommand command3 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            using (SqlDataReader reader2 = command3.ExecuteReader())
+                                            {
+                                                while (reader2.Read())
+                                                {
+                                                    string ourTimeLimit = (reader2["TimeLimit"].ToString());
+                                                    int.TryParse(ourTimeLimit, out intTimeLimit);
+                                                    providedTimeLimit = (intTimeLimit + userData.TimeLimit) / 2;
+
+                                                }
+                                            }
+                                        }
+                                        //Set the time limit for the game.
+                                        cmd = "INSERT into Games (TimeLimit) SELECT @TimeLimit WHERE Player1 is not null AND Player2 is null";
+                                        using (SqlCommand command4 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command4.Parameters.AddWithValue("@TimeLimit", providedTimeLimit);
+                                        }
+
+                                        //Set the GameStatus
+                                        cmd = "INSERT into Games (GameStatus) SELECT @gameStatus WHERE GameID = @gameID";
+                                        using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command5.Parameters.AddWithValue("@gameStatus", "active");
+                                            command5.Parameters.AddWithValue("@gameID", gameID);
+                                        }
+
+                                        //Players added. Create the new boggle board.
+                                        BoggleBoard currentBoard = new BoggleBoard();
+                                        string bogBoardString = currentBoard.ToString();
+
+                                        cmd = "INSERT into Games (Board) SELECT @board WHERE Player2 = @UserToken";
+                                        using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command5.Parameters.AddWithValue("@board", "bogBoardString");
+                                            command5.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                        }
+                                        //games[gameID].StartTime = DateTime.Now;
+                                        cmd = "INSERT into Games (StartTime) SELECT @StartTime WHERE GameID = @gameID";
+                                        using (SqlCommand command5 = new SqlCommand(cmd, conn, trans))
+                                        {
+                                            command5.Parameters.AddWithValue("@", "bogBoardString");
+                                            command5.Parameters.AddWithValue("@UserToken", userData.UserToken);
+                                            gameID++;
+                                        }
+                                    }
+                                }
+                            }
+                            */
                         }
-                        */
                     }
-                }
                 return null;
             }
         }
