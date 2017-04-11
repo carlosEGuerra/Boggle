@@ -22,8 +22,8 @@ namespace Boggle
         private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();  //mapped via userID
         private static readonly object sync = new object();
         private static int gameID = 0;
-        private HashSet<string> dictionary = new HashSet<string>();
-        private bool dictionaryLoaded = false;
+        private static HashSet<string> dictionary = new HashSet<string>();
+        private static bool dictionaryLoaded = false;
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when 
         /// an http response is sent.
@@ -202,11 +202,12 @@ namespace Boggle
         {
             lock (sync)
             {
-                if(userData.UserToken == null)
+                if (userData.UserToken == null)
                 {
                     SetStatus(Forbidden);
                     return;
-                }else if (!users.ContainsKey(userData.UserToken))
+                }
+                else if (!users.ContainsKey(userData.UserToken))
                 {
                     SetStatus(Forbidden);
                     return;
@@ -228,9 +229,8 @@ namespace Boggle
                     users[userData.UserToken].HasPendingGame = false; //Make sure the user's game is no longer pending.
 
                     //Only player 1 can choose to quit the game. Clear the first player.
-                    games[gameID].Player1 = null;
-                    users[userData.UserToken].CurrentGameID = 0;//Make sure the player has no gameID.
-                    games[gameID].TimeLimit = 0;
+                    games.Remove(gameID);
+                    users[userData.UserToken].CurrentGameID = -1;//Make sure the player has no gameID.
 
                     SetStatus(OK);
                 }
@@ -253,8 +253,17 @@ namespace Boggle
         /// <returns> returns the integer score of the current word. </returns>
         public PlayWordResponse PlayWord(PlayWordData userData, string GameID)
         {
+
+
             int thisgameID;
             int.TryParse(GameID, out thisgameID);
+
+            //First check the time limit.
+            if (TimeLeft(thisgameID) <= 0)
+            {
+                games[thisgameID].GameStatus = "completed";
+            }
+
             if (!games[thisgameID].GameStatus.Equals("active")) //If our game isn't active.
             {
                 SetStatus(Conflict);
@@ -310,7 +319,10 @@ namespace Boggle
         public StatusResponse GameStatus(string GameID, string Brief)
         {
             int gameID;
-            int.TryParse(GameID, out gameID);
+            if(!int.TryParse(GameID, out gameID))
+            {
+                gameID = -1;
+            }
             StatusResponse response = new StatusResponse();
             if (!games.ContainsKey(gameID))
             {
@@ -331,7 +343,7 @@ namespace Boggle
                     games[gameID].GameStatus = "completed";
                     response.TimeLeft = 0;
                 }
-                if (games[gameID].GameStatus == "active")
+                if (games.ContainsKey(gameID) && games[gameID].GameStatus == "active")
                 {
                     response.GameState = "active";
                     response.Board = games[gameID].Board;
@@ -357,7 +369,6 @@ namespace Boggle
                     //PLAYER 1'S WORDS
                     foreach (KeyValuePair<string, int> p in users[games[gameID].Player1].WordsPlayed)
                     {
-   
                         WordItem w = new WordItem();
                         w.Word = p.Key;
                         w.Score = p.Value;
@@ -369,14 +380,12 @@ namespace Boggle
                     //PLAYER 2'S WORDS NEED THESE
                     foreach (KeyValuePair<string, int> p in users[games[gameID].Player2].WordsPlayed)
                     {
-
                         WordItem w = new WordItem();
                         w.Word = p.Key;
                         w.Score = p.Value;
                         response.Player2.WordsPlayed.Add(w);
                     }
                 }
-
             }
             else if (Brief == "yes")
             {
@@ -433,7 +442,7 @@ namespace Boggle
                         response.Player2.WordsPlayed.Add(w);
                     }
 
-                    
+
                 }
             }
             return response;
