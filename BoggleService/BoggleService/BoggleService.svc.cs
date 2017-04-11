@@ -690,7 +690,7 @@ namespace Boggle
                             //represent Player1's Score
                             int Player1Score = 0;
 
-                            //gets player1's score
+                            //gets player1's score and words
                             cmd = "select Score from Words where Player = @Player AND GameID = @GameID";
                             using (SqlCommand command = new SqlCommand(cmd, conn, trans))
                             {
