@@ -1,0 +1,9 @@
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleServiceGrader\obj\Debug\BoggleServiceGrader.csprojResolveAssemblyReference.cache
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleServiceGrader\bin\Debug\BoggleServiceGrader.dll
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleServiceGrader\bin\Debug\BoggleServiceGrader.pdb
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleServiceGrader\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleServiceGrader\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleServiceGrader\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleServiceGrader\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.xml
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleServiceGrader\obj\Debug\BoggleServiceGrader.dll
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick2\BoggleService\BoggleServiceGrader\obj\Debug\BoggleServiceGrader.pdb
