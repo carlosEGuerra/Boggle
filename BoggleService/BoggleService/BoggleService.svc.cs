@@ -202,7 +202,21 @@ namespace Boggle
         {
             lock (sync)
             {
-                if (userData.UserToken == null || (games[gameID].Player1 != userData.UserToken && !users[userData.UserToken].HasPendingGame))
+                if(userData.UserToken == null)
+                {
+                    SetStatus(Forbidden);
+                    return;
+                }else if (!users.ContainsKey(userData.UserToken))
+                {
+                    SetStatus(Forbidden);
+                    return;
+                }
+                else if (!games.ContainsKey(gameID))
+                {
+                    SetStatus(Forbidden);
+                    return;
+                }
+                if ((games[gameID].Player1 != userData.UserToken || games[gameID].Player2 != userData.UserToken) && !users[userData.UserToken].HasPendingGame) //added this users.ContainsKey(userData.UserToken)
                 {
                     SetStatus(Forbidden);
                     return;
