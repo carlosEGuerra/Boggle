@@ -269,7 +269,6 @@ namespace Boggle
             {
                 SetStatus(Forbidden);
                 return null;
-
             }
 
             if (!games[thisgameID].GameStatus.Equals("active")) //If our game isn't active.
