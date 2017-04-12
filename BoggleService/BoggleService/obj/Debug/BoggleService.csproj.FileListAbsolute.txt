@@ -157,3 +157,4 @@ C:\Users\guerrac\Source\Repos\GunsNLipstick\BoggleService\BoggleService\bin\Syst
 C:\Users\guerrac\Source\Repos\GunsNLipstick\BoggleService\BoggleService\obj\Debug\BoggleService.csprojResolveAssemblyReference.cache
 C:\Users\guerrac\Source\Repos\GunsNLipstick\BoggleService\BoggleService\obj\Debug\BoggleService.dll
 C:\Users\guerrac\Source\Repos\GunsNLipstick\BoggleService\BoggleService\obj\Debug\BoggleService.pdb
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\BoggleService\obj\Debug\BoggleService.csprojResolveAssemblyReference.cache

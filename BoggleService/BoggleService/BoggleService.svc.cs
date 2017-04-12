@@ -186,7 +186,6 @@ namespace Boggle
                     games[gameID].StartTime = DateTime.Now;
                     gameID++; //Create a new empty game.
                 }
-
                 return response;
             }
         }
@@ -253,8 +252,6 @@ namespace Boggle
         /// <returns> returns the integer score of the current word. </returns>
         public PlayWordResponse PlayWord(PlayWordData userData, string GameID)
         {
-
-
             int thisgameID;
             int.TryParse(GameID, out thisgameID);
 
@@ -264,12 +261,7 @@ namespace Boggle
                 games[thisgameID].GameStatus = "completed";
             }
 
-            if (!games[thisgameID].GameStatus.Equals("active")) //If our game isn't active.
-            {
-                SetStatus(Conflict);
-                return null;
-            }
-
+            //changed the order of this
             //Check for invalid
             if (String.IsNullOrEmpty(userData.Word) || userData.UserToken == null || userData.UserToken.Length == 0
                 || !games.ContainsKey(users[userData.UserToken].CurrentGameID)
@@ -279,31 +271,36 @@ namespace Boggle
                 return null;
 
             }
-            else
+
+            if (!games[thisgameID].GameStatus.Equals("active")) //If our game isn't active.
             {
-                PlayWordResponse response = new PlayWordResponse();
-                string trimmedWord = userData.Word.Trim();
-                int score = 0;
-
-                string token = userData.UserToken;
-
-                score = ScoreWord(trimmedWord, token); //Score the word;
-                users[token].WordsPlayed.Add(trimmedWord, score);//Add the word and its coinciding score to our database.
-                users[token].CurrentTotalScore += score;//Add the word 
-
-                response.Score = score;
-
-                return response;
+                SetStatus(Conflict);
+                return null;
             }
+
+            PlayWordResponse response = new PlayWordResponse();
+            string trimmedWord = userData.Word.Trim();
+            int score = 0;
+
+            string token = userData.UserToken;
+
+            score = ScoreWord(trimmedWord, token); //Score the word;
+            users[token].WordsPlayed.Add(trimmedWord, score);//Add the word and its coinciding score to our database.
+            users[token].CurrentTotalScore += score;//Add the word 
+
+            response.Score = score;
+
+            return response;
+
 
         }
 
         public int TimeLeft(int gameID)
         {
-            int thisTimeLimit = games[gameID].TimeLimit;
+            int gameTimeLimit = games[gameID].TimeLimit;
             DateTime now = DateTime.UtcNow;
             TimeSpan difference = now.Subtract(games[gameID].StartTime);
-            return thisTimeLimit - (int)difference.Seconds;
+            return gameTimeLimit - (int)difference.Seconds;
         }
 
         /// <summary>
@@ -319,7 +316,7 @@ namespace Boggle
         public StatusResponse GameStatus(string GameID, string Brief)
         {
             int gameID;
-            if(!int.TryParse(GameID, out gameID))
+            if (!int.TryParse(GameID, out gameID))
             {
                 gameID = -1;
             }
@@ -329,6 +326,8 @@ namespace Boggle
                 SetStatus(Forbidden);
                 return null;
             }
+
+
             else if (Brief == "no" || Brief == null)
             {
                 if (games[gameID].GameStatus == "pending")
@@ -343,6 +342,9 @@ namespace Boggle
                     games[gameID].GameStatus = "completed";
                     response.TimeLeft = 0;
                 }
+
+                int timeLeftTemp = TimeLeft(gameID);
+
                 if (games.ContainsKey(gameID) && games[gameID].GameStatus == "active")
                 {
                     response.GameState = "active";

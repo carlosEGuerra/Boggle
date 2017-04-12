@@ -69,22 +69,27 @@ namespace Boggle
     /// <summary>
     /// The literal API output for Game
     /// </summary>
+    /// 
+    //Changes the EmitDefaultValue to true
     [DataContract]
     public class StatusResponse
     {
         [DataMember]
         public string GameState { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(EmitDefaultValue = true)]
         public string Board { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(EmitDefaultValue = true)]
         public int TimeLimit { get; set; }
-        [DataMember(EmitDefaultValue = false)]
+
+        [DataMember(EmitDefaultValue = true)]
         public int TimeLeft { get; set; }
-        [DataMember(EmitDefaultValue = false)]
+
+        [DataMember(EmitDefaultValue = true)]
         public player Player1 { get; set; }
-        [DataMember(EmitDefaultValue = false)]
+
+        [DataMember(EmitDefaultValue = true)]
         public player Player2 { get; set; }
 
     }
@@ -92,12 +97,12 @@ namespace Boggle
     [DataContract]
     public class player
     {
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(EmitDefaultValue = true)]
         public string Nickname { get; set; }
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(EmitDefaultValue = true)]
         public int Score { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(EmitDefaultValue = true)]
         public List<WordItem> WordsPlayed = new List<WordItem>();
         //public List<List<object>> WordsPlayed = new List<List<object>>();
         //public List<WordItem> WordsPlayed = new List<WordItem>();
@@ -110,7 +115,7 @@ namespace Boggle
         /// <summary>
         /// This is the userToken
         /// </summary>
-        public string UserId { get; set;}
+        public string UserId { get; set; }
         /// <summary>
         /// Nickname given by the user
         /// </summary>
@@ -159,13 +164,13 @@ namespace Boggle
         /// The current game ID.
         /// </summary>
         public int GameID { get; set; }
-        
+
         /// <summary>
         ///The 16-letter string representation of the current game board.
         /// </summary>
         public string Board { get; set; }
 
-        public BoggleBoard BogBoard { get; set;}
+        public BoggleBoard BogBoard { get; set; }
 
         /// <summary>
         /// Time limit given by the server.
@@ -212,7 +217,7 @@ namespace Boggle
         /// <summary>
         /// Player who played the current word.
         /// </summary>
-        public string Player { get; set; } 
+        public string Player { get; set; }
 
         /// <summary>
         /// Score of the individual word.
