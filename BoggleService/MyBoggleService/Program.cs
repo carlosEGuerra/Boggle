@@ -10,6 +10,7 @@ namespace MyBoggleService
     {
         static void Main(string[] args)
         {
+
         }
     }
 }
