@@ -99,15 +99,12 @@ namespace Boggle
     {
         [DataMember(EmitDefaultValue = true)]
         public string Nickname { get; set; }
+
         [DataMember(EmitDefaultValue = true)]
         public int Score { get; set; }
 
         [DataMember(EmitDefaultValue = true)]
         public List<WordItem> WordsPlayed = new List<WordItem>();
-        //public List<List<object>> WordsPlayed = new List<List<object>>();
-        //public List<WordItem> WordsPlayed = new List<WordItem>();
-        //public Dictionary<string, WordItem> WordsPlayed = new Dictionary<string, WordItem>();
-
     }
 
     public class User
@@ -192,10 +189,11 @@ namespace Boggle
     [DataContract]
     public class WordItem
     {
-        [DataMember(EmitDefaultValue = false)]
+        //changed both EmitDefaultValues to true
+        [DataMember(EmitDefaultValue = true)]
         public string Word { get; set; }
 
-        [DataMember(EmitDefaultValue = false)]
+        [DataMember(EmitDefaultValue = true)]
         public int Score { get; set; }
     }
 
