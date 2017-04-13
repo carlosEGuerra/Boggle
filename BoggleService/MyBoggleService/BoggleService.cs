@@ -7,6 +7,7 @@ using System.Collections;
 using MyBoggleService;
 //using System.ServiceModel.Web;
 using static System.Net.HttpStatusCode;
+using System.Net.Sockets;
 
 namespace MyBoggleService
 {
@@ -20,11 +21,15 @@ namespace MyBoggleService
         // a proper database.
         private readonly static Dictionary<int, Game> games = new Dictionary<int, Game>();    //mapped via gameID
         private readonly static Dictionary<String, User> users = new Dictionary<String, User>();  //maped via userID
-        private readonly static Dictionary<String, Words> words = new Dictionary<String, Words>();  //mapped via userID
         private static readonly object sync = new object();
         private static int gameID = 0;
         private static HashSet<string> dictionary = new HashSet<string>();
         private static bool dictionaryLoaded = false;
+
+        //Listens for incoming connection requests
+        private TcpListener server;
+
+
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when 
         /// an http response is sent.
@@ -32,52 +37,28 @@ namespace MyBoggleService
         /// <param name="status"></param>
         private static void SetStatus(HttpStatusCode status)
         {
-           // WebOperationContext.Current.OutgoingResponse.StatusCode = status;
+            // WebOperationContext.Current.OutgoingResponse.StatusCode = status;
         }
 
-        /// <summary>
-        /// Returns a Stream version of index.html.
-        /// </summary>
-        /// <returns></returns>
-   //     public Stream API()
-     //   {
-      //    SetStatus(OK);
-       //     WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
-        //    return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
-      //  }
-
-        /// <summary>
-        /// Demo.  You can delete this.
-        /// </summary>
-        public string WordAtIndex(int n)
+        public BoggleService(int port)
         {
-            if (n < 0)
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
-
-            string line;
-            using (StreamReader file = new System.IO.StreamReader("dictionary.txt"))
-            {
-                while ((line = file.ReadLine()) != null)
-                {
-                    if (n == 0) break;
-                    n--;
-                }
-            }
-
-            if (n == 0)
-            {
-                SetStatus(OK);
-                return line;
-            }
-            else
-            {
-                SetStatus(Forbidden);
-                return null;
-            }
+            server = new TcpListener(IPAddress.Any, port);
+            server.Start();
+            server.BeginAcceptSocket(ConnectionRequested, null);
         }
+
+        /*
+        ///<summary>
+        ///Returns a Stream version of index.html.
+        ///</summary>
+        ///<returns></returns>
+        public Stream API()
+        {
+            SetStatus(OK);
+            WebOperationContext.Current.OutgoingResponse.ContentType = "text/html";
+            return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
+        }
+        */
 
         /// <summary>
         /// Create a new user.
