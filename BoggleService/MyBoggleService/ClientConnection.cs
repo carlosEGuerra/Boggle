@@ -340,7 +340,7 @@ namespace MyBoggleService
             //CreateUser
             if(curRequestType == "POST" && curURL == "users")
             {
-                CreateUserData content = JsonConvert.de
+                CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
                 return server.CreateUser(content);
             }
             //JoinGame
