@@ -34,8 +34,9 @@ namespace MyBoggleService
         //Holds all of the data of the request, split up by whitespace.
         private List<String> incomingData = new List<string>();
 
-        //Integer to keep track of which part of the data we're on.
-        private int curDataPos = 0;
+        //stores the requests
+        
+
 
         //To keep track of the current type of request we're dealing with.
         private string curRequestType;
@@ -110,11 +111,12 @@ namespace MyBoggleService
                     {
                         String line = incoming.ToString(start, i + 1 - start);
 
-                        string[] splitString = line.Split();
+                        
 
-                        //incomingData.Add(splitString); //Add that string to the data we're looking at.
+                        incomingData.Add(line); //Add that string to the data we're looking at.
 
                         //If we have incoming data.
+                        
                         if(!(incomingData.Count == 0))
                         {
                             if(incomingData.Count == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
@@ -126,7 +128,7 @@ namespace MyBoggleService
                             {
                             }
                         }
-
+                        
                     }
                 }
                 incoming.Remove(0, lastNewline + 1);
