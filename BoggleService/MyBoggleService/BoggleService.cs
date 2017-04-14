@@ -28,14 +28,14 @@ namespace MyBoggleService
         private static HashSet<string> dictionary = new HashSet<string>();
         private static bool dictionaryLoaded = false;
 
+        // All the clients that have connected but haven't closed
+        private List<ClientConnection> clients = new List<ClientConnection>();
+
         //Listens for incoming connection requests
         private TcpListener server;
 
         private readonly ReaderWriterLockSlim _lock = new ReaderWriterLockSlim();
-
-        //List of the clients that have connected but haven't closed
-        private List<ClientConnection> clients = new List<ClientConnection>();
-
+        
         /// <summary>
         /// The most recent call to SetStatus determines the response code used when 
         /// an http response is sent.
@@ -46,6 +46,10 @@ namespace MyBoggleService
             // WebOperationContext.Current.OutgoingResponse.StatusCode = status;
         }
 
+        /// <summary>
+        /// BoggleService constructor that adds the service to the specified port.
+        /// </summary>
+        /// <param name="port"></param>
         public BoggleService(int port)
         {
             //creates the TCP Listener
@@ -58,32 +62,49 @@ namespace MyBoggleService
             server.BeginAcceptSocket(ConnectionRequested, null);
         }
         /// <summary>
-        /// This si the callback method that is passed to BeginAcceptSocket. It is called
-        /// when a connection request has arrived at the server
+        /// This is the callback method that is passed to BeginAcceptSocket.  It is called
+        /// when a connection request has arrived at the server.
         /// </summary>
-        /// <param name="result"></param>
         private void ConnectionRequested(IAsyncResult result)
         {
-            //We obtain the socket corresponding to the connection request.
+            // We obtain the socket corresonding to the connection request.  Notice that we
+            // are passing back the IAsyncResult object.
             Socket s = server.EndAcceptSocket(result);
 
-            //We ask the server to listen for another connection request.
+            // We ask the server to listen for another connection request.  As before, this
+            // will happen on another thread.
             server.BeginAcceptSocket(ConnectionRequested, null);
 
-            //We create a new ClientConnection which will take care of communicating with
-            //the remote client. We add the new client to the list of clients, taking
-            //care to use a write lock.
+            // We create a new ClientConnection, which will take care of communicating with
+            // the remote client.  We add the new client to the list of clients, taking 
+            // care to use a write lock.
             try
             {
-
                 _lock.EnterWriteLock();
-                //not sure what to do here
+                clients.Add(new ClientConnection(s, this));
             }
             finally
             {
                 _lock.ExitWriteLock();
             }
         }
+
+        /// <summary>
+        /// Remove c from the client list.
+        /// </summary>
+        public void RemoveClient(ClientConnection c)
+        {
+            try
+            {
+                _lock.EnterWriteLock();
+                clients.Remove(c);
+            }
+            finally
+            {
+                _lock.ExitWriteLock();
+            }
+        }
+
 
         /*
         ///<summary>
@@ -97,6 +118,7 @@ namespace MyBoggleService
             return File.OpenRead(AppDomain.CurrentDomain.BaseDirectory + "index.html");
         }
         */
+
 
         /// <summary>
         /// Create a new user.
@@ -522,44 +544,5 @@ namespace MyBoggleService
                 return -1;
             }
         }
-    }
-
-    public class ClientConnection
-    {
-        //incoming/outgoing is UTF8 Encoded
-        private static System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-
-        //Buffer size for reading incoming bytes
-        private const int BUFFER_SIZE = 1024;
-
-        //The socket though through which we communicate with the remote client
-        private Socket socket;
-
-        //Text that has been reveived from the client but not yet dealt with
-        private StringBuilder incoming;
-
-        //Text that needs to be sent to the client but which we have yet started sending
-        private StringBuilder outgoing;
-
-        //For decoding incoming UTF8 encoded byte streams.
-        private Decoder decoder = encoding.GetDecoder();
-
-        //Buffers that will contain incoming bytes and characters
-        private byte[] incomingBytes = new byte[BUFFER_SIZE];
-        private char[] incomingChars = new char[BUFFER_SIZE];
-
-        //Records whether an asynchronous send attempt is ongoing
-        private bool sendIsOngoing = false;
-
-        //For synchronizing sends
-        private readonly object sendSync = new object();
-
-        //Bytes that we are actively trying to send, along with the
-        //index of the leftmost byte whose send has not yet been completed
-        private byte[] pendingBytes = new byte[0];
-        private int pendingIndex = 0;
-
-        //
-
     }
 }

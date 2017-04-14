@@ -20,5 +20,7 @@ namespace MyBoggleService
             //Output is sent here
             Console.ReadLine();
         }
+
+
     }
 }

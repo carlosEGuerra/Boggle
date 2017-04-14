@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="BoggleBoard.cs" />
     <Compile Include="BoggleService.cs" />
+    <Compile Include="ClientConnection.cs" />
     <Compile Include="DataModels.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
