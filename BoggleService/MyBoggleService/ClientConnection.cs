@@ -112,14 +112,14 @@ namespace MyBoggleService
 
                         string[] splitString = line.Split();
 
-                        //incomingData.Add(splitString); //Add that string to the data we're looking at.
+                        incomingData.Add(line); //Add that string to the data we're looking at.
 
                         //If we have incoming data.
                         if(!(incomingData.Count == 0))
                         {
                             if(incomingData.Count == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
                             {
-                                GetRequestType();
+                                GetRequestType(splitString);
                             }
 
                             if(incomingData.Count == 2)
@@ -236,10 +236,12 @@ namespace MyBoggleService
 
         /// <summary>
         /// Gets and sets the type of request we're currently dealing with.
+        /// Also gets the parameters of the URL
         /// </summary>
-        private void GetRequestType()
+        private void GetRequestType(string[] request)
         {
-            curRequestType = incomingData[0];
+            curRequestType = request[0];
+
         }
     }
 }
