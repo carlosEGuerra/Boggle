@@ -1,8 +1,11 @@
 ﻿using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace MyBoggleService
@@ -32,13 +35,22 @@ namespace MyBoggleService
         private char[] incomingChars = new char[BUFFER_SIZE];
 
         //Holds all of the data of the request, split up by whitespace.
-        private List<String> incomingData = new List<string>();
+        private int incomingData = 0;
 
         //Integer to keep track of which part of the data we're on.
         private int curDataPos = 0;
 
         //To keep track of the current type of request we're dealing with.
         private string curRequestType;
+
+        //Keeps the content length of the JSON object, ommitting whitespacec
+        private int contentLength = 0;
+
+        //Holds the current jsonContent;
+        private string jsonContent;
+
+        //Holds the current URL with the put, post or get request.
+        private string curURL;
 
         //Records whether an asynchronous send attempt is ongoing
         private bool sendIsOngoing = false;
@@ -96,6 +108,7 @@ namespace MyBoggleService
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
             else
             {
+
                 // Convert the bytes into characters and appending to incoming
                 int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
                 incoming.Append(incomingChars, 0, charsRead);
@@ -112,18 +125,45 @@ namespace MyBoggleService
 
                         string[] splitString = line.Split();
 
-                        incomingData.Add(line); //Add that string to the data we're looking at.
+                        incomingData++; //Keeps track of how many lines of the socket we've received.
 
                         //If we have incoming data.
-                        if(!(incomingData.Count == 0))
+                        if (incomingData > 0)
                         {
-                            if(incomingData.Count == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
+                            //OUT PARAMETERS
+                            string gameID;
+                            string urlRequest; // /games, /users
+                            string brief;
+
+                            if (incomingData == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
                             {
                                 GetRequestType(splitString);
+                                ExtractServiceParams(splitString, out urlRequest, out gameID, out brief);
                             }
 
-                            if(incomingData.Count == 2)
+                            if (incomingData == 3)//Check for content type.
                             {
+                                //"content-length" @ index 7
+                                if (splitString[7].ToUpper() == "CONTENT-LENGTH")
+                                {
+                                    int cLength;
+                                    int.TryParse(splitString[8], out cLength);
+                                    contentLength = cLength;
+
+                                    //15 is the starting index.
+                                    //Compose the JSON string.
+                                    for(int j = 15; i < splitString.Length; j++)
+                                    {
+                                        if (!string.IsNullOrEmpty(splitString[j]))
+                                        {
+                                            jsonContent += splitString[j];
+                                        }
+                                    }
+
+                                    //We have the user's data. Send it into our methods.
+                                    CallServerMethod();
+                                    
+                                }
                             }
                         }
 
@@ -241,7 +281,73 @@ namespace MyBoggleService
         private void GetRequestType(string[] request)
         {
             curRequestType = request[0];
+            return;
+        }
 
+        /// <summary>
+        /// Sets the global service parameters if there are any.
+        /// </summary>
+        /// <param name="request"></param>
+        private void ExtractServiceParams(string[] request, out string urlRequest, out string gameID, out string brief)
+        {
+            //Regex gamesIDReg = new Regex(@"games/[0-9]+");
+            string url = request[1]; //Eg. /games/0
+            string[] urlTrim = url.Split('/');
+            urlRequest = urlTrim[0];
+
+            gameID = null;
+            brief = null;
+
+            if(urlRequest == "users")
+            {
+                gameID = null;
+                brief = null;
+                return;
+            }
+
+            if(urlRequest == "games")
+            {
+                if(urlTrim.Length == 1)
+                {
+                    gameID = null;
+                    brief = null;
+                    return;
+                }
+
+                if(urlTrim.Length == 2)
+                {
+                    gameID = urlTrim[1];
+                    brief = null;
+                    return;
+                }
+
+                if(urlTrim.Length == 3)
+                {
+                    gameID = urlTrim[1];
+                    brief = urlTrim[2].Substring(2);
+                    return;
+                }
+            }     
+        }
+
+        /// <summary>
+        /// Returns the result of a call to the proper service method according to the socket request.
+        /// </summary>
+        /// <returns></returns>
+        private object CallServerMethod()
+        {
+   
+            //CreateUser
+            if(curRequestType == "POST" && curURL == "users")
+            {
+                CreateUserData content = new JsonConvert.Serialize();
+                return server.CreateUser(content);
+            }
+            //JoinGame
+            //CancelJoinRequest
+            //PlayWord
+            //GameStatus
+            return null;
         }
     }
 }
