@@ -31,11 +31,17 @@ namespace MyBoggleService
         private byte[] incomingBytes = new byte[BUFFER_SIZE];
         private char[] incomingChars = new char[BUFFER_SIZE];
 
+        //Holds all of the data of the request, split up by whitespace.
+        private List<String> incomingData = new List<string>();
+
+        //Integer to keep track of which part of the data we're on.
+        private int curDataPos = 0;
+
+        //To keep track of the current type of request we're dealing with.
+        private string curRequestType;
+
         //Records whether an asynchronous send attempt is ongoing
         private bool sendIsOngoing = false;
-
-        //Put, post, or get.
-        private string requestType;
 
         //For synchronizing sends
         private readonly object sendSync = new object();
@@ -83,6 +89,7 @@ namespace MyBoggleService
             if (bytesRead == 0)
             {
                 Console.WriteLine("Socket closed");
+                server.RemoveClient(this);
                 socket.Close();
             }
 
@@ -97,26 +104,27 @@ namespace MyBoggleService
                 // Echo any complete lines, after capitalizing them
                 int lastNewline = -1;
                 int start = 0;
-              // StringBuilder currentLine; //This is going to need to be parsed.
                 for (int i = 0; i < incoming.Length; i++)
                 {
                     if (incoming[i] == '\n')
                     {
-                        String line = incoming.ToString(start, i + 1 - start);//TURNS THE CURRENT LINE INTO A LINE. \N
+                        String line = incoming.ToString(start, i + 1 - start);
 
-                        if (requestType == null)
-                        {
+                        incomingData.Add(line.Split().ToString()); //Add that string to the data we're looking at.
 
-                            //User Regexes here to figure out the request type.
-                            requestType = line.Substring(0, line.Length - 2);
-                            //server.SendToAllClients("Welcome " + name + "\r\n");
-                        }
-                        else //Deal wih the requests
+                        //If we have incoming data.
+                        if(!(incomingData.Count == 0))
                         {
-                            server.SendToAllClients(name + "> " + line.ToUpper());
+                            if(incomingData.Count == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
+                            {
+                                GetRequestType();
+                            }
+
+                            if(incomingData.Count == 2)
+                            {
+                            }
                         }
-                        lastNewline = i;
-                        start = i + 1;
+
                     }
                 }
                 incoming.Remove(0, lastNewline + 1);
@@ -222,6 +230,14 @@ namespace MyBoggleService
                     SendBytes();
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets and sets the type of request we're currently dealing with.
+        /// </summary>
+        private void GetRequestType()
+        {
+            curRequestType = incomingData[0];
         }
     }
 }
