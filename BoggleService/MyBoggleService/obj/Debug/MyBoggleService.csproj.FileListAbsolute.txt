@@ -10,3 +10,5 @@ C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\obj\Debug\MyBoggleService.exe
 C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\obj\Debug\MyBoggleService.pdb
 C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL15\BoggleService\MyBoggleService\obj\Debug\MyBoggleService.csprojResolveAssemblyReference.cache
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\bin\Debug\Newtonsoft.Json.xml

@@ -139,12 +139,13 @@ namespace MyBoggleService
                             {
                                 GetRequestType(splitString);
                                 ExtractServiceParams(splitString, out urlRequest, out gameID, out brief);
+                                curURL = urlRequest;
                             }
 
                             if (incomingData == 3)//Check for content type.
                             {
                                 //"content-length" @ index 7
-                                if (splitString[7].ToUpper() == "CONTENT-LENGTH")
+                                if (splitString[7].ToUpper() == "CONTENT-LENGTH:")
                                 {
                                     int cLength;
                                     int.TryParse(splitString[8], out cLength);
@@ -152,7 +153,7 @@ namespace MyBoggleService
 
                                     //15 is the starting index.
                                     //Compose the JSON string.
-                                    for(int j = 15; i < splitString.Length; j++)
+                                    for(int j = 15; j < splitString.Length; j++)
                                     {
                                         if (!string.IsNullOrEmpty(splitString[j]))
                                         {
@@ -293,7 +294,7 @@ namespace MyBoggleService
             //Regex gamesIDReg = new Regex(@"games/[0-9]+");
             string url = request[1]; //Eg. /games/0
             string[] urlTrim = url.Split('/');
-            urlRequest = urlTrim[0];
+            urlRequest = urlTrim[1];
 
             gameID = null;
             brief = null;
