@@ -4,3 +4,8 @@ C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL15\BoggleService\MyBoggl
 C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL15\BoggleService\MyBoggleService\bin\Debug\MyBoggleService.pdb
 C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL15\BoggleService\MyBoggleService\obj\Debug\MyBoggleService.exe
 C:\Users\ebrig\Documents\College\Spring 2017\CS 3500\GNL15\BoggleService\MyBoggleService\obj\Debug\MyBoggleService.pdb
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\bin\Debug\MyBoggleService.exe.config
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\bin\Debug\MyBoggleService.exe
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\bin\Debug\MyBoggleService.pdb
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\obj\Debug\MyBoggleService.exe
+C:\Users\Carlos Guerra\Source\Repos\GunsNLipstick\BoggleService\MyBoggleService\obj\Debug\MyBoggleService.pdb

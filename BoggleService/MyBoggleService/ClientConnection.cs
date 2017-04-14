@@ -110,7 +110,9 @@ namespace MyBoggleService
                     {
                         String line = incoming.ToString(start, i + 1 - start);
 
-                        incomingData.Add(line.Split().ToString()); //Add that string to the data we're looking at.
+                        string[] splitString = line.Split();
+
+                        //incomingData.Add(splitString); //Add that string to the data we're looking at.
 
                         //If we have incoming data.
                         if(!(incomingData.Count == 0))
