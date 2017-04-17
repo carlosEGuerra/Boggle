@@ -2,8 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\BoggleService",
-    "\\BoggleService\\BoggleService"
+    "\\BoggleService\\BoggleService",
+    "\\BoggleService\\MyBoggleService"
   ],
-  "SelectedNode": "\\BoggleService\\BoggleService\\DataModels.cs",
+  "SelectedNode": "\\BoggleService\\MyBoggleService\\ClientConnection.cs",
   "PreviewInSolutionExplorer": false
 }
