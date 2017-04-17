@@ -211,7 +211,7 @@ namespace MyBoggleService
                                 contentCollected = true;
                             }
 
-                            if (contentCollected)
+                            if (contentCollected && !requestCompleted)
                             {
                                 //Call the service method.
                                 CallServerMethod();
@@ -386,7 +386,10 @@ namespace MyBoggleService
         /// <returns></returns>
         private void CallServerMethod()
         {
-            object response;
+            dynamic response;
+            string jsonPortion;
+            string ourResponse;
+            string status;
 
             //CreateUser
             if (curRequestType == "POST")
@@ -395,7 +398,16 @@ namespace MyBoggleService
                 {
 
                     CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
-                    response = server.CreateUser(content);
+                    response = server.CreateUser(content, out status); //Save the response
+
+                    jsonPortion = "{" + "\"UserToken\":" + "\"" + response.UserToken + "\"" + "}";
+
+                    ourResponse = "HTTP/1.1 " + status + "\r\n" + 
+                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                  "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+                                  jsonPortion.ToString();
+                    SendMessage(ourResponse);
+                    Console.WriteLine(ourResponse);
                 }
                 else if (curURL == "games")
                 {
@@ -415,6 +427,8 @@ namespace MyBoggleService
             //CancelJoinRequest
             //PlayWord
             //GameStatus
+            requestCompleted = true;
+
         }
     }
 }

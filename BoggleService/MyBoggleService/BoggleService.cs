@@ -129,13 +129,16 @@ namespace MyBoggleService
         /// </summary>
         /// <param name="item"></param>
         /// <returns> string of the userToken </returns>
-        public CreateUserResponse CreateUser(CreateUserData userData)
+        public CreateUserResponse CreateUser(CreateUserData userData, out string status)
         {
+            status = "";
+            
             lock (sync)
             {
                 if (userData.Nickname == null || userData.Nickname.Trim().Length == 0)
                 {
                     SetStatus(Forbidden);
+                    status = "403 FORBIDDEN";
                     return null;
                 }
 
@@ -145,6 +148,7 @@ namespace MyBoggleService
                 users.Add(userToken, new User()); //Add it to our database; set the fields of our own User class.
                 users[userToken].UserId = userToken;
                 users[userToken].Nickname = userData.Nickname.Trim();
+                status = "201 CREATED"; 
                 SetStatus(Created);
 
                 return response;
