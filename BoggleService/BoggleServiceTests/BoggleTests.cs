@@ -66,14 +66,16 @@ namespace Boggle
             IISAgent.Stop();
         }
 
-        private RestTestClient client = new RestTestClient("http://localhost:60000/BoggleService.svc/");
+        private RestTestClient client = new RestTestClient("128.110.76.242:60000/BoggleService.svc/");
+		//private RestTestClient client = new RestTestClient("http://localhost:60000/BoggleService.svc/");
 
-        /// <summary>
-        /// Note that DoGetAsync (and the other similar methods) returns a Response object, which contains
-        /// the response Stats and the deserialized JSON response (if any).  See RestTestClient.cs
-        /// for details.
-        /// </summary>
-        [TestMethod]
+
+		/// <summary>
+		/// Note that DoGetAsync (and the other similar methods) returns a Response object, which contains
+		/// the response Stats and the deserialized JSON response (if any).  See RestTestClient.cs
+		/// for details.
+		/// </summary>
+		[TestMethod]
         public void TestMethod1()
         {
             Response r = client.DoGetAsync("word?index={0}", "-5").Result;
