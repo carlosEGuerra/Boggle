@@ -124,7 +124,7 @@ namespace MyBoggleService
                         String line = incoming.ToString(start, i + 1 - start);
 
                         string[] splitString = line.Split();
-                        
+
                         //Not needed ATM
                         /*
                         incomingData++; //Keeps track of how many lines of the socket we've received.
@@ -193,6 +193,7 @@ namespace MyBoggleService
                             string urlRequest; // /games, /users
                             string brief;
 
+
                             if (incomingData == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
                             {
                                 GetRequestType(splitString);
@@ -200,7 +201,7 @@ namespace MyBoggleService
                                 curURL = urlRequest;
                             }
                             //Won't always work as the 3rd line in incoming data might not be content length
-                            if (incomingData == 3)//Check for content type.
+                            if (requestType != null)//Check for content type.
                             {
                                 //"content-length" @ index 7
                                 if (splitString[7].ToUpper() == "CONTENT-LENGTH:")
