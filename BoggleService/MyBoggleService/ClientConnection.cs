@@ -167,18 +167,35 @@ namespace MyBoggleService
                             {
                                 //16 is the starting index.
                                 //Compose the JSON string.
-                                for (int l = 99; l <= 99 + contentLength; l++)
+                                for (int l = 100; l <= 100 + contentLength; l++)
                                 {
-                                    if (!string.IsNullOrEmpty(incoming[l].ToString()))
+                                    if (!string.IsNullOrEmpty(incoming[l].ToString()) || !(String.IsNullOrWhiteSpace(incoming[l].ToString()))
+                                        || incoming[l] != '\n' || incoming[l] != '\r' )
                                     {
                                         jsonContent += incoming[l];
                                         if (incoming[l] == '}')
                                         {
+                                            //Split again.
+                                            string[] fixedContent = jsonContent.Split();
+                                            string fixedContentString = "";
+
+                                            foreach(string s in fixedContent)
+                                            {
+                                                if (!string.IsNullOrEmpty(s))
+                                                {
+                                                    fixedContentString += s;
+                                                }
+                                                
+                                            }
+
+                                            jsonContent = fixedContentString;
+
+
                                             contentCollected = true;
                                             break;
                                         }
                                     }
-                                    if(string.IsNullOrEmpty(incoming[l].ToString()) || (String.IsNullOrWhiteSpace(incoming[l].ToString())))
+                                    if (string.IsNullOrEmpty(incoming[l].ToString()) || (String.IsNullOrWhiteSpace(incoming[l].ToString())))
                                     {
                                         contentLength++;
                                     }
@@ -367,21 +384,23 @@ namespace MyBoggleService
         /// Returns the result of a call to the proper service method according to the socket request.
         /// </summary>
         /// <returns></returns>
-        private object CallServerMethod()
+        private void CallServerMethod()
         {
+            object response;
 
             //CreateUser
             if (curRequestType == "POST")
             {
                 if (curURL == "users")
                 {
+
                     CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
-                    return server.CreateUser(content);
+                    response = server.CreateUser(content);
                 }
                 else if (curURL == "games")
                 {
                     JoinGameData content = JsonConvert.DeserializeObject<JoinGameData>(jsonContent);
-                    return server.JoinGame(content);
+                    response = server.JoinGame(content);
                 }
             }
             //for the case when the Request Type is JOIN
@@ -396,7 +415,6 @@ namespace MyBoggleService
             //CancelJoinRequest
             //PlayWord
             //GameStatus
-            return null;
         }
     }
 }
