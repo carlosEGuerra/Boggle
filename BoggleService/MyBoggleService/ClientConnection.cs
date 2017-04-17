@@ -163,11 +163,11 @@ namespace MyBoggleService
                             }
 
                             //When we finally have the content length and we need to begin reading the bytes of content.
-                            if (splitString.Length >= 16 && incoming.Length >= (83 + contentLength) && contentCollected == false) //Collect content only when we have the complete content
+                            if (incoming[i] == '{' && contentCollected == false) //Collect content only when we have the complete content
                             {
                                 //16 is the starting index.
                                 //Compose the JSON string.
-                                for (int l = 100; l <= 100 + contentLength; l++)
+                                for (int l = i; l <= i + contentLength; l++)
                                 {
                                     if (!string.IsNullOrEmpty(incoming[l].ToString()) || !(String.IsNullOrWhiteSpace(incoming[l].ToString()))
                                         || incoming[l] != '\n' || incoming[l] != '\r' )
