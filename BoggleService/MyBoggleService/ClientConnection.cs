@@ -339,12 +339,28 @@ namespace MyBoggleService
         {
    
             //CreateUser
-            if(curRequestType == "POST" && curURL == "users")
+            if(curRequestType == "POST")
             {
-                CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
-                return server.CreateUser(content);
+                if(curURL == "users")
+                {
+                    CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
+                    return server.CreateUser(content);
+                }
+                else if(curURL == "games")
+                {
+                    JoinGameData content = JsonConvert.DeserializeObject<JoinGameData>(jsonContent);
+                    return server.JoinGame(content);
+                }
             }
-            //JoinGame
+            //for the case when the Request Type is JOIN
+            else if(curRequestType == "PUT")
+            {
+                //need to fix the return object
+                if(curURL == "games")
+                {
+                    CancelJoinData content = JsonConvert.DeserializeObject<CancelJoinData>(jsonContent);
+                }
+            }
             //CancelJoinRequest
             //PlayWord
             //GameStatus
