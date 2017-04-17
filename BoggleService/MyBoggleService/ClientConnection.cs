@@ -124,16 +124,19 @@ namespace MyBoggleService
                         String line = incoming.ToString(start, i + 1 - start);
 
                         string[] splitString = line.Split();
-
-                        //incomingData++; //Keeps track of how many lines of the socket we've received.
+                        
+                        //Not needed ATM
+                        /*
+                        incomingData++; //Keeps track of how many lines of the socket we've received.
+                        */
 
                         //used to identify what needs to be done with the input
-                        string identifierString = splitString[0];
+                        string requestType = splitString[0];
                         string URL = splitString[1];
                         string[] urlLine = URL.Split('/');
 
                         //Does an action according to the string identifier
-                        switch (identifierString)
+                        switch (requestType)
                         {
                             case "POST":
                                 string request = urlLine[1];
@@ -149,32 +152,35 @@ namespace MyBoggleService
                             case "PUT":
                                 string identifier = urlLine[0];
                                 string gameIDNumber = urlLine[1];
-                                //for when we are trying to Play Word
+
+                                //For PlayWord
                                 if (identifier == "games" && !string.IsNullOrEmpty(gameIDNumber))
                                 {
-                                    //TODO
+                                    //TODO: for when we are trying to Play Word
                                 }
-                                //for when we are trying to Cancel Join Request
+                                //For CancelJoinRequest
                                 else if (identifier == "games")
                                 {
-                                    //TODO
+                                    //TODO: for when we are trying to Cancel Join Request
                                 }
                                 return;
                             case "GET":
-
+                                //For when we are getting the status of the game
                                 return;
                             case "HOST:":
                                 //Nothing needed to do with Hosts so we just return
                                 return;
                             case "content-length:":
-                                //TODO
+                                //need to save content length to a var then use it to go through the JSON 
                                 return;
                             case "content-type:":
-                                //TODO
+                                //Always will be JSON Obj according to Joe
                                 return;
                             case "/r/n/r/n":
-                                //TODO
+                                //signifies the end of the Headers and the start of the JSON Obj
                                 return;
+                            default:
+                                continue;
                         }
 
 
@@ -227,8 +233,7 @@ namespace MyBoggleService
                 try
                 {
                     // Ask for some more data
-                    socket.BeginReceive(incomingBytes, 0, incomingBytes.Length,
-                        SocketFlags.None, MessageReceived, null);
+                    socket.BeginReceive(incomingBytes, 0, incomingBytes.Length, SocketFlags.None, MessageReceived, null);
                 }
                 catch (ObjectDisposedException)
                 {
