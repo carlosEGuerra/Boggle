@@ -125,8 +125,60 @@ namespace MyBoggleService
 
                         string[] splitString = line.Split();
 
-                        incomingData++; //Keeps track of how many lines of the socket we've received.
+                        //incomingData++; //Keeps track of how many lines of the socket we've received.
 
+                        //used to identify what needs to be done with the input
+                        string identifierString = splitString[0];
+                        string URL = splitString[1];
+                        string[] urlLine = URL.Split('/');
+
+                        //Does an action according to the string identifier
+                        switch (identifierString)
+                        {
+                            case "POST":
+                                string request = urlLine[1];
+                                if (request == "users")
+                                {
+                                    //does the work for when the URL is Create User
+                                }
+                                else if (request == "games")
+                                {
+                                    //do the work for when the URL is Join Game
+                                }
+                                return;
+                            case "PUT":
+                                string identifier = urlLine[0];
+                                string gameIDNumber = urlLine[1];
+                                //for when we are trying to Play Word
+                                if (identifier == "games" && !string.IsNullOrEmpty(gameIDNumber))
+                                {
+                                    //TODO
+                                }
+                                //for when we are trying to Cancel Join Request
+                                else if (identifier == "games")
+                                {
+                                    //TODO
+                                }
+                                return;
+                            case "GET":
+
+                                return;
+                            case "HOST:":
+                                //Nothing needed to do with Hosts so we just return
+                                return;
+                            case "content-length:":
+                                //TODO
+                                return;
+                            case "content-type:":
+                                //TODO
+                                return;
+                            case "/r/n/r/n":
+                                //TODO
+                                return;
+                        }
+
+
+                        /*
                         //If we have incoming data.
                         if (incomingData > 0)
                         {
@@ -141,7 +193,7 @@ namespace MyBoggleService
                                 ExtractServiceParams(splitString, out urlRequest, out gameID, out brief);
                                 curURL = urlRequest;
                             }
-
+                            //Won't always work as the 3rd line in incoming data might not be content length
                             if (incomingData == 3)//Check for content type.
                             {
                                 //"content-length" @ index 7
@@ -167,7 +219,7 @@ namespace MyBoggleService
                                 }
                             }
                         }
-
+                        */
                     }
                 }
                 incoming.Remove(0, lastNewline + 1);
@@ -299,36 +351,36 @@ namespace MyBoggleService
             gameID = null;
             brief = null;
 
-            if(urlRequest == "users")
+            if (urlRequest == "users")
             {
                 gameID = null;
                 brief = null;
                 return;
             }
 
-            if(urlRequest == "games")
+            if (urlRequest == "games")
             {
-                if(urlTrim.Length == 1)
+                if (urlTrim.Length == 1)
                 {
                     gameID = null;
                     brief = null;
                     return;
                 }
 
-                if(urlTrim.Length == 2)
+                if (urlTrim.Length == 2)
                 {
                     gameID = urlTrim[1];
                     brief = null;
                     return;
                 }
 
-                if(urlTrim.Length == 3)
+                if (urlTrim.Length == 3)
                 {
                     gameID = urlTrim[1];
                     brief = urlTrim[2].Substring(2);
                     return;
                 }
-            }     
+            }
         }
 
         /// <summary>
@@ -337,26 +389,26 @@ namespace MyBoggleService
         /// <returns></returns>
         private object CallServerMethod()
         {
-   
+
             //CreateUser
-            if(curRequestType == "POST")
+            if (curRequestType == "POST")
             {
-                if(curURL == "users")
+                if (curURL == "users")
                 {
                     CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
                     return server.CreateUser(content);
                 }
-                else if(curURL == "games")
+                else if (curURL == "games")
                 {
                     JoinGameData content = JsonConvert.DeserializeObject<JoinGameData>(jsonContent);
                     return server.JoinGame(content);
                 }
             }
             //for the case when the Request Type is JOIN
-            else if(curRequestType == "PUT")
+            else if (curRequestType == "PUT")
             {
                 //need to fix the return object
-                if(curURL == "games")
+                if (curURL == "games")
                 {
                     CancelJoinData content = JsonConvert.DeserializeObject<CancelJoinData>(jsonContent);
                 }
