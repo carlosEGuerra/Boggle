@@ -55,6 +55,8 @@ namespace MyBoggleService
         //Records whether an asynchronous send attempt is ongoing
         private bool sendIsOngoing = false;
 
+        private bool contentLengthCollected = false;
+
 
         //Records if the request has been completed.
         private bool requestCompleted = false;
@@ -151,15 +153,17 @@ namespace MyBoggleService
                                 curURL = urlRequest;
                             }
 
-                            if (curRequestType != null && !requestCompleted)//Check for content type.
+                            if (curRequestType != null && !requestCompleted && !contentCollected && !contentLengthCollected)//Check for content type.
                             {
                                 //"content-length" @ index 7
-                                if (splitString.Contains("content-length:") && splitString.Length >= 9)//if (splitString[7].ToUpper() == "CONTENT-LENGTH:")
+                                if (splitString.Contains("Content-Length:") && splitString.Length >= 13)//if (splitString[7].ToUpper() == "CONTENT-LENGTH:")
                                 {
                                     int cLength;
-                                    int.TryParse(splitString[8], out cLength);
+                                    int.TryParse(splitString[12], out cLength);
+
                                     contentLength = cLength;
-                                    //NEED A CASE TO SAY THAT THE CONTENT IS COLLECTED IF WE HAVE A GET WITH NO   
+                                    //NEED A CASE TO SAY THAT THE CONTENT IS COLLECTED IF WE HAVE A GET WITH NO 
+                                    contentLengthCollected = true;
                                 }
 
                             }
@@ -167,7 +171,7 @@ namespace MyBoggleService
 
 
                             //For the case of the get
-                            if (!splitString.Contains("content-length:") && curRequestType == "GET")//If we have a get with no content length
+                            if (!splitString.Contains("Content-Length:") && curRequestType == "GET")//If we have a get with no content length
                             {
                                 contentCollected = true;
                             }
@@ -346,7 +350,22 @@ namespace MyBoggleService
             //Regex gamesIDReg = new Regex(@"games/[0-9]+");
             string url = request[1]; //Eg. /games/0
             string[] urlTrim = url.Split('/');
-            urlRequest = urlTrim[1];
+            urlRequest = "";
+
+            foreach(string s in urlTrim)
+            {
+                if(s == "users")
+                {
+                    urlRequest = s;
+                    break;
+                }
+
+                if(s == "games")
+                {
+                    urlRequest = s;
+                    break;
+                }
+            }
 
             gameID = null;
             brief = null;
@@ -403,14 +422,29 @@ namespace MyBoggleService
                     CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
                     response = server.CreateUser(content, out status); //Save the response
 
-                    jsonPortion = "{" + "\"UserToken\":" + "\"" + response.UserToken + "\"" + "}";
-
-                    ourResponse = "HTTP/1.1 " + status + "\r\n" +
-                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
-                                  "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
-                                  jsonPortion.ToString();
-                    SendMessage(ourResponse);
-                    Console.WriteLine(ourResponse);
+                    if(response != null)
+                    {
+                        jsonPortion = "{" + "\"UserToken\":" + "\"" + response.UserToken + "\"" + "}";
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+                                jsonPortion.ToString();
+                                SendMessage(ourResponse);
+                                Console.WriteLine(ourResponse);
+                        return;
+                    }
+                 
+                    if(response == null)
+                    {
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n";
+                        SendMessage(ourResponse);
+                        Console.WriteLine(ourResponse);
+                        return;
+                    }
+                   
+                    
+                  
                 }
                 else if (curURL == "games")
                 {
