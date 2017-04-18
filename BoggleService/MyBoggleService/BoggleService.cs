@@ -327,7 +327,6 @@ namespace MyBoggleService
                 SetStatus(Forbidden);
                 status = "403 FORBIDDEN";
                 return null;
-
             }
 
             if (!games[thisgameID].GameStatus.Equals("active")) //If our game isn't active.
