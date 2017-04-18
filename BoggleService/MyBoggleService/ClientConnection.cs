@@ -341,15 +341,15 @@ namespace MyBoggleService
             string[] urlTrim = url.Split('/');
             urlRequest = "";
 
-            foreach(string s in urlTrim)
+            foreach (string s in urlTrim)
             {
-                if(s == "users")
+                if (s == "users")
                 {
                     urlRequest = s;
                     break;
                 }
 
-                if(s == "games")
+                if (s == "games")
                 {
                     urlRequest = s;
                     break;
@@ -411,19 +411,19 @@ namespace MyBoggleService
                     CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
                     response = server.CreateUser(content, out status); //Save the response
 
-                    if(response != null)
+                    if (response != null)
                     {
                         jsonPortion = "{" + "\"UserToken\":" + "\"" + response.UserToken + "\"" + "}";
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
                                 "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
                                 "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
                                 jsonPortion.ToString();
-                                SendMessage(ourResponse);
-                                Console.WriteLine(ourResponse);
+                        SendMessage(ourResponse);
+                        Console.WriteLine(ourResponse);
                         return;
                     }
-                 
-                    if(response == null)
+
+                    if (response == null)
                     {
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
                                       "Content-Type: application/json; charset=utf-8 \r\n\r\n";
@@ -431,10 +431,11 @@ namespace MyBoggleService
                         Console.WriteLine(ourResponse);
                         return;
                     }
-                   
-                    
-                  
+
+
+
                 }
+                //for the case when the Request Type is JOIN
                 else if (curURL == "games")
                 {
                     JoinGameData content = JsonConvert.DeserializeObject<JoinGameData>(jsonContent);
@@ -449,20 +450,35 @@ namespace MyBoggleService
                     Console.WriteLine(ourResponse);
                 }
             }
-            //for the case when the Request Type is JOIN
+
             else if (curRequestType == "PUT")
             {
+
+                //For CancelJoinGame
+                if (curURL == "games" && string.IsNullOrEmpty(gameID))
+                {
+                    CancelJoinData content = JsonConvert.DeserializeObject<CancelJoinData>(jsonContent);
+                    server.CancelJoinRequest(content, out status);
+                    ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                  "Content-Type: application / json; charset = utf - 8 \r\n\r\n";
+                    SendMessage(ourResponse);
+                    Console.WriteLine(ourResponse);
+                }
+
                 //For PlayWord
                 if (curURL == "games" && !string.IsNullOrEmpty(gameID))
                 {
-                    CancelJoinData content = JsonConvert.DeserializeObject<CancelJoinData>(jsonContent);
+                    PlayWordData content = JsonConvert.DeserializeObject<PlayWordData>(jsonContent);
+                    response = server.PlayWord(content, gameID, out status);
+                    jsonPortion = "{" + "\"Score\":" + response.Score + "\"" + "}";
+                    ourResponse = "HTTP / 1.1 " + status + "\r\n" +
+                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                  "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+                                  jsonPortion.ToString();
+                    SendMessage(ourResponse);
+                    Console.WriteLine(ourResponse);
                 }
 
-                //For CancelJoinGame
-                if (curURL == "games")
-                {
-
-                }
             }
             //to get the Status
             else if (curRequestType == "GET")
