@@ -144,15 +144,12 @@ namespace MyBoggleService
                         //If we have incoming data.
                         if (incomingData > 0)
                         {
-
-
                             if (incomingData == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
                             {
                                 GetRequestType(splitString);
                                 ExtractServiceParams(splitString, out urlRequest, out gameID, out brief);
                                 curURL = urlRequest;
                             }
-
                             if (curRequestType != null && !requestCompleted && !contentCollected && !contentLengthCollected)//Check for content type.
                             {
                                 //"content-length" @ index 7
@@ -165,10 +162,7 @@ namespace MyBoggleService
                                     //NEED A CASE TO SAY THAT THE CONTENT IS COLLECTED IF WE HAVE A GET WITH NO 
                                     contentLengthCollected = true;
                                 }
-
                             }
-
-
 
                             //For the case of the get
                             if (!splitString.Contains("Content-Length:") && curRequestType == "GET")//If we have a get with no content length
