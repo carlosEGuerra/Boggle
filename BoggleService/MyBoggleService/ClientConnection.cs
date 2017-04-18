@@ -415,9 +415,9 @@ namespace MyBoggleService
                     {
                         jsonPortion = "{" + "\"UserToken\":" + "\"" + response.UserToken + "\"" + "}";
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
-                                "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
-                                "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
-                                jsonPortion.ToString();
+                                      "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+                                      jsonPortion.ToString();
                         SendMessage(ourResponse);
                         Console.WriteLine(ourResponse);
                         return;
@@ -426,6 +426,7 @@ namespace MyBoggleService
                     if (response == null)
                     {
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                      "Content-Length: " + "0" + "\r\n" +  
                                       "Content-Type: application/json; charset=utf-8 \r\n\r\n";
                         SendMessage(ourResponse);
                         Console.WriteLine(ourResponse);
