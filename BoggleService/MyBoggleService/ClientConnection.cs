@@ -404,7 +404,7 @@ namespace MyBoggleService
         private void CallServerMethod()
         {
             dynamic response;
-            string jsonPortion;
+            string jsonPortion = null;
             string ourResponse;
             string status;
 
@@ -432,7 +432,8 @@ namespace MyBoggleService
                     if (response == null)
                     {
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
-                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n";
+                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+                                      "Content-Length: " + "0" + "\r\n" + jsonPortion.ToString();
                         SendMessage(ourResponse);
                         Console.WriteLine(ourResponse);
                         return;
