@@ -235,7 +235,7 @@ namespace MyBoggleService
                     SetStatus(Created);//For the second player only.
                     games[gameID].StartTime = DateTime.Now;
                     gameID++; //Create a new empty game.
-                    status = "201 CREATED";
+                    status = "202 Accepted";
                 }
                 return response;
             }
