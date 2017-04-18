@@ -206,12 +206,8 @@ namespace MyBoggleService
                                         {
                                             fixedContentString += s;
                                         }
-
                                     }
-
                                     jsonContent = fixedContentString;
-
-
                                     contentCollected = true;
                                     break;
                                 }
@@ -221,7 +217,6 @@ namespace MyBoggleService
                                 contentLength++;
                             }
                         }
-
                         //Content is collected FLAG
                         contentCollected = true;
                     }
