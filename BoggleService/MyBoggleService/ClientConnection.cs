@@ -164,7 +164,7 @@ namespace MyBoggleService
 
                             }
 
-                           
+
 
                             //For the case of the get
                             if (!splitString.Contains("content-length:") && curRequestType == "GET")//If we have a get with no content length
@@ -377,7 +377,7 @@ namespace MyBoggleService
                 if (urlTrim.Length == 3)
                 {
                     gameID = urlTrim[1];
-                    brief = urlTrim[2].Substring(2);
+                    brief = urlTrim[2];
                     return;
                 }
             }
@@ -436,23 +436,55 @@ namespace MyBoggleService
                 }
 
                 //For CancelJoinGame
-                if(curURL == "games")
+                if (curURL == "games")
                 {
 
                 }
             }
             //to get the Status
-            else if( curRequestType == "GET")
+            else if (curRequestType == "GET")
             {
                 //for when Brief is no or null
-                if(curURL == "games" && (!string.IsNullOrEmpty(brief) || brief == "?=no"))
+                if (curURL == "games" && (!string.IsNullOrEmpty(brief) || brief == "?brief=no"))
                 {
-
+                    StatusResponse content = JsonConvert.DeserializeObject<StatusResponse>(jsonContent);
+                    response = server.GameStatus(gameID, null, out status);
+                    jsonPortion = "{" + "\"GameState\":" + "\"" + response.GameState + "\"" + "," +
+                                        "\"Board\":" + "\"" + response.Board + "\"" + "," +
+                                        "\"TimeLimit" + "\"" + response.TimeLimit + "\"" + "," +
+                                        "\"TimeLeft\":" + "\"" + response.TimeLeft + "\"" + "," +
+                                        "\"Player1\":" + "\"" + response.Player1 + "\"" + "{" +
+                                        "\"Nickname\":" + "\"" + response.Player1.Nickname + "\"" + "," +
+                                        "\"Score\":" + "\"" + response.Player1.Score + "," + "}," +
+                                        "\"WordsPlayed\":" + "\"" + "[" + response.Player1.WordsPlayed + "," + "]," + "}," +
+                                        "\"Player2\":" + "\"" + response.Player2 + "\"" + "{" +
+                                        "\"Nickname\":" + "\"" + response.Player2.Nickname + "\"" + "," +
+                                        "\"Score\":" + "\"" + response.Player2.Score + "," + "}," + "}" +
+                                        "\"WordsPlayed\":" + "\"" + "[" + response.Player1.WordsPlayed + "," + "]," + "}," + "}";
+                    ourResponse = "Http/1.1 " + status + "\r\n" +
+                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                  "Content-Type: application/jason; charset = utf-8 \r\n\r\n" +
+                                  jsonPortion.ToString();
+                    SendMessage(ourResponse);
+                    Console.WriteLine(ourResponse);
                 }
                 //for when Bried is yes
-                else if(curURL == "games" && brief == "?=yes")
+                else if (curURL == "games" && brief == "?brief=yes")
                 {
-
+                    StatusResponse content = JsonConvert.DeserializeObject<StatusResponse>(jsonContent);
+                    response = server.GameStatus(gameID, null, out status);
+                    jsonPortion = "{" + "\"GameState\":" + "\"" + response.GameState + "\"" + "," +
+                                        "\"TimeLeft\":" + "\"" + response.TimeLeft + "\"" + "," +
+                                        "\"Player1\":" + "\"" + response.Player1 + "\"" + "{" +
+                                        "\"Score\":" + "\"" + response.Player1.Score + "," + "}," +
+                                        "\"Player2\":" + "\"" + response.Player2 + "\"" + "{" +
+                                        "\"Score\":" + "\"" + response.Player2.Score + "," + "}," + "}";
+                    ourResponse = "Http/1.1 " + status + "\r\n" +
+                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                  "Content-Type: application/jason; charset = utf-8 \r\n\r\n" +
+                                  jsonPortion.ToString();
+                    SendMessage(ourResponse);
+                    Console.WriteLine(ourResponse);
                 }
             }
             requestCompleted = true;
