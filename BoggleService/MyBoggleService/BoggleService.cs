@@ -374,8 +374,9 @@ namespace MyBoggleService
         /// </summary>
         /// <param name="game"></param>
         /// <returns></returns>
-        public StatusResponse GameStatus(string GameID, string Brief)
+        public StatusResponse GameStatus(string GameID, string Brief, out string status)
         {
+            status = "";
             int gameID;
             if (!int.TryParse(GameID, out gameID))
             {
@@ -385,7 +386,7 @@ namespace MyBoggleService
             if (!games.ContainsKey(gameID))
             {
                 SetStatus(Forbidden);
-                return null;
+                status = "403 FORBIDDEN";
             }
 
 
@@ -504,10 +505,9 @@ namespace MyBoggleService
                         w.Score = p.Value;
                         response.Player2.WordsPlayed.Add(w);
                     }
-
-
                 }
             }
+            status = "200 OK";
             return response;
         }
 
