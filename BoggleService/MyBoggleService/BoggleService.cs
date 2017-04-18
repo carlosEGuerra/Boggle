@@ -174,10 +174,11 @@ namespace MyBoggleService
             {
                 status = "";
 
-                if (!users.ContainsKey(userData.UserToken) || userData.TimeLimit < 5 || userData.TimeLimit > 120)//If we don't have the current user in our database
+                if (!users.ContainsKey(userData.UserToken) || userData.TimeLimit < 5 || userData.TimeLimit > 120 )//If we don't have the current user in our database
                 {
                     SetStatus(Forbidden);
                     status = "403 FORBIDDEN";
+                    return null;
                 }
 
                 //Otherwise, if UserToken is already a player in the pending game, responds with status 409(Conflict).
@@ -185,6 +186,7 @@ namespace MyBoggleService
                 {
                     SetStatus(Conflict);
                     status = "409 CONFLICT";
+                    return null;
                 }
 
                 //Store the dictionry only the first time this method is called.

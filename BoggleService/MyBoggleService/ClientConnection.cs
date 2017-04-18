@@ -144,15 +144,12 @@ namespace MyBoggleService
                         //If we have incoming data.
                         if (incomingData > 0)
                         {
-
-
                             if (incomingData == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
                             {
                                 GetRequestType(splitString);
                                 ExtractServiceParams(splitString, out urlRequest, out gameID, out brief);
                                 curURL = urlRequest;
                             }
-
                             if (curRequestType != null && !requestCompleted && !contentCollected && !contentLengthCollected)//Check for content type.
                             {
                                 //"content-length" @ index 7
@@ -165,7 +162,6 @@ namespace MyBoggleService
                                     //NEED A CASE TO SAY THAT THE CONTENT IS COLLECTED IF WE HAVE A GET WITH NO 
                                     contentLengthCollected = true;
                                 }
-
                             }
 
                             //For the case of the get
@@ -419,9 +415,9 @@ namespace MyBoggleService
                     {
                         jsonPortion = "{" + "\"UserToken\":" + "\"" + response.UserToken + "\"" + "}";
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
-                                "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
-                                "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
-                                jsonPortion.ToString();
+                                      "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+                                      jsonPortion.ToString();
                         SendMessage(ourResponse);
                         Console.WriteLine(ourResponse);
                         return;
@@ -430,6 +426,7 @@ namespace MyBoggleService
                     if (response == null)
                     {
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                      "Content-Length: " + "0" + "\r\n" +  
                                       "Content-Type: application/json; charset=utf-8 \r\n\r\n";
                         SendMessage(ourResponse);
                         Console.WriteLine(ourResponse);
@@ -445,13 +442,25 @@ namespace MyBoggleService
                     JoinGameData content = JsonConvert.DeserializeObject<JoinGameData>(jsonContent);
                     response = server.JoinGame(content, out status);
 
-                    jsonPortion = "{" + "\"GameID\":" + "\"" + response.GameID + "\"" + "}";
-                    ourResponse = "HTTP/1.1 " + status + "\r\n" +
-                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
-                                  "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
-                                  jsonPortion.ToString();
-                    SendMessage(ourResponse);
-                    Console.WriteLine(ourResponse);
+                    if (response != null)
+                    {
+                        jsonPortion = "{" + "\"GameID\":" + "\"" + response.GameID + "\"" + "}";
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                      "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+                                      jsonPortion.ToString();
+                        SendMessage(ourResponse);
+                        Console.WriteLine(ourResponse);
+                    }
+                    else if(response == null)
+                    {
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                      "Content-Length: " + "0" + "\r\n" +
+                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n";
+                        SendMessage(ourResponse);
+                        Console.WriteLine(ourResponse);
+                        return;
+                    }
                 }
             }
 
