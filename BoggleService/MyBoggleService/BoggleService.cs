@@ -168,22 +168,23 @@ namespace MyBoggleService
         /// <param name="user"></param>
         /// <param name="game"></param>
         /// <returns> an integer GameID </returns>
-        public JoinGameResponse JoinGame(JoinGameData userData)
+        public JoinGameResponse JoinGame(JoinGameData userData, out string status)
         {
             lock (sync)
             {
+                status = "";
 
                 if (!users.ContainsKey(userData.UserToken) || userData.TimeLimit < 5 || userData.TimeLimit > 120)//If we don't have the current user in our database
                 {
                     SetStatus(Forbidden);
-                    return null;
+                    status = "403 FORBIDDEN";
                 }
 
                 //Otherwise, if UserToken is already a player in the pending game, responds with status 409(Conflict).
                 if (users[userData.UserToken].HasPendingGame)
                 {
                     SetStatus(Conflict);
-                    return null;
+                    status = "409 CONFLICT";
                 }
 
                 //Store the dictionry only the first time this method is called.
@@ -217,6 +218,7 @@ namespace MyBoggleService
                     games[gameID].Player1 = userData.UserToken;
                     users[userData.UserToken].CurrentGameID = gameID;//Make sure the player has a gameID.
                     SetStatus(Accepted); //For the first player only.
+                    status = "201 CREATED";
                 }
                 //If the current game ID exists, it only has 1 player; add the user as a second player.
                 else if (games.ContainsKey(gameID))
@@ -231,6 +233,7 @@ namespace MyBoggleService
                     SetStatus(Created);//For the second player only.
                     games[gameID].StartTime = DateTime.Now;
                     gameID++; //Create a new empty game.
+                    status = "201 CREATED";
                 }
                 return response;
             }
