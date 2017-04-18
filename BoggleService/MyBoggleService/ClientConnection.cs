@@ -7,75 +7,52 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 namespace MyBoggleService
 {
     public class ClientConnection
     {
         //incoming/outgoing is UTF8 Encoded
         private static System.Text.UTF8Encoding encoding = new System.Text.UTF8Encoding();
-
         //Buffer size for reading incoming bytes
         private const int BUFFER_SIZE = 1024;
-
         //The socket though through which we communicate with the remote client
         private Socket socket;
-
         //Text that has been reveived from the client but not yet dealt with
         private StringBuilder incoming;
-
         //Text that needs to be sent to the client but which we have yet started sending
         private StringBuilder outgoing;
-
         //For decoding incoming UTF8 encoded byte streams.
         private Decoder decoder = encoding.GetDecoder();
-
         //Buffers that will contain incoming bytes and characters
         private byte[] incomingBytes = new byte[BUFFER_SIZE];
         private char[] incomingChars = new char[BUFFER_SIZE];
-
         //Holds all of the data of the request, split up by whitespace.
         private int incomingData = 0;
-
-        //Integer to keep track of which part of the data we're on.
-        private int curDataPos = 0;
-
         //To keep track of the current type of request we're dealing with.
         private string curRequestType;
-
         //Keeps the content length of the JSON object, ommitting whitespacec
         private int contentLength = 0;
-
         //Holds the current jsonContent;
         private string jsonContent;
-
         //Holds the current URL with the put, post or get request.
         private string curURL;
-
         //Records whether an asynchronous send attempt is ongoing
         private bool sendIsOngoing = false;
-
         private bool contentLengthCollected = false;
-
 
         //Records if the request has been completed.
         private bool requestCompleted = false;
-
         //For synchronizing sends
         private readonly object sendSync = new object();
-
         //Bytes that we are actively trying to send, along with the
         //index of the leftmost byte whose send has not yet been completed
         private byte[] pendingBytes = new byte[0];
         private int pendingIndex = 0;
-
         private BoggleService server;
-
         //OUT PARAMETERS
         string gameID;
         string urlRequest; // /games, /users
         string brief;
-
         /// <summary>
         /// Creates a ClientConnection from the socket, then begins communicating with it.
         /// </summary>
@@ -86,7 +63,6 @@ namespace MyBoggleService
             socket = s;
             incoming = new StringBuilder();
             outgoing = new StringBuilder();
-
             try
             {
                 // Ask the socket to call MessageReceive as soon as up to 1024 bytes arrive.
@@ -96,9 +72,7 @@ namespace MyBoggleService
             catch (ObjectDisposedException)
             {
             }
-
         }
-
         /// <summary>
         /// Called when some data has been received.
         /// </summary>
@@ -106,10 +80,8 @@ namespace MyBoggleService
         {
             // Figure out how many bytes have come in
             int bytesRead = socket.EndReceive(result);
-
             //Lets us know we've collected all the content.
             bool contentCollected = false;
-
             // If no bytes were received, it means the client closed its side of the socket.
             // Report that to the console and close our socket.
             if (bytesRead == 0)
@@ -118,16 +90,13 @@ namespace MyBoggleService
                 server.RemoveClient(this);
                 socket.Close();
             }
-
             // Otherwise, decode and display the incoming bytes.  Then request more bytes.
             else
             {
-
                 // Convert the bytes into characters and appending to incoming
                 int charsRead = decoder.GetChars(incomingBytes, 0, bytesRead, incomingChars, 0, false);
                 incoming.Append(incomingChars, 0, charsRead);
                 Console.WriteLine(incoming);
-
                 // Echo any complete lines, after capitalizing them
                 int lastNewline = -1;
                 int start = 0;
@@ -136,11 +105,8 @@ namespace MyBoggleService
                     if (incoming[i] == '\n' || incoming[i] == '}')
                     {
                         String line = incoming.ToString(start, i + 1 - start);
-
                         string[] splitString = line.Split();
-
                         incomingData++; //Keeps track of how many lines of the socket we've received.
-
                         //If we have incoming data.
                         if (incomingData > 0)
                         {
@@ -157,19 +123,16 @@ namespace MyBoggleService
                                 {
                                     int cLength;
                                     int.TryParse(splitString[12], out cLength);
-
                                     contentLength = cLength;
                                     //NEED A CASE TO SAY THAT THE CONTENT IS COLLECTED IF WE HAVE A GET WITH NO 
                                     contentLengthCollected = true;
                                 }
                             }
-
                             //For the case of the get
                             if (!splitString.Contains("Content-Length:") && curRequestType == "GET")//If we have a get with no content length
                             {
                                 contentCollected = true;
                             }
-
                             if (contentCollected && !requestCompleted)
                             {
                                 //Call the service method.
@@ -193,7 +156,6 @@ namespace MyBoggleService
                                     //Split again.
                                     string[] fixedContent = jsonContent.Split();
                                     string fixedContentString = "";
-
                                     foreach (string s in fixedContent)
                                     {
                                         if (!string.IsNullOrEmpty(s))
@@ -216,7 +178,6 @@ namespace MyBoggleService
                     }
                 }
                 incoming.Remove(0, lastNewline + 1);
-
                 try
                 {
                     // Ask for some more data
@@ -238,7 +199,6 @@ namespace MyBoggleService
             {
                 // Append the message to the outgoing lines
                 outgoing.Append(lines);
-
                 // If there's not a send ongoing, start one.
                 if (!sendIsOngoing)
                 {
@@ -247,7 +207,6 @@ namespace MyBoggleService
                 }
             }
         }
-
         /// <summary>
         /// Attempts to send the entire outgoing string.
         /// This method should not be called unless sendSync has been acquired.
@@ -267,7 +226,6 @@ namespace MyBoggleService
                 {
                 }
             }
-
             // If we're not currently dealing with a block of bytes, make a new block of bytes
             // out of outgoing and start sending that.
             else if (outgoing.Length > 0)
@@ -284,14 +242,12 @@ namespace MyBoggleService
                 {
                 }
             }
-
             // If there's nothing to send, shut down for the time being.
             else
             {
                 sendIsOngoing = false;
             }
         }
-
         /// <summary>
         /// Called when a message has been successfully sent
         /// </summary>
@@ -299,7 +255,6 @@ namespace MyBoggleService
         {
             // Find out how many bytes were actually sent
             int bytesSent = socket.EndSend(result);
-
             // Get exclusive access to send mechanism
             lock (sendSync)
             {
@@ -310,7 +265,6 @@ namespace MyBoggleService
                     server.RemoveClient(this);
                     Console.WriteLine("Socket closed");
                 }
-
                 // Update the pendingIndex and keep trying
                 else
                 {
@@ -319,7 +273,6 @@ namespace MyBoggleService
                 }
             }
         }
-
         /// <summary>
         /// Gets and sets the type of request we're currently dealing with.
         /// Also gets the parameters of the URL
@@ -329,7 +282,6 @@ namespace MyBoggleService
             curRequestType = request[0];
             return;
         }
-
         /// <summary>
         /// Sets the global service parameters if there are any.
         /// </summary>
@@ -340,7 +292,6 @@ namespace MyBoggleService
             string url = request[1]; //Eg. /games/0
             string[] urlTrim = url.Split('/');
             urlRequest = "";
-
             foreach (string s in urlTrim)
             {
                 if (s == "users")
@@ -348,24 +299,20 @@ namespace MyBoggleService
                     urlRequest = s;
                     break;
                 }
-
                 if (s == "games")
                 {
                     urlRequest = s;
                     break;
                 }
             }
-
             gameID = null;
             brief = null;
-
             if (urlRequest == "users")
             {
                 gameID = null;
                 brief = null;
                 return;
             }
-
             if (urlRequest == "games")
             {
                 if (urlTrim.Length == 1)
@@ -374,14 +321,12 @@ namespace MyBoggleService
                     brief = null;
                     return;
                 }
-
                 if (urlTrim.Length == 2)
                 {
                     gameID = urlTrim[1];
                     brief = null;
                     return;
                 }
-
                 if (urlTrim.Length == 3)
                 {
                     gameID = urlTrim[1];
@@ -390,7 +335,6 @@ namespace MyBoggleService
                 }
             }
         }
-
         /// <summary>
         /// Returns the result of a call to the proper service method according to the socket request.
         /// </summary>
@@ -401,16 +345,14 @@ namespace MyBoggleService
             string jsonPortion;
             string ourResponse;
             string status;
-
             //CreateUser
             if (curRequestType == "POST")
             {
+
                 if (curURL == "users")
                 {
-
                     CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
                     response = server.CreateUser(content, out status); //Save the response
-
                     if (response != null)
                     {
                         jsonPortion = "{" + "\"UserToken\":" + "\"" + response.UserToken + "\"" + "}";
@@ -422,18 +364,15 @@ namespace MyBoggleService
                         Console.WriteLine(ourResponse);
                         return;
                     }
-
                     if (response == null)
                     {
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
-                                      "Content-Length: " + "0" + "\r\n" +  
+                                      "Content-Length: " + "0" + "\r\n" +
                                       "Content-Type: application/json; charset=utf-8 \r\n\r\n";
                         SendMessage(ourResponse);
                         Console.WriteLine(ourResponse);
                         return;
                     }
-
-
 
                 }
                 //for the case when the Request Type is JOIN
@@ -441,7 +380,6 @@ namespace MyBoggleService
                 {
                     JoinGameData content = JsonConvert.DeserializeObject<JoinGameData>(jsonContent);
                     response = server.JoinGame(content, out status);
-
                     if (response != null)
                     {
                         jsonPortion = "{" + "\"GameID\":" + "\"" + response.GameID + "\"" + "}";
@@ -452,7 +390,7 @@ namespace MyBoggleService
                         SendMessage(ourResponse);
                         Console.WriteLine(ourResponse);
                     }
-                    else if(response == null)
+                    else if (response == null)
                     {
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
                                       "Content-Length: " + "0" + "\r\n" +
@@ -463,35 +401,44 @@ namespace MyBoggleService
                     }
                 }
             }
-
             else if (curRequestType == "PUT")
             {
-
                 //For CancelJoinGame
                 if (curURL == "games" && string.IsNullOrEmpty(gameID))
                 {
                     CancelJoinData content = JsonConvert.DeserializeObject<CancelJoinData>(jsonContent);
                     server.CancelJoinRequest(content, out status);
                     ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                  "Content-Length: " + "0" + "\r\n" +
                                   "Content-Type: application / json; charset = utf - 8 \r\n\r\n";
                     SendMessage(ourResponse);
                     Console.WriteLine(ourResponse);
                 }
-
                 //For PlayWord
                 if (curURL == "games" && !string.IsNullOrEmpty(gameID))
                 {
                     PlayWordData content = JsonConvert.DeserializeObject<PlayWordData>(jsonContent);
                     response = server.PlayWord(content, gameID, out status);
-                    jsonPortion = "{" + "\"Score\":" + response.Score + "\"" + "}";
-                    ourResponse = "HTTP / 1.1 " + status + "\r\n" +
-                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
-                                  "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
-                                  jsonPortion.ToString();
-                    SendMessage(ourResponse);
-                    Console.WriteLine(ourResponse);
+                    if (response != null)
+                    {
+                        jsonPortion = "{" + "\"Score\":" + response.Score + "\"" + "}";
+                        ourResponse = "HTTP / 1.1 " + status + "\r\n" +
+                                      "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+                                      jsonPortion.ToString();
+                        SendMessage(ourResponse);
+                        Console.WriteLine(ourResponse);
+                    }
+                    else if (response == null)
+                    {
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                      "Content-Length: " + "0" + "\r\n" +
+                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n";
+                        SendMessage(ourResponse);
+                        Console.WriteLine(ourResponse);
+                        return;
+                    }
                 }
-
             }
             //to get the Status
             else if (curRequestType == "GET")
