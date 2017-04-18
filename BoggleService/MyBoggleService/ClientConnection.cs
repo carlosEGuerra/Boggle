@@ -69,6 +69,11 @@ namespace MyBoggleService
 
         private BoggleService server;
 
+        //OUT PARAMETERS
+        string gameID;
+        string urlRequest; // /games, /users
+        string brief;
+
         /// <summary>
         /// Creates a ClientConnection from the socket, then begins communicating with it.
         /// </summary>
@@ -137,10 +142,7 @@ namespace MyBoggleService
                         //If we have incoming data.
                         if (incomingData > 0)
                         {
-                            //OUT PARAMETERS
-                            string gameID;
-                            string urlRequest; // /games, /users
-                            string brief;
+
 
                             if (incomingData == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
                             {
@@ -427,14 +429,33 @@ namespace MyBoggleService
             //for the case when the Request Type is JOIN
             else if (curRequestType == "PUT")
             {
-                //need to fix the return object
-                if (curURL == "games")
+                //For PlayWord
+                if (curURL == "games" && !string.IsNullOrEmpty(gameID))
                 {
                     CancelJoinData content = JsonConvert.DeserializeObject<CancelJoinData>(jsonContent);
                 }
+
+                //For CancelJoinGame
+                if(curURL == "games")
+                {
+
+                }
+            }
+            //to get the Status
+            else if( curRequestType == "GET")
+            {
+                //for when Brief is no or null
+                if(curURL == "games" && (!string.IsNullOrEmpty(brief) || brief == "?=no"))
+                {
+
+                }
+                //for when Bried is yes
+                else if(curURL == "games" && brief == "?=yes")
+                {
+
+                }
             }
             requestCompleted = true;
-
         }
     }
 }
