@@ -433,9 +433,6 @@ namespace MyBoggleService
                     CancelJoinData content = JsonConvert.DeserializeObject<CancelJoinData>(jsonContent);
                 }
             }
-            //CancelJoinRequest
-            //PlayWord
-            //GameStatus
             requestCompleted = true;
 
         }
