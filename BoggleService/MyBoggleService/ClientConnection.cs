@@ -152,7 +152,7 @@ namespace MyBoggleService
                             if (curRequestType != null && !requestCompleted)//Check for content type.
                             {
                                 //"content-length" @ index 7
-                                if (splitString.Contains("Content-Length:") && splitString.Length >= 9)//if (splitString[7].ToUpper() == "CONTENT-LENGTH:")
+                                if (splitString.Contains("content-length:") && splitString.Length >= 9)//if (splitString[7].ToUpper() == "CONTENT-LENGTH:")
                                 {
                                     int cLength;
                                     int.TryParse(splitString[8], out cLength);
@@ -162,9 +162,51 @@ namespace MyBoggleService
 
                             }
 
+                            //When we finally have the content length and we need to begin reading the bytes of content.
+                            if (splitString.Length >= 16 && incoming.Length >= (83 + contentLength) && contentCollected == false) //Collect content only when we have the complete content
+                            {
+                                //16 is the starting index.
+                                //Compose the JSON string.
+                                for (int l = 100; l <= 100 + contentLength; l++)
+                                {
+                                    if (!string.IsNullOrEmpty(incoming[l].ToString()) || !(String.IsNullOrWhiteSpace(incoming[l].ToString()))
+                                        || incoming[l] != '\n' || incoming[l] != '\r' )
+                                    {
+                                        jsonContent += incoming[l];
+                                        if (incoming[l] == '}')
+                                        {
+                                            //Split again.
+                                            string[] fixedContent = jsonContent.Split();
+                                            string fixedContentString = "";
+
+                                            foreach(string s in fixedContent)
+                                            {
+                                                if (!string.IsNullOrEmpty(s))
+                                                {
+                                                    fixedContentString += s;
+                                                }
+                                                
+                                            }
+
+                                            jsonContent = fixedContentString;
+
+
+                                            contentCollected = true;
+                                            break;
+                                        }
+                                    }
+                                    if (string.IsNullOrEmpty(incoming[l].ToString()) || (String.IsNullOrWhiteSpace(incoming[l].ToString())))
+                                    {
+                                        contentLength++;
+                                    }
+                                }
+
+                                //Content is collected FLAG
+                                contentCollected = true;
+                            }
 
                             //For the case of the get
-                            if (!splitString.Contains("Content-Length:") &&  splitString.Contains("Content-Type:"))//If we have a get with no content length
+                            if (!splitString.Contains("content-length:") && curRequestType == "GET")//If we have a get with no content length
                             {
                                 contentCollected = true;
                             }
@@ -175,49 +217,6 @@ namespace MyBoggleService
                                 CallServerMethod();
                             }
                         }
-                    }
-
-                    //When we finally have the content length and we need to begin reading the bytes of content.
-                    if (incoming[i] == '{' && contentCollected == false) //Collect content only when we have the complete content
-                    {
-                        //16 is the starting index.
-                        //Compose the JSON string.
-                        for (int l = i; l <= i + contentLength; l++)
-                        {
-                            if (!string.IsNullOrEmpty(incoming[l].ToString()) || !(String.IsNullOrWhiteSpace(incoming[l].ToString()))
-                                || incoming[l] != '\n' || incoming[l] != '\r')
-                            {
-                                jsonContent += incoming[l];
-                                if (incoming[l] == '}')
-                                {
-                                    //Split again.
-                                    string[] fixedContent = jsonContent.Split();
-                                    string fixedContentString = "";
-
-                                    foreach (string s in fixedContent)
-                                    {
-                                        if (!string.IsNullOrEmpty(s))
-                                        {
-                                            fixedContentString += s;
-                                        }
-
-                                    }
-
-                                    jsonContent = fixedContentString;
-
-
-                                    contentCollected = true;
-                                    break;
-                                }
-                            }
-                            if (string.IsNullOrEmpty(incoming[l].ToString()) || (String.IsNullOrWhiteSpace(incoming[l].ToString())))
-                            {
-                                contentLength++;
-                            }
-                        }
-
-                        //Content is collected FLAG
-                        contentCollected = true;
                     }
                 }
                 incoming.Remove(0, lastNewline + 1);
@@ -232,7 +231,6 @@ namespace MyBoggleService
                 {
                 }
             }
-
         }
         /// <summary>
         /// Sends a string to the client
@@ -414,11 +412,7 @@ namespace MyBoggleService
                 else if (curURL == "games")
                 {
                     JoinGameData content = JsonConvert.DeserializeObject<JoinGameData>(jsonContent);
-                    response = server.JoinGame(content, out status);
-
-                    jsonPortion = "{" + "\"GameID\":" + "\"" + response.GameID + "\"" + "}";
-                    ourResponse = "HTTP/1.1 " + status + "\r\n";
-
+                    response = server.JoinGame(content);
                 }
             }
             //for the case when the Request Type is JOIN
