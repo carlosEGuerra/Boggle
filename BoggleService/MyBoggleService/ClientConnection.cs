@@ -168,8 +168,6 @@ namespace MyBoggleService
 
                             }
 
-
-
                             //For the case of the get
                             if (!splitString.Contains("Content-Length:") && curRequestType == "GET")//If we have a get with no content length
                             {
@@ -404,7 +402,7 @@ namespace MyBoggleService
         private void CallServerMethod()
         {
             dynamic response;
-            string jsonPortion = null;
+            string jsonPortion;
             string ourResponse;
             string status;
 
@@ -432,8 +430,7 @@ namespace MyBoggleService
                     if (response == null)
                     {
                         ourResponse = "HTTP/1.1 " + status + "\r\n" +
-                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
-                                      "Content-Length: " + "0" + "\r\n" + jsonPortion.ToString();
+                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n";
                         SendMessage(ourResponse);
                         Console.WriteLine(ourResponse);
                         return;
