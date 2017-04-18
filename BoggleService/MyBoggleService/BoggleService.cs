@@ -246,28 +246,34 @@ namespace MyBoggleService
         /// Otherwise, removes UserToken from the pending game and responds with status 200 (OK).
         /// </summary>
         /// <param name="user"></param>
-        public void CancelJoinRequest(CancelJoinData userData)
-        {
-            lock (sync)
+        public void CancelJoinRequest(CancelJoinData userData, out string status)
+		{
+			status = "";
+
+			lock (sync)
             {
-                if (userData.UserToken == null)
+				if (userData.UserToken == null)
                 {
                     SetStatus(Forbidden);
+                    status = "403 FORBIDDEN";
                     return;
                 }
                 else if (!users.ContainsKey(userData.UserToken))
                 {
                     SetStatus(Forbidden);
+                    status = "403 FORBIDDEN";
                     return;
                 }
                 else if (!games.ContainsKey(gameID))
                 {
                     SetStatus(Forbidden);
+                    status = "403 FORBIDDEN";
                     return;
                 }
                 if ((games[gameID].Player1 != userData.UserToken || games[gameID].Player2 != userData.UserToken) && !users[userData.UserToken].HasPendingGame) //added this users.ContainsKey(userData.UserToken)
                 {
                     SetStatus(Forbidden);
+                    status = "403 FORBIDDEN";
                     return;
                 }
 
@@ -281,6 +287,7 @@ namespace MyBoggleService
                     users[userData.UserToken].CurrentGameID = -1;//Make sure the player has no gameID.
 
                     SetStatus(OK);
+                    status = "200 OK";
                 }
             }
         }
@@ -299,10 +306,11 @@ namespace MyBoggleService
         /// <param name="user"></param>
         /// <param name="word"></param>
         /// <returns> returns the integer score of the current word. </returns>
-        public PlayWordResponse PlayWord(PlayWordData userData, string GameID)
+        public PlayWordResponse PlayWord(PlayWordData userData, string GameID, out string status)
         {
             int thisgameID;
             int.TryParse(GameID, out thisgameID);
+            status = "";
 
             //First check the time limit.
             if (TimeLeft(thisgameID) <= 0)
@@ -317,6 +325,7 @@ namespace MyBoggleService
                 || (games[users[userData.UserToken].CurrentGameID].Player1 != userData.UserToken && games[users[userData.UserToken].CurrentGameID].Player2 != userData.UserToken))
             {
                 SetStatus(Forbidden);
+                status = "403 FORBIDDEN";
                 return null;
 
             }
@@ -324,6 +333,7 @@ namespace MyBoggleService
             if (!games[thisgameID].GameStatus.Equals("active")) //If our game isn't active.
             {
                 SetStatus(Conflict);
+                status = "409 CONFLICT";
                 return null;
             }
 
@@ -339,6 +349,8 @@ namespace MyBoggleService
 
             response.Score = score;
 
+            SetStatus(OK);
+            status = "200 OK";
             return response;
 
 

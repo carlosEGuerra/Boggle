@@ -394,67 +394,79 @@ namespace MyBoggleService
             string ourResponse;
             string status;
 
-            //CreateUser
-            if (curRequestType == "POST")
-            {
-                if (curURL == "users")
-                {
+			//CreateUser
+			if (curRequestType == "POST")
+			{
+				if (curURL == "users")
+				{
 
-                    CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
-                    response = server.CreateUser(content, out status); //Save the response
+					CreateUserData content = JsonConvert.DeserializeObject<CreateUserData>(jsonContent);
+					response = server.CreateUser(content, out status); //Save the response
 
-                    jsonPortion = "{" + "\"UserToken\":" + "\"" + response.UserToken + "\"" + "}";
+					jsonPortion = "{" + "\"UserToken\":" + "\"" + response.UserToken + "\"" + "}";
 
+					ourResponse = "HTTP/1.1 " + status + "\r\n" +
+								  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+								  "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+								  jsonPortion.ToString();
+					SendMessage(ourResponse);
+					Console.WriteLine(ourResponse);
+				}
+				else if (curURL == "games") //for the case when the Request Type is JOIN
+				{
+					JoinGameData content = JsonConvert.DeserializeObject<JoinGameData>(jsonContent);
+					response = server.JoinGame(content, out status);
+
+					jsonPortion = "{" + "\"GameID\":" + "\"" + response.GameID + "\"" + "}";
+					ourResponse = "HTTP/1.1 " + status + "\r\n" +
+								  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+								  "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
+								  jsonPortion.ToString();
+					SendMessage(ourResponse);
+					Console.WriteLine(ourResponse);
+				}
+			}
+			else if (curRequestType == "PUT")
+			{
+				//For CancelJoinGame
+				if (curURL == "games" && string.IsNullOrEmpty(gameID))
+				{
+					CancelJoinData content = JsonConvert.DeserializeObject<CancelJoinData>(jsonContent);
+					server.CancelJoinRequest(content, out status);
                     ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                  "Content-Type: application / json; charset = utf - 8 \r\n\r\n";
+                    SendMessage(ourResponse);
+                    Console.WriteLine(ourResponse);
+                }
+
+				//For PlayWord
+				if (curURL == "games" && !string.IsNullOrEmpty(gameID))
+				{
+					PlayWordData content = JsonConvert.DeserializeObject<PlayWordData>(jsonContent);
+                    response = server.PlayWord(content, gameID, out status);
+                    jsonPortion = "{" + "\"Score\":" + response.Score + "\"" + "}";
+                    ourResponse = "HTTP / 1.1 " + status + "\r\n" +
                                   "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
                                   "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
                                   jsonPortion.ToString();
                     SendMessage(ourResponse);
                     Console.WriteLine(ourResponse);
                 }
-                else if (curURL == "games")
-                {
-                    JoinGameData content = JsonConvert.DeserializeObject<JoinGameData>(jsonContent);
-                    response = server.JoinGame(content, out status);
+			}
+			//to get the Status
+			else if (curRequestType == "GET")
+			{
+				//for when Brief is no or null
+				if (curURL == "games" && (!string.IsNullOrEmpty(brief) || brief == "?=no"))
+				{
 
-                    jsonPortion = "{" + "\"GameID\":" + "\"" + response.GameID + "\"" + "}";
-                    ourResponse = "HTTP/1.1 " + status + "\r\n" +
-                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
-                                  "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
-                                  jsonPortion.ToString();
-                    SendMessage(ourResponse);
-                    Console.WriteLine(ourResponse);
-                }
-            }
-            //for the case when the Request Type is JOIN
-            else if (curRequestType == "PUT")
-            {
-                //For PlayWord
-                if (curURL == "games" && !string.IsNullOrEmpty(gameID))
-                {
-                    CancelJoinData content = JsonConvert.DeserializeObject<CancelJoinData>(jsonContent);
-                }
+				}
+				//for when Bried is yes
+				else if (curURL == "games" && brief == "?=yes")
+				{
 
-                //For CancelJoinGame
-                if(curURL == "games")
-                {
-
-                }
-            }
-            //to get the Status
-            else if( curRequestType == "GET")
-            {
-                //for when Brief is no or null
-                if(curURL == "games" && (!string.IsNullOrEmpty(brief) || brief == "?=no"))
-                {
-
-                }
-                //for when Bried is yes
-                else if(curURL == "games" && brief == "?=yes")
-                {
-
-                }
-            }
+				}
+			}
             requestCompleted = true;
         }
     }
