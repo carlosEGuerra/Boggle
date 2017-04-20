@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 namespace MyBoggleService
-{
+{  
     public class ClientConnection
     {
         //incoming/outgoing is UTF8 Encoded
