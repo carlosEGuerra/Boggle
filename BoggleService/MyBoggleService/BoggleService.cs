@@ -343,7 +343,7 @@ namespace MyBoggleService
             if (!games.ContainsKey(gameID))
             {
                 SetStatus(Forbidden);
-                status = "409 FORBIDDEN";
+                status = "403 FORBIDDEN";
                 return null;
             }
 
@@ -353,6 +353,7 @@ namespace MyBoggleService
                 if (games[gameID].GameStatus == "pending")
                 {
                     response.GameState = "pending";
+                    status = "200 OK";
                     return response;
                 }
 
@@ -467,6 +468,7 @@ namespace MyBoggleService
 
                 }
             }
+            status = "200 OK";
             return response;
         }
 

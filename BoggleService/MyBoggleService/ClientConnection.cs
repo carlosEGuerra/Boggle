@@ -100,81 +100,87 @@ namespace MyBoggleService
                 // Echo any complete lines, after capitalizing them
                 int lastNewline = -1;
                 int start = 0;
-                for (int i = 0; i < incoming.Length; i++)
+                if (!requestCompleted)
                 {
-                    if (incoming[i] == '\n' || incoming[i] == '}')
+                    for (int i = 0; i < incoming.Length; i++)
                     {
-                        String line = incoming.ToString(start, i + 1 - start);
-                        string[] splitString = line.Split();
-                        incomingData++; //Keeps track of how many lines of the socket we've received.
-                        //If we have incoming data.
-                        if (incomingData > 0)
+                        if ((incoming[i] == '\n' || incoming[i] == '}') && !requestCompleted)
                         {
-                            if (incomingData == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
+                            String line = incoming.ToString(start, i + 1 - start);
+                            string[] splitString = line.Split();
+
+                            incomingData++; //Keeps track of how many lines of the socket we've received.
+                                            //If we have incoming data.
+                            if (incomingData > 0)
                             {
-                                GetRequestType(splitString);
-                                ExtractServiceParams(splitString, out urlRequest, out gameID, out brief);
-                                curURL = urlRequest;
-                            }
-                            if (curRequestType != null && !requestCompleted && !contentCollected && !contentLengthCollected)//Check for content type.
-                            {
-                                //"content-length" @ index 7
-                                if (splitString.Contains("Content-Length:") && splitString.Length >= 13)//if (splitString[7].ToUpper() == "CONTENT-LENGTH:")
+                                if (incomingData == 1) //If we only have 1 item in the incoming data, figure out what type of request we have.
                                 {
-                                    int cLength;
-                                    int.TryParse(splitString[12], out cLength);
-                                    contentLength = cLength;
-                                    //NEED A CASE TO SAY THAT THE CONTENT IS COLLECTED IF WE HAVE A GET WITH NO 
-                                    contentLengthCollected = true;
+                                    GetRequestType(splitString);
+                                    ExtractServiceParams(splitString, out urlRequest, out gameID, out brief);
+                                    curURL = urlRequest;
                                 }
-                            }
-                            //For the case of the get
-                            if (!splitString.Contains("Content-Length:") && curRequestType == "GET")//If we have a get with no content length
-                            {
-                                contentCollected = true;
-                            }
-                            if (contentCollected && !requestCompleted)
-                            {
-                                //Call the service method.
-                                CallServerMethod();
-                            }
-                        }
-                    }
-                    //When we finally have the content length and we need to begin reading the bytes of content.
-                    if (incoming[i] == '{' && contentCollected == false) //Collect content only when we have the complete content
-                    {
-                        //16 is the starting index.
-                        //Compose the JSON string.
-                        for (int l = i; l <= i + contentLength; l++)
-                        {
-                            if (!string.IsNullOrEmpty(incoming[l].ToString()) || !(String.IsNullOrWhiteSpace(incoming[l].ToString()))
-                                || incoming[l] != '\n' || incoming[l] != '\r')
-                            {
-                                jsonContent += incoming[l];
-                                if (incoming[l] == '}')
+                                if (curRequestType != null && !requestCompleted && !contentCollected && !contentLengthCollected)//Check for content type.
                                 {
-                                    //Split again.
-                                    string[] fixedContent = jsonContent.Split();
-                                    string fixedContentString = "";
-                                    foreach (string s in fixedContent)
+                                    //"content-length" @ index 7
+                                    if (splitString.Contains("Content-Length:") && splitString.Length >= 13)//if (splitString[7].ToUpper() == "CONTENT-LENGTH:")
                                     {
-                                        if (!string.IsNullOrEmpty(s))
-                                        {
-                                            fixedContentString += s;
-                                        }
+                                        int contIndex = Array.IndexOf(splitString, "Content-Length:");
+                                        int cLength;
+                                        int.TryParse(splitString[contIndex + 1], out cLength);
+                                        contentLength = cLength;
+                                        //NEED A CASE TO SAY THAT THE CONTENT IS COLLECTED IF WE HAVE A GET WITH NO 
+                                        contentLengthCollected = true;
                                     }
-                                    jsonContent = fixedContentString;
+                                }
+                                //For the case of the get
+                                if (!splitString.Contains("Content-Length:") && curRequestType == "GET")//If we have a get with no content length
+                                {
                                     contentCollected = true;
-                                    break;
+                                }
+                                if (contentCollected && !requestCompleted)
+                                {
+                                    //Call the service method.
+                                    CallServerMethod();
+                                    requestCompleted = true;
                                 }
                             }
-                            if (string.IsNullOrEmpty(incoming[l].ToString()) || (String.IsNullOrWhiteSpace(incoming[l].ToString())))
-                            {
-                                contentLength++;
-                            }
                         }
-                        //Content is collected FLAG
-                        contentCollected = true;
+                        //When we finally have the content length and we need to begin reading the bytes of content.
+                        if (incoming[i] == '{' && contentCollected == false) //Collect content only when we have the complete content
+                        {
+                            //16 is the starting index.
+                            //Compose the JSON string.
+                            for (int l = i; l <= i + contentLength; l++)
+                            {
+                                if (!string.IsNullOrEmpty(incoming[l].ToString()) || !(String.IsNullOrWhiteSpace(incoming[l].ToString()))
+                                    || incoming[l] != '\n' || incoming[l] != '\r')
+                                {
+                                    jsonContent += incoming[l];
+                                    if (incoming[l] == '}')
+                                    {
+                                        //Split again.
+                                        string[] fixedContent = jsonContent.Split();
+                                        string fixedContentString = "";
+                                        foreach (string s in fixedContent)
+                                        {
+                                            if (!string.IsNullOrEmpty(s))
+                                            {
+                                                fixedContentString += s;
+                                            }
+                                        }
+                                        jsonContent = fixedContentString;
+                                        contentCollected = true;
+                                        break;
+                                    }
+                                }
+                                if (string.IsNullOrEmpty(incoming[l].ToString()) || (String.IsNullOrWhiteSpace(incoming[l].ToString())))
+                                {
+                                    contentLength++;
+                                }
+                            }
+                            //Content is collected FLAG
+                            contentCollected = true;
+                        }
                     }
                 }
                 incoming.Remove(0, lastNewline + 1);
@@ -253,8 +259,18 @@ namespace MyBoggleService
         /// </summary>
         private void MessageSent(IAsyncResult result)
         {
-            // Find out how many bytes were actually sent
-            int bytesSent = socket.EndSend(result);
+            int bytesSent;
+            try
+            {
+                // Find out how many bytes were actually sent
+                bytesSent = socket.EndSend(result);
+            }
+
+            catch
+            {
+                bytesSent = 0;
+            }
+          
             // Get exclusive access to send mechanism
             lock (sendSync)
             {
@@ -315,6 +331,7 @@ namespace MyBoggleService
             }
             if (urlRequest == "games")
             {
+                int gameNumIndex = Array.IndexOf(urlTrim, "games") + 1;
                 if (urlTrim.Length == 1)
                 {
                     gameID = null;
@@ -327,10 +344,42 @@ namespace MyBoggleService
                     brief = null;
                     return;
                 }
-                if (urlTrim.Length == 3)
+
+                if (urlTrim.Length >= gameNumIndex + 1)//If we a game ID
                 {
-                    gameID = urlTrim[1];
-                    brief = urlTrim[2];
+                    int gID = 0;
+                    if (int.TryParse(urlTrim[gameNumIndex], out gID))
+                    {
+                        gameID = gID.ToString();
+
+                        //NEED A CHECK WHEN BRIEF = YES
+
+                        brief = urlTrim[2];
+                    }
+                    else
+                    {
+                        if (urlTrim[gameNumIndex].Contains("brief"))
+                        {
+                            int gIDBriefIndex = urlTrim[gameNumIndex].IndexOf('?');
+                            gameID = urlTrim[gameNumIndex].Substring(0, gIDBriefIndex);
+
+                            if (urlTrim[gameNumIndex].Contains("brief=no"))
+                            {
+                                brief = "no";
+                            }
+
+                            if (urlTrim[gameNumIndex].Contains("brief=yes"))
+                            {
+                                brief = "yes";
+                            }
+                        }
+                        else
+                        {
+                            gameID = null;
+                            brief = null;
+                        }
+                    }
+
                     return;
                 }
             }
@@ -421,11 +470,12 @@ namespace MyBoggleService
                     response = server.PlayWord(content, gameID, out status);
                     if (response != null)
                     {
-                        jsonPortion = "{" + "\"Score\":" + response.Score + "\"" + "}";
-                        ourResponse = "HTTP / 1.1 " + status + "\r\n" +
+                        jsonPortion = "{" + "\"Score\": " + response.Score + "}";
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
                                       "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
-                                      "Content-Type: application/json; charset=utf-8 \r\n\r\n" +
-                                      jsonPortion.ToString();
+                                      "Content-Type: application/json; charset = utf - 8 \r\n\r\n" +
+                                      "{" + "\"Score\": " + response.Score + "}";
+                        //jsonPortion.ToString();
                         SendMessage(ourResponse);
                         Console.WriteLine(ourResponse);
                     }
@@ -444,49 +494,145 @@ namespace MyBoggleService
             else if (curRequestType == "GET")
             {
                 //for when Brief is no or null
-                if (curURL == "games" && (!string.IsNullOrEmpty(brief) || brief == "?brief=no"))
+                if (curURL == "games" && (!string.IsNullOrEmpty(brief) || brief == "no"))
                 {
-                    StatusResponse content = JsonConvert.DeserializeObject<StatusResponse>(jsonContent);
+                    //StatusResponse content = JsonConvert.DeserializeObject<StatusResponse>(jsonContent);
                     response = server.GameStatus(gameID, null, out status);
-                    jsonPortion = "{" + "\"GameState\":" + "\"" + response.GameState + "\"" + "," +
-                                        "\"Board\":" + "\"" + response.Board + "\"" + "," +
-                                        "\"TimeLimit" + "\"" + response.TimeLimit + "\"" + "," +
-                                        "\"TimeLeft\":" + "\"" + response.TimeLeft + "\"" + "," +
-                                        "\"Player1\":" + "\"" + response.Player1 + "\"" + "{" +
-                                        "\"Nickname\":" + "\"" + response.Player1.Nickname + "\"" + "," +
-                                        "\"Score\":" + "\"" + response.Player1.Score + "," + "}," +
-                                        "\"WordsPlayed\":" + "\"" + "[" + response.Player1.WordsPlayed + "," + "]," + "}," +
-                                        "\"Player2\":" + "\"" + response.Player2 + "\"" + "{" +
-                                        "\"Nickname\":" + "\"" + response.Player2.Nickname + "\"" + "," +
-                                        "\"Score\":" + "\"" + response.Player2.Score + "," + "}," + "}" +
-                                        "\"WordsPlayed\":" + "\"" + "[" + response.Player1.WordsPlayed + "," + "]," + "}," + "}";
-                    ourResponse = "Http/1.1 " + status + "\r\n" +
-                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
-                                  "Content-Type: application/jason; charset = utf-8 \r\n\r\n" +
-                                  jsonPortion.ToString();
+                    if (response is null)
+                    {
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                     "Content-Length: " + "0" + "\r\n" +
+                                     "Content-Type: application/jason; charset = utf-8 \r\n\r\n";
+                    }
+
+                    else if(response.GameState == "pending")
+                    {
+                        string gameState = "{\"GameState\":\"pending\"}";
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                     "Content-Length: " + gameState.Length + "\r\n" +
+                                     "Content-Type: application/json; charset = utf-8 \r\n\r\n" +
+                                     gameState;
+                    }
+                    else if(response.GameState == "active")//ACTIVE AND BRIEF==YES WAS NOT A PARAMETER
+                    {
+                        jsonPortion = "{" + "\"GameState\":" + "\"" + response.GameState + "\"" + "," +
+                                            "\"Board\":" + "\"" + response.Board + "\"" + "," +
+                                            "\"TimeLimit\":" + response.TimeLimit + "," +
+                                            "\"TimeLeft\":" + response.TimeLeft + "," +
+                                            "\"Player1\":" + "{" +
+                                            "\"Nickname\":" + "\"" + response.Player1.Nickname + "\"" + "," +
+                                            "\"Score\":" + response.Player1.Score + "," + "}," +
+                                            "\"Player2\":" + "{" +
+                                            "\"Nickname\":" + "\"" + response.Player2.Nickname + "\"" + "," +
+                                            "\"Score\":"  + response.Player2.Score + "," + "}," + "}";
+                                    
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                      "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                      "Content-Type: application/json; charset = utf-8 \r\n\r\n" +
+                                       "{" + "\"GameState\":" + "\"" + response.GameState + "\"" + "," +
+                                            "\"Board\":" + "\"" + response.Board + "\"" + "," +
+                                            "\"TimeLimit\":" + response.TimeLimit + "," +
+                                            "\"TimeLeft\":" + response.TimeLeft + "," +
+                                            "\"Player1\":" + "{" +
+                                            "\"Nickname\":" + "\"" + response.Player1.Nickname + "\"" + "," +
+                                            "\"Score\":" + response.Player1.Score + "," + "}," +
+                                            "\"Player2\":" + "{" +
+                                            "\"Nickname\":" + "\"" + response.Player2.Nickname + "\"" + "," +
+                                            "\"Score\":" + response.Player2.Score + "," + "}," + "}";
+                    }
+
+                    else //GAME IS COMPLETED AND Brief=yes was not a parameter.
+                    {
+                        string p1Words = GenerateWords(response.Player1.WordsPlayed);
+                        string p2Words = GenerateWords(response.Player2.WordsPlayed);
+
+                        jsonPortion = "{" + "\"GameState\":" + "\"" + response.GameState + "\"" + "," +
+                                            "\"Board\":" + "\"" + response.Board + "\"" + "," +
+                                            "\"TimeLimit\":" + response.TimeLimit + "," +
+                                            "\"TimeLeft\":" + response.TimeLeft + "," +
+                                            "\"Player1\":" + "{" +
+                                            "\"Nickname\":" + "\"" + response.Player1.Nickname + "\"" + "," +
+                                            "\"Score\":" + response.Player1.Score + "," +
+                                            "\"WordsPlayed\":"  + "[" + p1Words + "]," + "}," +
+
+
+                                            "\"Player2\":" + "{" +
+                                            "\"Nickname\":" + "\"" + response.Player2.Nickname + "\"" + "," +
+                                            "\"Score\":" + response.Player1.Score + "," +
+                                            "\"WordsPlayed\":" + "[" + p1Words + "]," + "}," +
+                                              "}";
+
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                      "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                      "Content-Type: application/json; charset = utf-8 \r\n\r\n" +
+                                      jsonPortion;
+
+                    }
                     SendMessage(ourResponse);
                     Console.WriteLine(ourResponse);
                 }
-                //for when Bried is yes
-                else if (curURL == "games" && brief == "?brief=yes")
+                //for when Brief is yes
+                else if (curURL == "games" && brief == "yes")
                 {
-                    StatusResponse content = JsonConvert.DeserializeObject<StatusResponse>(jsonContent);
-                    response = server.GameStatus(gameID, null, out status);
-                    jsonPortion = "{" + "\"GameState\":" + "\"" + response.GameState + "\"" + "," +
-                                        "\"TimeLeft\":" + "\"" + response.TimeLeft + "\"" + "," +
-                                        "\"Player1\":" + "\"" + response.Player1 + "\"" + "{" +
-                                        "\"Score\":" + "\"" + response.Player1.Score + "," + "}," +
-                                        "\"Player2\":" + "\"" + response.Player2 + "\"" + "{" +
-                                        "\"Score\":" + "\"" + response.Player2.Score + "," + "}," + "}";
-                    ourResponse = "Http/1.1 " + status + "\r\n" +
-                                  "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
-                                  "Content-Type: application/jason; charset = utf-8 \r\n\r\n" +
-                                  jsonPortion.ToString();
+                   // StatusResponse content = JsonConvert.DeserializeObject<StatusResponse>(jsonContent);
+                    response = server.GameStatus(gameID, "yes", out status);
+
+                    if (response is null)
+                    {
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                     "Content-Length: " + "0" + "\r\n" +
+                                     "Content-Type: application/jason; charset = utf-8 \r\n\r\n";
+                    }
+
+                    else if (response.GameState == "pending")
+                    {
+                        string gameState = "{\"GameState\":\"pending\"}";
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                     "Content-Length: " + gameState.Length + "\r\n" +
+                                     "Content-Type: application/jason; charset = utf-8 \r\n\r\n" +
+                                     gameState;
+                    }
+
+                    else
+                    {
+                        jsonPortion = "{" + "\"GameState\":" + "\"" + response.GameState + "\"" + "," +
+                                            "\"TimeLeft\":" + response.TimeLeft + "," +
+                                            "\"Player1\":" + "{" +
+                                            "\"Score\":" + response.Player1.Score + "," + "}," +
+                                            "\"Player2\":"+ "{" +
+                                            "\"Score\":" + response.Player2.Score + "," + "}," + "}";
+                        ourResponse = "HTTP/1.1 " + status + "\r\n" +
+                                      "Content-Length: " + jsonPortion.Length.ToString() + "\r\n" +
+                                      "Content-Type: application/jason; charset = utf-8 \r\n\r\n" +
+                                       "{" + "\"GameState\":" + "\"" + response.GameState + "\"" + "," +
+                                            "\"TimeLeft\":" + response.TimeLeft + "," +
+                                            "\"Player1\":" + "{" +
+                                            "\"Score\":" + response.Player1.Score + "," + "}," +
+                                            "\"Player2\":" + "{" +
+                                            "\"Score\":" + response.Player2.Score + "," + "}," + "}";
+                    }
                     SendMessage(ourResponse);
                     Console.WriteLine(ourResponse);
                 }
             }
             requestCompleted = true;
+        }
+
+        private string GenerateWords(List<WordItem> list)
+        {
+            string result = "";
+            foreach(WordItem w in list)
+            {
+                result += "{\"Word\":\"" + w.Word + "\",\"Score\":" + w.Score + "}"; 
+
+                if(list.IndexOf(w) < list.Count - 1)
+                {
+                    result += ",";
+                }
+            }
+
+            return result;
+
         }
     }
 }

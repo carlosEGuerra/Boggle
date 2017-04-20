@@ -105,6 +105,7 @@ namespace MyBoggleService
 
         [DataMember(EmitDefaultValue = true)]
         public List<WordItem> WordsPlayed = new List<WordItem>();
+
     }
 
     public class User
