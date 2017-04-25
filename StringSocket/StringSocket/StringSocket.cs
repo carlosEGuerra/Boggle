@@ -63,6 +63,12 @@ namespace CustomNetworking
         //Storage for the decoder
         private Decoder decoder;
 
+        //Queue for the Send Requests
+        private Queue<StringSocket.SendRequest> sendRequests;
+
+        //Queue for the Receieve Requests
+        private Queue<StringSocket.ReceiveRequest> receiveRequests;
+
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
         /// The read and write methods of the regular Socket must not be called after the
@@ -77,6 +83,11 @@ namespace CustomNetworking
             //sets the decoder to the ecoders decoder
             decoder = encoding.GetDecoder();
 
+            //initializes the queue for the send requests
+            sendRequests = new Queue<StringSocket.SendRequest>();
+
+            //intializes the queue for the receive requests
+            receiveRequests = new Queue<StringSocket.ReceiveRequest>();
         }
 
         /// <summary>
@@ -121,7 +132,7 @@ namespace CustomNetworking
         /// </summary>
         public void BeginSend(String s, SendCallback callback, object payload)
         {
-            lock (this)
+            lock (this.sendRequests)
             {
                 //checks the status of the socket 
                 bool socketAvailable = socket.Poll(500, SelectMode.SelectRead);
@@ -139,7 +150,13 @@ namespace CustomNetworking
                     callback(false, payload);
                 }
 
+                //enqueues the current request
+                sendRequests.Enqueue(new SendRequest());
 
+                //while the queue has something in it, it will send the items
+                while (sendRequests.Count > 0)
+                {
+                }
             }
         }
 
@@ -183,7 +200,7 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-            lock (this)
+            lock (this.receiveRequests)
             {
                 // TODO: Implement BeginReceive
             }
@@ -196,6 +213,20 @@ namespace CustomNetworking
         {
             Shutdown(SocketShutdown.Both);
             Close();
+        }
+
+        public struct SendRequest
+        {
+            private SendCallback _Callback { get; set; }
+            private string _Text { get; set; }
+            private object _Payload { get; set; }
+        }
+
+        public struct ReceiveRequest
+        {
+            private ReceiveCallback _CallBack { get; set; }
+            private object _Object { get; set; }
+            private int _Length { get; set; }
         }
     }
 }
