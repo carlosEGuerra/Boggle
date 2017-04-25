@@ -3,11 +3,9 @@
 // Revised extensively by Joe Zachary April 2017
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Net.Sockets;
-using System.Threading;
+using System.Collections.Generic;
 
 namespace CustomNetworking
 {
@@ -62,6 +60,9 @@ namespace CustomNetworking
         // Encoding used for sending and receiving
         private Encoding encoding;
 
+        //Storage for the decoder
+        private Decoder decoder;
+
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
         /// The read and write methods of the regular Socket must not be called after the
@@ -72,7 +73,10 @@ namespace CustomNetworking
         {
             socket = s;
             encoding = e;
-            // TODO: Complete implementation of StringSocket
+
+            //sets the decoder to the ecoders decoder
+            decoder = encoding.GetDecoder();
+
         }
 
         /// <summary>
@@ -117,7 +121,26 @@ namespace CustomNetworking
         /// </summary>
         public void BeginSend(String s, SendCallback callback, object payload)
         {
-            // TODO: Implement BeginSend
+            lock (this)
+            {
+                //checks the status of the socket 
+                bool socketAvailable = socket.Poll(500, SelectMode.SelectRead);
+
+                //checks the ammount of data in the socket
+                bool socketHasData = socket.Available == 0;
+
+                //checks to see if the socket is connected
+                bool socketConnected = socket.Connected;
+
+                //checks if the socket is closed
+                //if it isn't closed then we invoke callback with false and the payload
+                if (!((socketAvailable && socketHasData) || socketConnected))
+                {
+                    callback(false, payload);
+                }
+
+
+            }
         }
 
         /// <summary>
@@ -160,7 +183,10 @@ namespace CustomNetworking
         /// </summary>
         public void BeginReceive(ReceiveCallback callback, object payload, int length = 0)
         {
-            // TODO: Implement BeginReceive
+            lock (this)
+            {
+                // TODO: Implement BeginReceive
+            }
         }
 
         /// <summary>
