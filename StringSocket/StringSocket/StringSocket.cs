@@ -6,6 +6,7 @@ using System;
 using System.Text;
 using System.Net.Sockets;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace CustomNetworking
 {
@@ -69,6 +70,20 @@ namespace CustomNetworking
         //Queue for the Receieve Requests
         private Queue<StringSocket.ReceiveRequest> receiveRequests;
 
+        //The incoming string
+        private StringBuilder incoming;
+        
+        //An outgoing string
+        private StringBuilder outgoing;
+
+        // For synchronizing sends
+        private readonly object sendSync = new object();
+
+        // Bytes that we are actively trying to send, along with the
+        // index of the leftmost byte whose send has not yet been completed
+        private byte[] pendingBytes = new byte[0];
+        private int pendingIndex = 0;
+
         /// <summary>
         /// Creates a StringSocket from a regular Socket, which should already be connected.  
         /// The read and write methods of the regular Socket must not be called after the
@@ -79,10 +94,12 @@ namespace CustomNetworking
         {
             socket = s;
             encoding = e;
-
-            //sets the decoder to the ecoders decoder
+            incoming = new StringBuilder();
+            outgoing = new StringBuilder();
+           
+            //sets the decoder to the encoders decoder
             decoder = encoding.GetDecoder();
-
+ 
             //initializes the queue for the send requests
             sendRequests = new Queue<StringSocket.SendRequest>();
 
@@ -126,18 +143,18 @@ namespace CustomNetworking
         /// 
         /// This method is thread safe.  This means that multiple threads can call BeginSend
         /// on a shared socket without worrying around synchronization.  The implementation of
-        /// BeginSend must take care of synchronization instead.  On a given StringSocket, each
+        /// BeginSend must take care of instead.  On a given StringSocket, each
         /// string arriving via a BeginSend method call must be sent (in its entirety) before
         /// a later arriving string can be sent.
         /// </summary>
         public void BeginSend(String s, SendCallback callback, object payload)
         {
-            lock (this.sendRequests)
+            lock(sendSync)//lock (this.sendRequests)
             {
                 //checks the status of the socket 
                 bool socketAvailable = socket.Poll(500, SelectMode.SelectRead);
 
-                //checks the ammount of data in the socket
+                //checks the amount of data in the socket
                 bool socketHasData = socket.Available == 0;
 
                 //checks to see if the socket is connected
@@ -150,13 +167,52 @@ namespace CustomNetworking
                     callback(false, payload);
                 }
 
+                //Add the outgoing string to our StringSocket 
+                outgoing.Append(s);
+
                 //enqueues the current request
                 sendRequests.Enqueue(new SendRequest());
 
                 //while the queue has something in it, it will send the items
                 while (sendRequests.Count > 0)
                 {
+           
                 }
+            }
+        }
+
+        /// <summary>
+        /// Attempts to send the entire outgoing string.
+        /// This method should not be called unless sendSync has been acquired.
+        /// </summary>
+        private void SendBytes()
+        {
+            // If we're in the middle of the process of sending out a block of bytes,
+            // keep doing that.
+            if (pendingIndex < pendingBytes.Length)
+            {
+                Console.WriteLine("\tSending " + (pendingBytes.Length - pendingIndex) + " bytes");
+                socket.BeginSend(pendingBytes, pendingIndex, pendingBytes.Length - pendingIndex,
+                                 SocketFlags.None, MessageSent, null);
+            }
+
+            // If we're not currently dealing with a block of bytes, make a new block of bytes
+            // out of outgoing and start sending that.
+            else if (outgoing.Length > 0)
+            {
+                pendingBytes = encoding.GetBytes(outgoing.ToString());
+                pendingIndex = 0;
+                Console.WriteLine("\tConverting " + outgoing.Length + " chars into " + pendingBytes.Length + " bytes, sending them");
+                outgoing.Clear();
+                socket.BeginSend(pendingBytes, 0, pendingBytes.Length,
+                                 SocketFlags.None, MessageSent, null);
+            }
+
+            // If there's nothing to send, shut down for the time being.
+            else
+            {
+                Console.WriteLine("Shutting down send mechanism\n");
+                sendIsOngoing = false;
             }
         }
 
@@ -203,6 +259,7 @@ namespace CustomNetworking
             lock (this.receiveRequests)
             {
                 // TODO: Implement BeginReceive
+                
             }
         }
 
@@ -227,6 +284,34 @@ namespace CustomNetworking
             private ReceiveCallback _CallBack { get; set; }
             private object _Object { get; set; }
             private int _Length { get; set; }
+        }
+
+        /// <summary>
+        /// Called when a message has been successfully sent
+        /// </summary>
+        private void MessageSent(IAsyncResult result)
+        {
+            // Find out how many bytes were actually sent
+            int bytesSent = socket.EndSend(result);
+            Console.WriteLine("\t" + bytesSent + " bytes were successfully sent");
+
+            // Get exclusive access to send mechanism
+            lock (sendSync)
+            {
+                // The socket has been closed
+                if (bytesSent == 0)
+                {
+                    socket.Close();
+                    Console.WriteLine("Socket closed");
+                }
+
+                // Update the pendingIndex and keep trying
+                else
+                {
+                    pendingIndex += bytesSent;
+                    SendBytes();
+                }
+            }
         }
     }
 }
