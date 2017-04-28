@@ -1,0 +1,11 @@
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\bin\Debug\GradingTester.dll
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\bin\Debug\GradingTester.pdb
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\bin\Debug\SS.dll
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\bin\Debug\StringSocket.dll
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\bin\Debug\StringSocket.pdb
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\bin\Debug\StringSocket.xml
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\bin\Debug\SS.xml
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\obj\Debug\GradingTester.csprojResolveAssemblyReference.cache
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\obj\Debug\GradingTester.dll
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\GradingTester\obj\Debug\GradingTester.pdb

@@ -1,0 +1,6 @@
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\StringSocket\bin\Debug\StringSocket.XML
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\StringSocket\bin\Debug\StringSocket.dll
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\StringSocket\bin\Debug\StringSocket.pdb
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\StringSocket\obj\Debug\StringSocket.csprojResolveAssemblyReference.cache
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\StringSocket\obj\Debug\StringSocket.dll
+C:\Users\ebrig\Source\Repos\GunsNLipstick2\StringSocket\StringSocket\obj\Debug\StringSocket.pdb
